@@ -345,6 +345,9 @@ def main():
         return
     unit, day, kind = job
     if args.check:
+        if os.environ.get("IG_TOKEN_SET", "true") != "true":
+            print("IG_TOKEN עדיין לא הוגדר – מדלג (שום פרק לא מסומן כהועלה).")
+            return
         print(f"due: chapter {unit['chapter']} of {day}")
         if os.environ.get("GITHUB_OUTPUT"):
             with open(os.environ["GITHUB_OUTPUT"], "a") as f:
