@@ -198,6 +198,10 @@ def build_video(unit: dict, out: Path) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
     frames = [(ROOT / p, CONFIG["seconds_per_page"]) for p in unit["images"]]
     missing = [str(p) for p, _ in frames if not p.exists()]
+    # חלקים צריכים להיות רצופים (_1, _2, ...). אם חסר חלק – לא מעלים פרק חלקי.
+    nums = sorted(int(Path(p).stem.split("_")[1]) for p in unit["images"])
+    if not nums or nums != list(range(1, len(nums) + 1)):
+        missing.append(f"חלק חסר (קיימים: {nums})")
     if missing:
         raise FileNotFoundError(f"חסרות תמונות לפרק {unit['chapter']}: {missing}")
     join = ROOT / CONFIG["join_image"]
