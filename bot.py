@@ -33,8 +33,12 @@ ROOT = Path(__file__).resolve().parent
 TZ = ZoneInfo("Asia/Jerusalem")
 CITY = LocationInfo("Ashkelon", "Israel", "Asia/Jerusalem", 31.668, 34.571)
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
-UNITS = json.loads((ROOT / "schedule.json").read_text(encoding="utf-8"))
+# רשימת הפרקים נבנית לבד מתיקיית images: 001_1.png, 001_2.png ... 150_1.png
+UNITS = [{"chapter": c, "images": sorted(f"images/{p.name}" for p in (ROOT / "images").glob(f"{c:03d}_*.png"))}
+         for c in range(1, 151)]
 STATE_FILE = ROOT / "state.json"
+LEARN_FILE = ROOT / "learn.json"
+LEARN = json.loads(LEARN_FILE.read_text(encoding="utf-8")) if LEARN_FILE.exists() else {}
 
 GRAPH = "https://graph.instagram.com/v21.0"
 
@@ -59,13 +63,33 @@ def holy_end(day: dt.date) -> dt.datetime:
     return sunset(day) + dt.timedelta(minutes=CONFIG["minutes_after_holy_end"])
 
 
+def day_kind(day: dt.date) -> str:
+    if is_holy(day):
+        return "holy"
+    return "erev" if is_holy(day + dt.timedelta(days=1)) else "weekday"
+
+
+def planned_slot(day: dt.date) -> str:
+    """השעה המתוכננת להעלאה ביום הזה.
+    ברוב הימים: השעה הכי טובה שהבוט למד מהנתונים (learn.json).
+    בחלק מהימים (explore_rate) הוא מנסה שעה אחרת מהרשימה, כדי להמשיך ללמוד."""
+    import random
+    kind = day_kind(day)
+    slots = CONFIG["slots"][kind]
+    best = LEARN.get("best", {}).get(kind, CONFIG["default_slot"][kind])
+    rng = random.Random(day.toordinal())  # אותה החלטה בכל הרצה באותו יום
+    if rng.random() < CONFIG["explore_rate"]:
+        return rng.choice(slots)
+    return best
+
+
 def release_time(day: dt.date) -> dt.datetime:
     """מתי הפרק של היום הזה מותר/אמור לעלות."""
     if is_holy(day):
         return holy_end(day)
-    hh, mm = map(int, CONFIG["post_time"].split(":"))
+    hh, mm = map(int, planned_slot(day).split(":"))
     target = dt.datetime.combine(day, dt.time(hh, mm), TZ)
-    if is_holy(day + dt.timedelta(days=1)):  # ערב שבת / ערב חג
+    if day_kind(day) == "erev":  # ערב שבת / ערב חג – לעולם לא מאוחר משעתיים לפני השקיעה
         latest = sunset(day) - dt.timedelta(minutes=CONFIG["minutes_before_sunset_on_erev"])
         target = min(target, latest)
     return target
@@ -328,7 +352,9 @@ def main():
         return
     video = build_video(unit, ROOT / "out" / "reel.mp4")
     media_id = publish_reel(video, text, os.environ["IG_TOKEN"])
+    slot = planned_slot(day) if (kind == "cycle" and day == now.date() and day_kind(day) != "holy") else None
     state["posted"].append({"chapter": unit["chapter"], "day": day.isoformat(), "kind": kind,
+                            "day_kind": day_kind(day), "slot": slot,
                             "at": now.isoformat(timespec="minutes"), "media_id": media_id})
     save_state(state)
     print(f"הועלה בהצלחה: {media_id}")

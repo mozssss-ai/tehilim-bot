@@ -2,8 +2,8 @@ name: post daily chapter
 
 on:
   schedule:
-    # כל חצי שעה בין 12:00 ל-23:30 שעון ישראל (בערך). הבוט מחליט לבד אם להעלות.
-    - cron: "5,35 10-20 * * *"
+    # כל חצי שעה בין 08:00 ל-23:30 שעון ישראל (בערך). הבוט מחליט לבד אם להעלות.
+    - cron: "5,35 6-20 * * *"
   workflow_dispatch:
 
 permissions:
@@ -43,4 +43,4 @@ jobs:
           git config user.email "tehilim-bot@users.noreply.github.com"
           git add state.json
           git commit -m "posted chapter" || exit 0
-          git push
+          git pull --rebase -q && git push

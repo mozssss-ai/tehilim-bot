@@ -1,15 +1,5 @@
 {
   "cycle_start": "2026-11-05",
-  "post_time": "19:30",
-  "minutes_after_holy_end": 100,
-  "minutes_before_sunset_on_erev": 120,
-  "max_posts_per_day": 4,
-  "seconds_per_page": 4,
-  "seconds_join": 3,
-  "join_image": "assets/join_reel.png",
-  "music": "assets/music.mp3",
-  "whatsapp_link": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
-  "caption": "פרק {chapter} | {hebrew_date} 📖\n⏸️ לחצו לחיצה ארוכה על המסך כדי לעצור ולקרוא\n\nאומרים יחד פרק תהילים אחד בכל יום, לפי הסדר.\nרוצים לקבל את הפרק כל יום בוואטסאפ? הקישור בביו 👆\n\n#תהילים #תהיליםכליום #פרקתהילים #ספרתהילים",
   "catch_up": [
     144,
     145,
@@ -18,5 +8,33 @@
     148,
     149,
     150
-  ]
+  ],
+  "default_slot": {
+    "weekday": "19:30",
+    "erev": "11:00"
+  },
+  "slots": {
+    "weekday": [
+      "18:30",
+      "19:30",
+      "20:30",
+      "21:30"
+    ],
+    "erev": [
+      "09:00",
+      "10:00",
+      "11:00",
+      "12:00"
+    ]
+  },
+  "explore_rate": 0.25,
+  "max_posts_per_day": 10,
+  "minutes_after_holy_end": 100,
+  "minutes_before_sunset_on_erev": 120,
+  "seconds_per_page": 4,
+  "seconds_join": 3,
+  "join_image": "assets/join_reel.png",
+  "music": "assets/music.mp3",
+  "whatsapp_link": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
+  "caption": "פרק {chapter} | {hebrew_date} 📖\n⏸️ לחצו לחיצה ארוכה על המסך כדי לעצור ולקרוא\n\nאומרים יחד פרק תהילים אחד בכל יום, לפי הסדר.\nרוצים לקבל את הפרק כל יום בוואטסאפ? הקישור בביו 👆\n\n#תהילים #תהיליםכליום #פרקתהילים #ספרתהילים"
 }
