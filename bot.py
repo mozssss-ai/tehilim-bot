@@ -235,7 +235,17 @@ def build_video(unit: dict, out: Path) -> Path:
 
 
 # ---------------------------------------------------------------- instagram
+def _clean(kw):
+    for k in ("params", "data"):
+        if kw.get(k) and "access_token" in kw[k]:
+            kw[k]["access_token"] = kw[k]["access_token"].strip().strip('"').strip()
+    if kw.get("headers", {}).get("Authorization"):
+        kw["headers"]["Authorization"] = "OAuth " + kw["headers"]["Authorization"][6:].strip().strip('"').strip()
+    return kw
+
+
 def ig_request(method, url, **kw):
+    kw = _clean(kw)
     import requests
     for attempt in range(3):
         r = requests.request(method, url, timeout=120, **kw)
@@ -287,6 +297,7 @@ def create_container(uid: str, video: Path, text: str, token: str) -> str:
 
 
 def connect(token: str):
+    token = token.strip().strip('"').strip()
     """מזהה את סוג המפתח ומחזיר (מזהה חשבון האינסטגרם, שם המשתמש).
     מפתח של 'התחברות עם אינסטגרם' עובד מול graph.instagram.com;
     מפתח של פייסבוק / משתמש מערכת (Unified login) עובד מול graph.facebook.com."""
@@ -336,6 +347,8 @@ def main():
     args = ap.parse_args()
 
     if args.whoami:
+        t = os.environ.get("IG_TOKEN", "")
+        print(f"IG_TOKEN: אורך {len(t)}, מתחיל ב-{t.strip()[:3]!r}, רווחים/שורות בקצוות: {t != t.strip()}")
         uid, username = connect(os.environ["IG_TOKEN"])
         print(f"מחובר לאינסטגרם: @{username} (id {uid}) דרך {GRAPH}")
         lim = ig_request("GET", f"{GRAPH}/{uid}/content_publishing_limit",
