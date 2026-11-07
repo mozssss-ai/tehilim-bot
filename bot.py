@@ -214,7 +214,8 @@ def build_video(unit: dict, out: Path) -> Path:
     cmd = ["ffmpeg", "-y", "-loglevel", "error"]
     for path, secs in frames:
         cmd += ["-loop", "1", "-t", str(secs), "-i", str(path)]
-    music = ROOT / CONFIG["music"]
+    tracks = sorted((ROOT / "assets" / "music").glob("*.mp3"))
+    music = tracks[unit["chapter"] % len(tracks)] if tracks else ROOT / CONFIG["music"]
     if music.exists():
         cmd += ["-stream_loop", "-1", "-i", str(music)]
     else:
@@ -277,9 +278,12 @@ def host_video(video: Path) -> str:
     return f"https://raw.githubusercontent.com/{repo}/media/{name}"
 
 
-def create_container(uid: str, video: Path, text: str, token: str) -> str:
-    base = {"media_type": "REELS", "caption": text, "share_to_feed": "true",
-            "thumb_offset": "500", "access_token": token}
+def create_container(uid: str, video: Path, text: str, token: str, media_type: str = "REELS") -> str:
+    if media_type == "STORIES":
+        base = {"media_type": "STORIES", "access_token": token}
+    else:
+        base = {"media_type": "REELS", "caption": text, "share_to_feed": "true",
+                "thumb_offset": "500", "access_token": token}
     # דרך 1: העלאה ישירה של הקובץ
     try:
         c = ig_request("POST", f"{GRAPH}/{uid}/media", data={**base, "upload_type": "resumable"})
@@ -324,11 +328,11 @@ def connect(token: str):
     raise RuntimeError(f"לא נמצא חשבון אינסטגרם מקושר למפתח הזה (משתמש: {me})")
 
 
-def publish_reel(video: Path, text: str, token: str) -> str:
+def publish(video: Path, text: str, token: str, media_type: str = "REELS") -> str:
     uid, _ = connect(token)
-    c = {"id": create_container(uid, video, text, token)}
+    cid = create_container(uid, video, text, token, media_type)
     for _ in range(60):  # עד 10 דקות עיבוד
-        st = ig_request("GET", f"{GRAPH}/{c['id']}", params={"fields": "status_code,status", "access_token": token})
+        st = ig_request("GET", f"{GRAPH}/{cid}", params={"fields": "status_code,status", "access_token": token})
         if st.get("status_code") == "FINISHED":
             break
         if st.get("status_code") == "ERROR":
@@ -336,8 +340,68 @@ def publish_reel(video: Path, text: str, token: str) -> str:
         time.sleep(10)
     else:
         raise RuntimeError("Instagram processing timeout")
-    pub = ig_request("POST", f"{GRAPH}/{uid}/media_publish", data={"creation_id": c["id"], "access_token": token})
+    pub = ig_request("POST", f"{GRAPH}/{uid}/media_publish", data={"creation_id": cid, "access_token": token})
     return pub["id"]
+
+
+def publish_reel(video: Path, text: str, token: str) -> str:
+    return publish(video, text, token, "REELS")
+
+
+# ---------------------------------------------------------------- status page
+def write_status(now: dt.datetime) -> None:
+    state = load_state()
+    posted = state["posted"]
+    have = {u["chapter"] for u in UNITS if u["images"]}
+    missing = [c for c in range(1, 151) if c not in have]
+    # מתי כל פרק חסר יידרש (לפי המחזור הנוכחי)
+    start = dt.date.fromisoformat(CONFIG["cycle_start"])
+    need = {}
+    for c in missing:
+        d = start + dt.timedelta(days=c - 1)
+        while d < now.date():
+            d += dt.timedelta(days=150)
+        need[c] = d
+    catch_left = [c for c in CONFIG.get("catch_up", []) if c not in
+                  {p["chapter"] for p in posted if p.get("kind") == "catch_up"}]
+    lines = ["# סטטוס הבוט – תהילים כל יום 📖", "",
+             f"_עודכן: {now:%d/%m/%Y}_", ""]
+    lines += ["## מה עלה לאחרונה", "", "| מתי | פרק | סוג | סטורי |", "|---|---|---|---|"]
+    for p in posted[-10:][::-1]:
+        when = dt.datetime.fromisoformat(p["at"]).strftime("%d/%m %H:%M")
+        kind = "השלמה" if p.get("kind") == "catch_up" else "יומי"
+        lines.append(f"| {when} | {gematria(p['chapter'])} | {kind} | {'✅' if p.get('story_id') else '—'} |")
+    if not posted:
+        lines.append("| — | עדיין לא עלה כלום | | |")
+    lines += ["", "## הבא בתור", ""]
+    if catch_left:
+        lines.append(f"- השלמה: נשארו {len(catch_left)} פרקים ({', '.join(gematria(c) for c in catch_left)})")
+    first = start
+    for i in range(7):
+        day = max(now.date(), first) + dt.timedelta(days=i)
+        n = (day - first).days % len(UNITS)
+        lines.append(f"- {day:%d/%m} – פרק {gematria(UNITS[n]['chapter'])}, בערך ב-{release_time(day):%H:%M}"
+                     + (" (אחרי שבת/חג)" if is_holy(day) else ""))
+    lines += ["", "## תמונות שחסרות", ""]
+    if missing:
+        soon = [c for c in missing if (need[c] - now.date()).days <= 21]
+        if soon:
+            lines.append("**⚠️ דחוף (נדרש בשלושת השבועות הקרובים):** " +
+                         ", ".join(f"{gematria(c)} ({need[c]:%d/%m})" for c in soon))
+            lines.append("")
+        lines.append(f"סה\"כ חסרים {len(missing)} פרקים: " + ", ".join(gematria(c) for c in missing))
+        lines.append("")
+        lines.append(f"הראשון שיידרש: פרק {gematria(min(missing, key=lambda c: need[c]))} "
+                     f"ב-{min(need.values()):%d/%m/%Y}")
+    else:
+        lines.append("אין – כל 150 הפרקים קיימים ✅")
+    replied = ROOT / "replied.json"
+    if replied.exists():
+        r = json.loads(replied.read_text(encoding="utf-8"))
+        lines += ["", "## תגובות \"תהילים\"", "",
+                  f"- נענו עד היום: {len(r.get('done', []))}",
+                  f"- הודעות פרטיות שנשלחו: {sum(1 for x in r.get('done', []) if x.get('dm'))}"]
+    (ROOT / "STATUS.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 # ---------------------------------------------------------------- main
@@ -349,7 +413,12 @@ def main():
     ap.add_argument("--build", type=int, metavar="UNIT")
     ap.add_argument("--now", help="ISO time, for testing")
     ap.add_argument("--whoami", action="store_true", help="בדיקת חיבור לאינסטגרם")
+    ap.add_argument("--status", action="store_true", help="כתיבת STATUS.md")
     args = ap.parse_args()
+
+    if args.status:
+        write_status(dt.datetime.now(TZ))
+        return
 
     if args.whoami:
         t = os.environ.get("IG_TOKEN", "")
@@ -402,10 +471,18 @@ def main():
         return
     video = build_video(unit, ROOT / "out" / "reel.mp4")
     media_id = publish_reel(video, text, os.environ["IG_TOKEN"])
+    story_id = None
+    if CONFIG.get("also_story", True):
+        try:
+            story_id = publish(video, "", os.environ["IG_TOKEN"], "STORIES")
+            print("הועלה גם לסטורי:", story_id)
+        except Exception as e:  # סטורי שנכשל לא מבטל את הריל
+            print("העלאת הסטורי נכשלה:", e)
     slot = planned_slot(day) if (kind == "cycle" and day == now.date() and day_kind(day) != "holy") else None
     state["posted"].append({"chapter": unit["chapter"], "day": day.isoformat(), "kind": kind,
                             "day_kind": day_kind(day), "slot": slot,
-                            "at": now.isoformat(timespec="minutes"), "media_id": media_id})
+                            "at": now.isoformat(timespec="minutes"), "media_id": media_id,
+                            "story_id": story_id})
     save_state(state)
     print(f"הועלה בהצלחה: {media_id}")
 

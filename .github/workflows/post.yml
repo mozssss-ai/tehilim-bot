@@ -2,8 +2,8 @@ name: post daily chapter
 
 on:
   schedule:
-    # כל חצי שעה בין 08:00 ל-23:30 שעון ישראל (בערך). הבוט מחליט לבד אם להעלות.
-    - cron: "5,35 6-20 * * *"
+    # כל חצי שעה, מסביב לשעון. הבוט מחליט לבד אם להעלות (ולא מעלה בשבת ובחג).
+    - cron: "5,35 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,7 +16,7 @@ concurrency:
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,17 +32,26 @@ jobs:
       - name: install ffmpeg
         if: steps.check.outputs.post == 'true'
         run: which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
-      - name: build and publish reel
+      - name: build and publish reel (+ story)
         if: steps.check.outputs.post == 'true'
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
           GITHUB_TOKEN: ${{ github.token }}
         run: python bot.py
+      - name: answer "תהילים" comments
+        if: always()
+        continue-on-error: true
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+        run: python comments.py
+      - name: update status page
+        if: always()
+        run: python bot.py --status
       - name: save state
-        if: steps.check.outputs.post == 'true'
+        if: always()
         run: |
           git config user.name "tehilim-bot"
           git config user.email "tehilim-bot@users.noreply.github.com"
-          git add state.json
-          git commit -m "posted chapter" || exit 0
+          git add state.json STATUS.md replied.json 2>/dev/null || git add state.json STATUS.md
+          git commit -m "bot update" || exit 0
           git pull --rebase -q && git push
