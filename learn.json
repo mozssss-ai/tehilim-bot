@@ -7,6 +7,6 @@
     "weekday": {},
     "erev": {}
   },
-  "updated": "2026-11-07T23:41+00:00",
-  "online_error": "400: {\"error\":{\"message\":\"(#10) Application does not have permission for this action\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"AJj2XT43Nk15HX9c3XyS1zC\"}}"
+  "updated": "2026-11-07T23:42+00:00",
+  "online_raw": "{\"data\":[{\"id\":\"17841455606505848/insights/online_followers/lifetime\",\"name\":\"online_followers\",\"period\":\"lifetime\",\"values\":[{\"value\":{},\"end_time\":\"2026-11-06T08:00:00+0000\"},{\"value\":{},\"end_time\":\"2026-11-07T08:00:00+0000\"}],\"title\":\"עוקבים ברשת\",\"description\":\"מספר העוקבים הכולל של פרופיל זה שהיו מחוברים בפרק הזמן שצויין\"}],\"paging\":{\"previous\":\"https://graph.facebook.com/v27.0/17841455606505"
 }
