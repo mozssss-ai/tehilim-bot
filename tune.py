@@ -72,6 +72,16 @@ def online_score(slot):
     return a + (b - a) * m / 60
 
 
+# אם אינסטגרם לא מחזירים נתוני שעות – משתמשים בנתונים שהוזנו ידנית מלוח הבקרה
+if not online and config.get("followers_activity_manual"):
+    man = config["followers_activity_manual"]["weekday"]
+    for h3, v in man.items():
+        for k in range(3):
+            online[(int(h3) + k) % 24] = v
+    learn["online_source"] = "manual"
+else:
+    learn["online_source"] = "instagram"
+
 best, report = dict(learn.get("best", {})), {}
 by_followers = {}
 if online:
