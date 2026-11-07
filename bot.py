@@ -315,6 +315,11 @@ def connect(token: str):
         ig = pg.get("instagram_business_account")
         if ig:
             return ig["id"], ig.get("username")
+    # מפתח של משתמש מערכת (Unified login) – פונים ישירות למזהה חשבון האינסטגרם
+    if CONFIG.get("ig_user_id"):
+        ig = ig_request("GET", f"{FB_GRAPH}/{CONFIG['ig_user_id']}", params={
+            "fields": "id,username", "access_token": token})
+        return ig["id"], ig.get("username")
     me = ig_request("GET", f"{FB_GRAPH}/me", params={"fields": "id,name", "access_token": token})
     raise RuntimeError(f"לא נמצא חשבון אינסטגרם מקושר למפתח הזה (משתמש: {me})")
 
