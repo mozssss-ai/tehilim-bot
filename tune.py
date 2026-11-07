@@ -58,8 +58,10 @@ try:
         online = {h: sums[h] / counts[h] for h in sums}
     else:
         print("online_followers לא זמין:", r.status_code, r.text[:300])
+        learn["online_error"] = f"{r.status_code}: {r.text[:300]}"
 except Exception as e:
     print("online_followers נכשל:", e)
+    learn["online_error"] = str(e)[:300]
 
 
 def online_score(slot):
