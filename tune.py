@@ -9,8 +9,11 @@ from pathlib import Path
 import requests
 
 ROOT = Path(__file__).resolve().parent
-GRAPH = "https://graph.instagram.com/v21.0"
+sys.path.insert(0, str(ROOT))
+import bot  # noqa: E402
 token = os.environ["IG_TOKEN"]
+bot.connect(token)
+GRAPH = bot.GRAPH
 state = json.loads((ROOT / "state.json").read_text(encoding="utf-8"))
 config = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 learn_file = ROOT / "learn.json"

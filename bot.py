@@ -40,7 +40,9 @@ STATE_FILE = ROOT / "state.json"
 LEARN_FILE = ROOT / "learn.json"
 LEARN = json.loads(LEARN_FILE.read_text(encoding="utf-8")) if LEARN_FILE.exists() else {}
 
-GRAPH = "https://graph.instagram.com/v21.0"
+GRAPH = "https://graph.instagram.com/v21.0"   # מתעדכן לבד לפי סוג המפתח (connect())
+IG_GRAPH = "https://graph.instagram.com/v21.0"
+FB_GRAPH = "https://graph.facebook.com/v21.0"
 
 
 # ---------------------------------------------------------------- dates
@@ -284,9 +286,30 @@ def create_container(uid: str, video: Path, text: str, token: str) -> str:
     return c["id"]
 
 
+def connect(token: str):
+    """מזהה את סוג המפתח ומחזיר (מזהה חשבון האינסטגרם, שם המשתמש).
+    מפתח של 'התחברות עם אינסטגרם' עובד מול graph.instagram.com;
+    מפתח של פייסבוק / משתמש מערכת (Unified login) עובד מול graph.facebook.com."""
+    global GRAPH
+    try:
+        me = ig_request("GET", f"{IG_GRAPH}/me", params={"fields": "user_id,username", "access_token": token})
+        GRAPH = IG_GRAPH
+        return me["user_id"], me.get("username")
+    except RuntimeError as e:
+        print("not an Instagram-login token, trying Facebook Graph:", str(e)[:200])
+    GRAPH = FB_GRAPH
+    pages = ig_request("GET", f"{FB_GRAPH}/me/accounts", params={
+        "fields": "name,instagram_business_account{id,username}", "access_token": token, "limit": 100})
+    for pg in pages.get("data", []):
+        ig = pg.get("instagram_business_account")
+        if ig:
+            return ig["id"], ig.get("username")
+    me = ig_request("GET", f"{FB_GRAPH}/me", params={"fields": "id,name", "access_token": token})
+    raise RuntimeError(f"לא נמצא חשבון אינסטגרם מקושר למפתח הזה (משתמש: {me})")
+
+
 def publish_reel(video: Path, text: str, token: str) -> str:
-    me = ig_request("GET", f"{GRAPH}/me", params={"fields": "user_id,username", "access_token": token})
-    uid = me["user_id"]
+    uid, _ = connect(token)
     c = {"id": create_container(uid, video, text, token)}
     for _ in range(60):  # עד 10 דקות עיבוד
         st = ig_request("GET", f"{GRAPH}/{c['id']}", params={"fields": "status_code,status", "access_token": token})
@@ -313,9 +336,11 @@ def main():
     args = ap.parse_args()
 
     if args.whoami:
-        me = ig_request("GET", f"{GRAPH}/me", params={
-            "fields": "user_id,username,account_type", "access_token": os.environ["IG_TOKEN"]})
-        print("מחובר לאינסטגרם:", me)
+        uid, username = connect(os.environ["IG_TOKEN"])
+        print(f"מחובר לאינסטגרם: @{username} (id {uid}) דרך {GRAPH}")
+        lim = ig_request("GET", f"{GRAPH}/{uid}/content_publishing_limit",
+                         params={"fields": "quota_usage,config", "access_token": os.environ["IG_TOKEN"]})
+        print("מכסת פרסום:", lim)
         return
 
     if args.plan:
