@@ -2,6 +2,8 @@ name: test instagram connection
 
 on:
   workflow_dispatch:
+  push:
+    paths: [".github/run-test"]
 
 jobs:
   test:
