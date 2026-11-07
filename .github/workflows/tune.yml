@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "0 7 * * 0"   # כל יום ראשון בבוקר
   workflow_dispatch:
+  push:
+    paths: [".github/run-tune"]
 
 permissions:
   contents: write

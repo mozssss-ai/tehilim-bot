@@ -382,6 +382,11 @@ def write_status(now: dt.datetime) -> None:
         n = (day - first).days % len(UNITS)
         lines.append(f"- {day:%d/%m} – פרק {gematria(UNITS[n]['chapter'])}, בערך ב-{release_time(day):%H:%M}"
                      + (" (אחרי שבת/חג)" if is_holy(day) else ""))
+    if LEARN.get("best"):
+        lines += ["", "## שעות העלאה שנלמדו", "",
+                  f"- ימי חול: {LEARN['best'].get('weekday', '—')}  |  ערב שבת/חג: {LEARN['best'].get('erev', '—')}",
+                  f"- לפי מתי העוקבים מחוברים: {LEARN.get('by_followers', {})}",
+                  f"- עודכן: {LEARN.get('updated', '—')[:10]}"]
     lines += ["", "## תמונות שחסרות", ""]
     if missing:
         soon = [c for c in missing if (need[c] - now.date()).days <= 21]

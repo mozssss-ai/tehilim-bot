@@ -1,4 +1,8 @@
-"""לומד מהנתונים של אינסטגרם מה השעה הכי טובה להעלאה.
+"""לומד מהנתונים של אינסטגרם מה השעה הכי טובה להעלאה – משני מקורות:
+
+1. מתי העוקבים מחוברים (online_followers מהתובנות של אינסטגרם) – נותן כיוון כבר מהשבוע הראשון.
+2. ניסוי: לכמה אנשים הגיע כל ריל בפועל (reach) לפי שעת ההעלאה – מתקן אם אינסטגרם "מוטה".
+   שעה שהוכיחה בניסוי reach גבוה ביותר מ-15% גוברת על השעה לפי העוקבים.
 
 לכל ריל שעלה לפני יומיים לפחות, שואב מאינסטגרם לכמה אנשים הוא הגיע (reach),
 מחשב ממוצע לכל שעת העלאה (בנפרד לימי חול ולערבי שבת/חג), ושומר את השעה המנצחת ב-learn.json.
@@ -35,17 +39,58 @@ for p in state["posted"]:
     value = r.json()["data"][0]["values"][0]["value"]
     cache[p["media_id"]] = {"reach": value, "slot": p["slot"], "day_kind": p["day_kind"]}
 
+# ---- 1. מתי העוקבים מחוברים
+from zoneinfo import ZoneInfo
+online = {}  # שעה בשעון ישראל -> ממוצע עוקבים מחוברים
+try:
+    r = requests.get(f"{GRAPH}/{bot.connect(token)[0]}/insights", params={
+        "metric": "online_followers", "period": "lifetime", "access_token": token}, timeout=60)
+    if r.status_code == 200 and r.json().get("data"):
+        sums, counts = {}, {}
+        for v in r.json()["data"][0]["values"]:
+            day = dt.datetime.fromisoformat(v["end_time"].replace("+0000", "+00:00"))
+            for h, n in (v.get("value") or {}).items():
+                # מטא מחזירים את השעות לפי שעון החוף המערבי בארה"ב
+                pt = dt.datetime(day.year, day.month, day.day, int(h), tzinfo=ZoneInfo("America/Los_Angeles"))
+                il = pt.astimezone(bot.TZ).hour
+                sums[il] = sums.get(il, 0) + n
+                counts[il] = counts.get(il, 0) + 1
+        online = {h: sums[h] / counts[h] for h in sums}
+    else:
+        print("online_followers לא זמין:", r.status_code, r.text[:300])
+except Exception as e:
+    print("online_followers נכשל:", e)
+
+
+def online_score(slot):
+    h, m = map(int, slot.split(":"))
+    a, b = online.get(h, 0), online.get((h + 1) % 24, 0)
+    return a + (b - a) * m / 60
+
+
 best, report = dict(learn.get("best", {})), {}
+by_followers = {}
+if online:
+    for kind in ("weekday", "erev"):
+        by_followers[kind] = max(config["slots"][kind], key=online_score)
+    best.update(by_followers)
 for kind in ("weekday", "erev"):
     by_slot = {}
     for v in cache.values():
         if v["day_kind"] == kind:
             by_slot.setdefault(v["slot"], []).append(v["reach"])
     scores = {s: statistics.mean(r) for s, r in by_slot.items() if len(r) >= 2}
-    report[kind] = {s: {"avg_reach": round(statistics.mean(r)), "reels": len(r)} for s, r in by_slot.items()}
+    report[kind] = {s: {"avg_reach": round(statistics.mean(r)), "reels": len(r),
+                        "followers_online": round(online_score(s))} for s, r in by_slot.items()}
     if scores:
-        best[kind] = max(scores, key=scores.get)
+        top = max(scores, key=scores.get)
+        base = by_followers.get(kind)
+        # הניסוי גובר רק אם יש לו נתונים מספיקים וההבדל משמעותי
+        if base is None or base not in scores or scores[top] > scores[base] * 1.15:
+            best[kind] = top
 
+learn["online_followers"] = {str(h): round(v) for h, v in sorted(online.items())}
+learn["by_followers"] = by_followers
 learn.update({"best": best, "reach": cache, "report": report, "updated": now.isoformat(timespec="minutes")})
 learn_file.write_text(json.dumps(learn, ensure_ascii=False, indent=2), encoding="utf-8")
 print("השעות הכי טובות כרגע:", best or config["default_slot"])
