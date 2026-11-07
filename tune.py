@@ -42,9 +42,11 @@ for p in state["posted"]:
 # ---- 1. מתי העוקבים מחוברים
 from zoneinfo import ZoneInfo
 online = {}  # שעה בשעון ישראל -> ממוצע עוקבים מחוברים
+learn.pop("online_error", None)
 try:
     r = requests.get(f"{GRAPH}/{bot.connect(token)[0]}/insights", params={
         "metric": "online_followers", "period": "lifetime", "access_token": token}, timeout=60)
+    learn["online_raw"] = r.text[:400]
     if r.status_code == 200 and r.json().get("data"):
         sums, counts = {}, {}
         for v in r.json()["data"][0]["values"]:
