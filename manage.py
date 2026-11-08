@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 import bot, extras  # noqa: E402
 
-SWITCHES = {"shabbat_story": "סטורי שבת שלום", "siyum_reel": "ריל סיום הספר", "dedications": "הקדשות מהצופים",
+SWITCHES = {"shabbat_story": "סטורי שבת וערב חג", "holiday_stories": "סטורי חנוכה, פורים ושאר החגים", "siyum_reel": "ריל סיום הספר", "dedications": "הקדשות מהצופים",
             "also_story": "העלאת הריל גם לסטורי", "replace_phone_with_qr": "QR במקום מספר הטלפון"}
 
 

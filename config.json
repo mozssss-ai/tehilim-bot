@@ -88,5 +88,6 @@
     6,
     2
   ],
-  "replace_phone_with_qr": true
+  "replace_phone_with_qr": true,
+  "holiday_stories": true
 }

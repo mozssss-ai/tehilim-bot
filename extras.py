@@ -44,10 +44,12 @@ def parse_dedication(msg: str):
     return t
 
 
-def card_video(png: Path, out: Path, secs: float = 8) -> Path:
-    """תמונה סטטית -> סרטון קצר עם מנגינה שקטה (כמו הריילס)."""
+def card_video(png: Path, out: Path, secs: float = 8, track: str = None) -> Path:
+    """תמונה סטטית -> סרטון קצר עם מנגינה (מנגינת החג, אם יש)."""
     tracks = sorted((ROOT / "assets" / "music").glob("*.mp3"))
     music = tracks[dt.date.today().toordinal() % len(tracks)] if tracks else None
+    if track and (ROOT / "assets" / "music" / "holiday" / f"{track}.mp3").exists():
+        music = ROOT / "assets" / "music" / "holiday" / f"{track}.mp3"
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-loop", "1", "-t", str(secs), "-i", str(png)]
     cmd += ["-stream_loop", "-1", "-i", str(music)] if music else ["-f", "lavfi", "-t", str(secs), "-i", "anullsrc=r=44100:cl=stereo"]
     cmd += ["-filter_complex",
@@ -219,6 +221,48 @@ def check_inbox(token):
 
 
 # ---------------------------------------------------------------- stories / reels around the daily reel
+HOLIDAY_TRACK = {"ראש השנה": "rosh_hashana", "יום כיפור": "yom_kippur", "סוכות": "sukkot",
+                 "שמיני עצרת": "simchat_torah", "פסח": "pesach", "שבועות": "shavuot", "חנוכה": "chanukah",
+                 "פורים": "purim", "ט״ו בשבט": "tu_bishvat", "ל״ג בעומר": "lag_baomer", "ט״ו באב": "tu_beav"}
+ORDINAL = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שביעי", "שמיני"]
+MINOR = {"פורים": ('פורים שמח', "ונהפוך הוא", "crown"),
+         "ט״ו בשבט": ('ט"ו בשבט שמח', "ראש השנה לאילנות", "tree"),
+         "ל״ג בעומר": ('ל"ג בעומר שמח', "הילולת רבי שמעון בר יוחאי", "bonfire"),
+         "ט״ו באב": ('ט"ו באב', "יום טוב לישראל", "grapes")}
+
+
+def _fest(day, working):
+    from pyluach import dates as hd
+    return hd.HebrewDate.from_pydate(day).festival(israel=True, hebrew=True, include_working_days=working)
+
+
+def erev_track(day):
+    """המנגינה לסטורי של ערב חג (None בשבת רגילה)."""
+    return HOLIDAY_TRACK.get(_fest(day + dt.timedelta(days=1), False) or "")
+
+
+def minor_story(day):
+    """סטורי לחגים שאינם יום טוב – עולה בערב שבו החג נכנס (אחרי הפרק היומי).
+    מחזיר dict או None."""
+    tom = day + dt.timedelta(days=1)
+    f = _fest(tom, True)
+    if not f or _fest(tom, False):
+        return None
+    if f == "חנוכה":
+        k, x = 1, tom
+        while _fest(x - dt.timedelta(days=1), True) == "חנוכה":
+            k, x = k + 1, x - dt.timedelta(days=1)
+        if k > 8:
+            return None
+        return {"title": "חנוכה שמח", "subtitle": f"נר {ORDINAL[k - 1]} של חנוכה", "icon": "chanukiah", "lit": k,
+                "question": "מדליקים יחד – גם אתם איתנו?", "track": "chanukah", "key": f"chanukah{k}"}
+    if f in MINOR and _fest(day, True) != f:
+        t, s, icon = MINOR[f]
+        return {"title": t, "subtitle": s, "icon": icon, "lit": 0, "question": "החג הזה – גם אתם איתנו?",
+                "track": HOLIDAY_TRACK[f], "key": HOLIDAY_TRACK[f]}
+    return None
+
+
 GREETINGS = {  # חג -> (ברכה, שם החג להצגה)
     "ראש השנה": ("שנה טובה ומתוקה", "ראש השנה"),
     "יום כיפור": ("גמר חתימה טובה", "יום הכיפורים"),
@@ -276,8 +320,15 @@ def after_reel(unit, day, kind, media_id, token, publish):
     if daily and "shabbat_story" not in already and CFG.get("shabbat_story") \
             and bot.day_kind(day) == "erev" and day == today:
         title, sub, q = story_override(day, shabbat_texts(day))
-        v = card_video(design.shabbat_story(title, sub, OUT / "shabbat.png", q), OUT / "shabbat.mp4", 8)
+        v = card_video(design.shabbat_story(title, sub, OUT / "shabbat.png", q), OUT / "shabbat.mp4",
+                       12 if erev_track(day) else 8, erev_track(day))
         done.append(("shabbat_story", publish(v, "", token, "STORIES")))
+    ms = minor_story(day) if day == today else None
+    if daily and ms and "holiday_story" not in already and CFG.get("holiday_stories", True):
+        o = load_ovr().get("story", {}).get(day.isoformat()) or {}
+        png = design.shabbat_story(o.get("title") or ms["title"], o.get("subtitle", ms["subtitle"]), OUT / "holiday.png",
+                                   ms["question"], ms["icon"], ms["lit"])
+        done.append(("holiday_story", publish(card_video(png, OUT / "holiday.mp4", 12, ms["track"]), "", token, "STORIES")))
     if daily and "invite_story" not in already and CFG.get("dedications") and today.weekday() in CFG.get("dedication_invite_days", [6, 2]):
         v = card_video(design.invite_story(OUT / "invite.png"), OUT / "invite.mp4", 8)
         done.append(("invite_story", publish(v, "", token, "STORIES")))

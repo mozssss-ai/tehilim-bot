@@ -36,7 +36,7 @@ def main():
         pages = []
         for i, f in enumerate(u["images"], 1):
             src = ROOT / f
-            h = sha(src) + "-v1"  # להעלות את v1 אם משנים את עיצוב ה-QR
+            h = sha(src) + "-v2"  # להעלות את v1 אם משנים את עיצוב ה-QR
             name = Path(f).stem
             if f in known and known[f].get("hash") == h and (G / "thumb" / f"{name}.jpg").exists():
                 pages.append(known[f])

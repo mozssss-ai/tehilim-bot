@@ -69,13 +69,89 @@ def fit(d, s, size, max_w=900):
     return f
 
 
-def shabbat_story(title, subtitle, out, question="השבת הזאת – גם אתם איתנו?"):
+FLAME, FLAME_IN = (240, 180, 60), (255, 236, 170)
+
+
+def flame(d, x, y, h=58):
+    d.ellipse((x - h * .31, y - h, x + h * .31, y), fill=FLAME)
+    d.ellipse((x - h * .14, y - h * .55, x + h * .14, y - h * .06), fill=FLAME_IN)
+
+
+def chanukiah(d, cx, cy, lit):
+    """חנוכייה: 8 נרות + שמש מוגבה. lit = מספר הנרות הדולקים (מימין לשמאל)."""
+    xs = [cx + (i - 4) * 70 for i in range(9)]  # i=4 שמש
+    d.rounded_rectangle((cx - 120, cy + 230, cx + 120, cy + 250), 10, fill=GOLD)
+    d.rectangle((cx - 9, cy + 60, cx + 9, cy + 232), fill=GOLD)
+    d.rectangle((xs[0] - 6, cy + 105, xs[-1] + 6, cy + 120), fill=GOLD)
+    for i, x in enumerate(xs):
+        top = cy - 40 if i == 4 else cy
+        d.rectangle((x - 6, top + 70, x + 6, cy + 112), fill=GOLD)
+        d.rounded_rectangle((x - 13, top, x + 13, top + 72), 5, fill=WHITE, outline=GOLD, width=4)
+        order = 8 - i if i > 4 else 7 - i  # מימין: 0..3 ואז משמאל לשמש 4..7
+        if i == 4 or order < lit:
+            d.line((x, top - 2, x, top - 14), fill=NAVY, width=3)
+            flame(d, x, top - 12, 44)
+
+
+def crown(d, cx, cy):
+    pts = [(cx - 150, cy + 90), (cx - 150, cy - 40), (cx - 75, cy + 20), (cx, cy - 80), (cx + 75, cy + 20),
+           (cx + 150, cy - 40), (cx + 150, cy + 90)]
+    d.polygon(pts, fill=GOLD)
+    d.rounded_rectangle((cx - 160, cy + 80, cx + 160, cy + 120), 10, fill=GOLD)
+    for x, y in [(cx - 150, cy - 40), (cx, cy - 80), (cx + 150, cy - 40)]:
+        d.ellipse((x - 18, y - 18, x + 18, y + 18), fill=NAVY)
+    for x in (cx - 80, cx, cx + 80):
+        d.ellipse((x - 14, cy + 86, x + 14, cy + 114), fill=WHITE)
+
+
+def tree(d, cx, cy):
+    d.rounded_rectangle((cx - 22, cy + 20, cx + 22, cy + 170), 10, fill=(120, 86, 40))
+    green = (110, 140, 90)
+    for dx, dy, r in [(0, -60, 100), (-85, 0, 75), (85, 0, 75), (-45, 40, 70), (45, 40, 70), (0, -130, 70)]:
+        d.ellipse((cx + dx - r, cy + dy - r, cx + dx + r, cy + dy + r), fill=green)
+    for dx, dy in [(-60, -40), (40, -90), (70, 20), (-20, 30), (10, -150), (-90, 10)]:
+        d.ellipse((cx + dx - 10, cy + dy - 10, cx + dx + 10, cy + dy + 10), fill=(250, 230, 235))
+
+
+def bonfire(d, cx, cy):
+    for a in (-1, 1):
+        d.line((cx - 120 * a, cy + 150, cx + 120 * a, cy + 90), fill=(120, 86, 40), width=26)
+    d.polygon([(cx - 110, cy + 120), (cx - 60, cy - 40), (cx - 20, cy + 30), (cx, cy - 120), (cx + 30, cy + 20),
+               (cx + 70, cy - 50), (cx + 110, cy + 120)], fill=FLAME)
+    d.polygon([(cx - 55, cy + 120), (cx - 20, cy + 10), (cx, cy - 40), (cx + 25, cy + 20), (cx + 55, cy + 120)], fill=FLAME_IN)
+
+
+def grapes(d, cx, cy):
+    d.line((cx, cy - 150, cx + 10, cy - 100), fill=(120, 86, 40), width=10)
+    d.polygon([(cx + 10, cy - 120), (cx + 120, cy - 160), (cx + 70, cy - 90)], fill=(110, 140, 90))
+    purple = (92, 52, 110)
+    rows = [5, 4, 3, 2, 1]
+    for r, n in enumerate(rows):
+        for i in range(n):
+            x = cx + (i - (n - 1) / 2) * 52
+            y = cy - 80 + r * 48
+            d.ellipse((x - 27, y - 27, x + 27, y + 27), fill=purple)
+            d.ellipse((x - 14, y - 16, x - 4, y - 6), fill=(170, 140, 190))
+
+
+def shabbat_story(title, subtitle, out, question="השבת הזאת – גם אתם איתנו?", icon="candles", lit=0):
     """title: 'שבת שלום' / 'חג שמח' / 'שנה טובה' ... subtitle: למשל 'פרשת תולדות' / 'ראש השנה'."""
     im = Image.open(A / "bg_card.png").convert("RGB")
     d = ImageDraw.Draw(im)
     text(d, (960, 120), 'בס"ד', HEB(30, 800), anchor="rm")
     logo(im, 540, 330, 560)
-    candles(d, 540, 640)
+    if icon == "chanukiah":
+        chanukiah(d, 540, 600, lit)
+    elif icon == "crown":
+        crown(d, 540, 680)
+    elif icon == "tree":
+        tree(d, 540, 680)
+    elif icon == "bonfire":
+        bonfire(d, 540, 700)
+    elif icon == "grapes":
+        grapes(d, 540, 720)
+    else:
+        candles(d, 540, 640)
     label(d, 990, title, 110)
     if subtitle:
         text(d, (540, 1135), subtitle, fit(d, subtitle, 70), fill=GOLD)
@@ -153,7 +229,10 @@ def clean_footer(src, out, link):
         return out
     top, bottom = blocks[-2][0] - 4, blocks[-1][1] + 4
     above = blocks[-3][1]
-    im.paste(bg.crop((90, top, 990, bottom)), (90, top))
+    # משחזרים רקע רק ברוחב הטקסט של הטלפון – לא נוגעים בעלים שבצדדים (הם במיקום אחר מהרקע הנקי)
+    cols = np.where(diff[top:bottom, 150:830].any(axis=0))[0]
+    X0, X1 = 150 + int(cols.min()) - 10, 150 + int(cols.max()) + 11
+    im.paste(bg.crop((X0, top, X1, bottom)), (X0, top))
     # QR באמצע הרווח שהתפנה
     space_top, space_bottom = above + 10, min(bottom + 40, 1850)
     avail = max(90, space_bottom - space_top)
@@ -165,7 +244,7 @@ def clean_footer(src, out, link):
     q.box_size = box
     qr = q.make_image(fill_color=NAVY, back_color="white").convert("RGB")
     size = qr.width
-    im.paste(bg.crop((90, above + 2, 990, space_bottom)), (90, above + 2))
+    im.paste(bg.crop((X0, above + 2, X1, space_bottom)), (X0, above + 2))
     d = ImageDraw.Draw(im)
     f = SEC(36)
     label_w = max(d.textlength(w, font=f, direction="rtl") for w in ("סרקו", "והצטרפו"))

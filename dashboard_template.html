@@ -69,6 +69,9 @@ details summary{cursor:pointer;color:var(--muted);font-size:13px}
 .frames img{height:220px;border-radius:8px;border:1px solid var(--line);display:block}
 .cap{white-space:pre-line;font-size:13px;background:var(--bg);border-radius:10px;padding:10px;margin:6px 0}
 .gal{margin:16px 0 0}
+.hol{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start}
+.hol img{width:96px;border-radius:8px;border:1px solid var(--line);display:block}
+.hol audio{width:100%;height:32px;margin-top:6px}
 .bar{height:8px;border-radius:4px;background:var(--gold)}
 </style>
 </head>
@@ -126,7 +129,7 @@ ${D.next_post ? `<div class="card next"><div class="nl">הפרק הבא${D.next_
   <div class="tile"><div class="v">${fmt(T.dms_sent)}</div><div class="l">קיבלו קישור בפרטי</div></div>
 </div>
 
-<a class="btn wide gal" href="gallery/">🖼️ כל תמונות הפרקים · עם טלפון / עם QR</a>
+
 
 <h2>מה עומד לעלות</h2>
 ${P.reel ? `<div class="card">
@@ -137,20 +140,21 @@ ${P.reel ? `<div class="card">
   <div class="btns"><a class="btn" href="${issue('כיתוב לפרק '+P.reel.ch, P.reel.caption)}">✏ לתקן את הכיתוב</a>
   ${P.reel.edited?`<a class="btn" href="${issue('ביטול כיתוב לפרק '+P.reel.ch)}">↩ לחזור לכיתוב הרגיל</a>`:''}</div>
 </div>` : ''}
-${P.story ? `<div class="card">
-  <div class="sw-main"><b>סטורי ${P.story.title.includes('שבת')?'שבת':'חג'} · ${esc(P.story.date_h)}</b>${P.story.edited?'<span class="state on">מתוקן</span>':''}</div>
-  <div class="sub"><span class="cd" data-when="${esc(P.story.when)}"></span></div>
-  <div class="frames"><a href="preview/story.jpg"><img src="preview/story.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a>
-  <a href="preview/invite.jpg"><img src="preview/invite.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a></div>
-  <div class="sub">משמאל: סטורי ההזמנה להקדשות (ראשון ורביעי)</div>
-  <div class="btns"><a class="btn" href="${issue('כותרת סטורי '+P.story.day, P.story.title+'\n'+P.story.subtitle)}">✏ לתקן כותרת</a>
-  ${P.story.edited?`<a class="btn" href="${issue('ביטול כותרת סטורי '+P.story.day)}">↩ לחזור לרגיל</a>`:''}</div>
-  <p class="sub" style="margin:6px 0 0">בבקשת התיקון: שורה 1 = הכותרת, שורה 2 = השורה שמתחתיה.</p>
-</div>` : ''}
 
-<h2>חגים קרובים</h2>
-<div class="card">${(D.holidays||[]).map(h => `<div class="sw cm"><div class="sw-main"><b>${esc(h.name)}</b><span class="sub">${esc(h.date_h)}</span></div>
-<div class="sw-next">נכנס <span class="cd" data-when="${esc(h.start)}"></span>${h.story?` · סטורי "${esc(h.greeting)}"`:''}</div></div>`).join('')}</div>
+<h2>תגובות אחרונות</h2>
+<div class="card">${(D.recent_comments||[]).slice(0,15).map(c => `<div class="cm"><div class="u">${esc(c.user)}</div><div class="t">${esc(c.text)}</div><div class="p">${esc(c.post)}</div></div>`).join('') || '<p class="empty">עוד אין תגובות.</p>'}</div>
+
+<h2>ריילס אחרונים</h2>
+<div class="card">${(D.reels||[]).slice(0,15).map(r => `<div class="reel cm">
+  <div class="ch">${r.permalink?`<a href="${esc(r.permalink)}">${esc(r.chapter_h)}</a>`:esc(r.chapter_h)}</div>
+  <div class="stats"><span>👁 <b>${fmt(r.views ?? r.reach)}</b></span><span>❤ <b>${fmt(r.likes)}</b></span>
+  <span>↗ <b>${fmt(r.shares)}</b></span><span>🔖 <b>${fmt(r.saved)}</b></span><span>🙏 <b>${fmt(r.joins)}</b></span></div></div>`).join('') || '<p class="empty">עוד אין ריילס.</p>'}
+  <p class="sub" style="margin:8px 0 0">👁 צפיות · ❤ לייקים · ↗ שיתופים · 🔖 שמירות · 🙏 ביקשו להצטרף</p></div>
+
+<h2>חשיפה לכל ריל</h2><div class="card">${reachBars()}</div>
+
+<h2>הפרקים הבאים</h2>
+<div class="card"><table>${(D.upcoming||[]).map(u => `<tr><td>פרק ${esc(u.chapter)}${u.kind==='catch_up'?' <span class="sub">(השלמה)</span>':''}</td><td class="n">${esc(u.at)}</td></tr>`).join('')}</table></div>
 
 <h2>הקדשות</h2>
 <div class="card">
@@ -163,30 +167,25 @@ ${D.dedications?.inbox_error ? `<p class="sub" style="color:var(--no)">הבוט 
 </div>
 ${(D.dedications?.done||[]).length ? `<div class="card"><div class="sub" style="margin-bottom:4px">הקדשות שעלו</div>${D.dedications.done.map(q => `<div class="cm"><div class="t">${esc(q.text)}</div><div class="p">פרק ${esc(q.chapter)} · ${esc((q.posted||'').slice(0,10).split('-').reverse().join('/'))}${q.notified?' · נשלחה הודעה ✓':''}</div></div>`).join('')}</div>`:''}
 
-<h2>מתגים</h2>
-<div class="card">${(D.switches||[]).map(s => `<div class="sw cm">
-<div class="sw-main"><span class="state ${s.on?'on':'off'}">${s.on?'דולק':'כבוי'}</span><b>${esc(s.label)}</b></div>
-${s.on && s.when ? `<div class="sw-next">${esc(s.what||'')} · <span class="cd" data-when="${esc(s.when)}"></span></div>`
-  : `<div class="sw-next">${s.on?'':'לא יעלה עד שידלק'}</div>`}
-<a class="btn sm" href="${issue((s.on?'כבה ':'הדלק ')+s.key)}">${s.on?'לכבות':'להדליק'}</a></div>`).join('')}
-<p class="sub" style="margin:8px 0 0">כל כפתור פותח בקשה מוכנה ב-GitHub. לוחצים "Submit", והבוט מבצע תוך כדקה.</p></div>
+<h2>סטורי שבת / חג</h2>
+${P.story ? `<div class="card">
+  <div class="sw-main"><b>סטורי ${P.story.title.includes('שבת')?'שבת':'חג'} · ${esc(P.story.date_h)}</b>${P.story.edited?'<span class="state on">מתוקן</span>':''}</div>
+  <div class="sub"><span class="cd" data-when="${esc(P.story.when)}"></span></div>
+  <div class="frames"><a href="preview/story.jpg"><img src="preview/story.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a>
+  <a href="preview/invite.jpg"><img src="preview/invite.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a></div>
+  <div class="sub">משמאל: סטורי ההזמנה להקדשות (ראשון ורביעי)</div>
+  <div class="btns"><a class="btn" href="${issue('כותרת סטורי '+P.story.day, P.story.title+'\n'+P.story.subtitle)}">✏ לתקן כותרת</a>
+  ${P.story.edited?`<a class="btn" href="${issue('ביטול כותרת סטורי '+P.story.day)}">↩ לחזור לרגיל</a>`:''}</div>
+  <p class="sub" style="margin:6px 0 0">בבקשת התיקון: שורה 1 = הכותרת, שורה 2 = השורה שמתחתיה.</p>
+</div>` : ''}
 
 <h2>עוקבים</h2><div class="card">${followersChart()}</div>
-
-<h2>מה הבוט בודק עכשיו</h2>
-${(D.hypotheses||[]).map(h => `<div class="card hyp"><h3>${esc(h.title)}<span class="pill ${h.status}">${ST[h.status]}</span></h3><p>${esc(h.text)}</p></div>`).join('')}
 
 <h2>המלצות שיווק</h2>
 ${(D.recommendations||[]).map(r => `<div class="card rec ${r.level}"><h3>${r.level==='idea'?'💡 ':''}${esc(r.title)}</h3><p>${esc(r.text)}</p></div>`).join('')}
 
-<h2>חשיפה לכל ריל</h2><div class="card">${reachBars()}</div>
-
-<h2>ריילס אחרונים</h2>
-<div class="card">${(D.reels||[]).slice(0,15).map(r => `<div class="reel cm">
-  <div class="ch">${r.permalink?`<a href="${esc(r.permalink)}">${esc(r.chapter_h)}</a>`:esc(r.chapter_h)}</div>
-  <div class="stats"><span>👁 <b>${fmt(r.views ?? r.reach)}</b></span><span>❤ <b>${fmt(r.likes)}</b></span>
-  <span>↗ <b>${fmt(r.shares)}</b></span><span>🔖 <b>${fmt(r.saved)}</b></span><span>🙏 <b>${fmt(r.joins)}</b></span></div></div>`).join('') || '<p class="empty">עוד אין ריילס.</p>'}
-  <p class="sub" style="margin:8px 0 0">👁 צפיות · ❤ לייקים · ↗ שיתופים · 🔖 שמירות · 🙏 ביקשו להצטרף</p></div>
+<h2>מה הבוט בודק עכשיו</h2>
+${(D.hypotheses||[]).map(h => `<div class="card hyp"><h3>${esc(h.title)}<span class="pill ${h.status}">${ST[h.status]}</span></h3><p>${esc(h.text)}</p></div>`).join('')}
 
 ${Object.keys(D.cta||{}).length>1?`<h2>ניסוי הכיתוב (A/B)</h2>
 <div class="card"><table><tr><th>נוסח</th><th class="n">ריילס</th><th class="n">חשיפה</th><th class="n">הצטרפו</th></tr>
@@ -203,11 +202,26 @@ ${D.slot_rows.map(s => `<tr><td>${s.kind==='erev'?'ערב שבת/חג':'חול'}
 ${D.music_rows.map(s => `<tr><td>${esc(s.track.replace(/^\d+_/,'').replace(/_/g,' '))}</td><td class="n">${s.n}</td><td class="n">${fmt(s.avg_reach)}</td></tr>`).join('')}</table>`
  : '<p class="empty">יתמלא כשיעלו ריילס עם המנגינות החדשות.</p>'}</div>
 
-<h2>תגובות אחרונות</h2>
-<div class="card">${(D.recent_comments||[]).slice(0,15).map(c => `<div class="cm"><div class="u">${esc(c.user)}</div><div class="t">${esc(c.text)}</div><div class="p">${esc(c.post)}</div></div>`).join('') || '<p class="empty">עוד אין תגובות.</p>'}</div>
+<h2>חגים קרובים</h2>
+<div class="card">${(D.holidays||[]).map(h => `<div class="hol cm">
+  <a href="preview/${esc(h.img)}"><img src="preview/${esc(h.img)}?v=${encodeURIComponent(D.updated)}" alt=""></a>
+  <div><div class="sw-main"><b>${esc(h.name)}</b><span class="sub">${esc(h.date_h)}</span></div>
+  <div class="sw-next">נכנס <span class="cd" data-when="${esc(h.start)}"></span></div>
+  <div class="sub">סטורי "${esc(h.greeting)}" עולה <span class="cd" data-when="${esc(h.story)}"></span></div>
+  ${h.audio?`<audio controls preload="none" src="${esc(h.audio)}"></audio>`:''}
+  <div class="btns"><a class="btn" href="${issue('כותרת סטורי '+h.day, h.greeting+'\n')}">✏ לתקן</a></div></div>
+</div>`).join('')}</div>
 
-<h2>הפרקים הבאים</h2>
-<div class="card"><table>${(D.upcoming||[]).map(u => `<tr><td>פרק ${esc(u.chapter)}${u.kind==='catch_up'?' <span class="sub">(השלמה)</span>':''}</td><td class="n">${esc(u.at)}</td></tr>`).join('')}</table></div>
+<h2>תמונות הפרקים</h2>
+<a class="btn wide gal" href="gallery/">🖼️ כל תמונות הפרקים · עם טלפון / עם QR</a>
+
+<h2>מתגים</h2>
+<div class="card">${(D.switches||[]).map(s => `<div class="sw cm">
+<div class="sw-main"><span class="state ${s.on?'on':'off'}">${s.on?'דולק':'כבוי'}</span><b>${esc(s.label)}</b></div>
+${s.on && s.when ? `<div class="sw-next">${esc(s.what||'')} · <span class="cd" data-when="${esc(s.when)}"></span></div>`
+  : `<div class="sw-next">${s.on?'':'לא יעלה עד שידלק'}</div>`}
+<a class="btn sm" href="${issue((s.on?'כבה ':'הדלק ')+s.key)}">${s.on?'לכבות':'להדליק'}</a></div>`).join('')}
+<p class="sub" style="margin:8px 0 0">כל כפתור פותח בקשה מוכנה ב-GitHub. לוחצים "Submit", והבוט מבצע תוך כדקה.</p></div>
 
 <h2>סיכום</h2>
 <div class="card"><table>
@@ -217,6 +231,7 @@ ${D.music_rows.map(s => `<tr><td>${esc(s.track.replace(/^\d+_/,'').replace(/_/g,
 <tr><td>לייקים · שיתופים · שמירות</td><td class="n">${fmt(T.likes_sum)} · ${fmt(T.shares_sum)} · ${fmt(T.saves_sum)}</td></tr>
 <tr><td>חשיפה · 28 ימים</td><td class="n">${fmt(M.reach)}</td></tr>
 </table></div>
+
 ${(D.api_errors||[]).length ? `<details class="card"><summary>הערות טכניות (${D.api_errors.length})</summary><pre style="white-space:pre-wrap;font-size:11px;direction:ltr;text-align:left">${esc(D.api_errors.join('\n'))}</pre></details>` : ''}
 `;
 app.append($(html));

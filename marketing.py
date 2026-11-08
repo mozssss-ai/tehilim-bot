@@ -342,28 +342,40 @@ def previews(upcoming, now):
 
 
 def holidays(now, n=8):
-    """החגים הקרובים: שם, תאריך, מתי נכנס החג, ומתי עולה הסטורי (בימים טובים)."""
+    """החגים הקרובים: שם, תאריך, מתי נכנס, מתי עולה הסטורי, תמונת הסטורי והמנגינה שלו."""
+    import design
     import extras
-    from pyluach import dates as hd
     skip = {"פורים קטן", "שושן פורים", "פסח שני", "שושן פורים קטן"}
-    fest_of = lambda x, w: hd.HebrewDate.from_pydate(x).festival(israel=True, hebrew=True, include_working_days=w)
     res, d = [], now.date()
+    PREVIEW.mkdir(parents=True, exist_ok=True)
+    raw = "https://raw.githubusercontent.com/mozssss-ai/tehilim-bot/main/assets/music/holiday/"
     for _ in range(800):
         if len(res) >= n:
             break
-        f = fest_of(d, True)
+        f = extras._fest(d, True)
         prev = d - dt.timedelta(days=1)
-        if f and f not in skip and fest_of(prev, True) != f:
+        if f and f not in skip and extras._fest(prev, True) != f:
             start = bot.sunset(prev)
             if start > now:
-                if fest_of(d, False):  # יום טוב – יש סטורי
-                    t, sub, _ = extras.shabbat_texts(prev)
-                    res.append({"name": sub.replace("שבת שלום · ", ""), "greeting": t, "date_h": bot.hebrew_date(d),
-                                "date": d.strftime("%d/%m/%Y"), "start": start.isoformat(),
-                                "story": bot.release_time(prev).isoformat()})
+                item = {"date_h": bot.hebrew_date(d), "date": d.strftime("%d/%m/%Y"), "start": start.isoformat()}
+                if extras._fest(d, False):  # יום טוב – סטורי בערב החג
+                    t, sub, q = extras.story_override(prev, extras.shabbat_texts(prev))
+                    key = extras.HOLIDAY_TRACK.get(f, "yt")
+                    img = design.shabbat_story(t, sub, bot.ROOT / "out" / f"prev_{key}.png", q)
+                    track = extras.erev_track(prev)
+                    item.update({"name": sub.replace("שבת שלום · ", ""), "greeting": t})
                 else:
-                    res.append({"name": f.replace("״", '"'), "greeting": "", "date_h": bot.hebrew_date(d),
-                                "date": d.strftime("%d/%m/%Y"), "start": start.isoformat(), "story": None})
+                    ms = extras.minor_story(prev)
+                    if not ms:
+                        d += dt.timedelta(days=1)
+                        continue
+                    key, track = ms["key"], ms["track"]
+                    img = design.shabbat_story(ms["title"], ms["subtitle"], bot.ROOT / "out" / f"prev_{key}.png",
+                                               ms["question"], ms["icon"], ms["lit"])
+                    item.update({"name": f.replace("״", '"'), "greeting": ms["title"]})
+                item.update({"story": bot.release_time(prev).isoformat(), "img": save_jpg(Image.open(img), PREVIEW / f"hol_{key}.jpg"),
+                             "audio": raw + f"{track}.mp3" if track else None, "day": prev.isoformat()})
+                res.append(item)
         d += dt.timedelta(days=1)
     return res
 
