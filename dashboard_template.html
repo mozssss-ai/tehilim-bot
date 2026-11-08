@@ -53,6 +53,10 @@ svg text{font-family:Heebo,sans-serif}
 .empty{color:var(--muted);font-size:14px}
 details summary{cursor:pointer;color:var(--muted);font-size:13px}
 .cta{white-space:pre-line;font-size:13px;color:var(--muted);margin-top:2px}
+.btns{display:flex;gap:8px;margin-top:6px}
+.btn{display:inline-block;text-decoration:none;font-size:13px;font-weight:700;padding:5px 12px;border-radius:99px;background:var(--gold-soft);color:var(--ink);border:1px solid var(--line);white-space:nowrap}
+.btn.danger{color:var(--no)}.btn.off{opacity:.7}
+.btn.wide{display:block;text-align:center;margin-top:10px;padding:10px;background:var(--navy);color:var(--bg);border:0}
 .bar{height:8px;border-radius:4px;background:var(--gold)}
 </style>
 </head>
@@ -65,6 +69,7 @@ const fmt = (n) => (n === null || n === undefined) ? '–' : Number(n).toLocaleS
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ST = {validated:'אומת ✓', rejected:'לא אומת', testing:'בבדיקה'};
 const app = document.getElementById('app');
+const issue = (title, body) => `https://github.com/${D.repo||'mozssss-ai/tehilim-bot'}/issues/new?title=${encodeURIComponent(title)}${body?'&body='+encodeURIComponent(body):''}`;
 const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
 
 function followersChart(){
@@ -106,6 +111,22 @@ ${D.next_post ? `<div class="card next">הפרק הבא: <b>פרק ${esc(D.next_
   <div class="tile"><div class="v">${fmt(T.tehilim_comments)}</div><div class="l">כתבו "תהילים"</div></div>
   <div class="tile"><div class="v">${fmt(T.dms_sent)}</div><div class="l">קיבלו קישור בפרטי</div></div>
 </div>
+
+<h2>הקדשות</h2>
+<div class="card">
+${(D.dedications?.queue||[]).length ? D.dedications.queue.map((q,i) => `<div class="cm"><div class="t"><b>${esc(q.text)}</b></div>
+<div class="p">${q.username && q.username!=='ידני' ? '@'+esc(q.username)+' · ' : ''}יעלה בפרק של ${esc(q.eta)}</div>
+<div class="btns">${i?`<a class="btn" href="${issue('הקדם הקדשה '+q.id)}">⬆ להקדים</a>`:''}<a class="btn danger" href="${issue('מחק הקדשה '+q.id)}">🗑 למחוק</a></div></div>`).join('')
+ : '<p class="empty">אין הקדשות בתור כרגע.</p>'}
+<a class="btn wide" href="${issue('הקדשה: לרפואת ', 'כתבו בכותרת את ההקדשה אחרי המילה "הקדשה:" ולחצו Submit.')}">➕ הוספת הקדשה</a>
+${D.dedications?.inbox_error ? `<p class="sub" style="color:var(--no)">הבוט לא מצליח לקרוא הודעות פרטיות כרגע: ${esc(D.dedications.inbox_error.slice(0,140))}</p>`:''}
+</div>
+${(D.dedications?.done||[]).length ? `<div class="card"><div class="sub" style="margin-bottom:4px">הקדשות שעלו</div>${D.dedications.done.map(q => `<div class="cm"><div class="t">${esc(q.text)}</div><div class="p">פרק ${esc(q.chapter)} · ${esc((q.posted||'').slice(0,10).split('-').reverse().join('/'))}${q.notified?' · נשלחה הודעה ✓':''}</div></div>`).join('')}</div>`:''}
+
+<h2>מתגים</h2>
+<div class="card">${(D.switches||[]).map(s => `<div class="reel cm"><div>${esc(s.label)}</div>
+<a class="btn ${s.on?'':'off'}" href="${issue((s.on?'כבה ':'הדלק ')+s.key)}">${s.on?'דולק · לכיבוי':'כבוי · להדלקה'}</a></div>`).join('')}
+<p class="sub" style="margin:8px 0 0">כל כפתור פותח בקשה מוכנה ב-GitHub. לוחצים "Submit", והבוט מבצע תוך כדקה.</p></div>
 
 <h2>עוקבים</h2><div class="card">${followersChart()}</div>
 

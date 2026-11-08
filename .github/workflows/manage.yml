@@ -1,0 +1,37 @@
+name: manage from dashboard
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: post
+  cancel-in-progress: false
+jobs:
+  manage:
+    if: github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - id: run
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: python manage.py
+      - name: refresh dashboard
+        run: python marketing.py
+      - run: |
+          git config user.name "tehilim-bot"; git config user.email "tehilim-bot@users.noreply.github.com"
+          git add -A dedications.json config.json docs marketing.json
+          git commit -m "dashboard: ${{ github.event.issue.title }}" || true
+          git pull --rebase -q && git push
+      - name: answer and close
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MSG: ${{ steps.run.outputs.msg }}
+        run: gh issue close ${{ github.event.issue.number }} --repo ${{ github.repository }} --comment "$MSG – הדשבורד יתעדכן בעוד כדקה."

@@ -310,6 +310,13 @@ def render(m, state):
                                   "hypotheses", "recommendations", "slot_rows", "music_rows", "reels",
                                   "totals", "cta", "api_errors")}
     data["upcoming"] = upcoming
+    import extras
+    ded = extras.load_ded()
+    data["dedications"] = {"queue": [{**q, "eta": extras.queue_eta(i)} for i, q in enumerate(ded.get("queue", []))],
+                           "done": ded.get("done", [])[-10:][::-1], "inbox_error": ded.get("inbox_error")}
+    import manage
+    data["switches"] = [{"key": k, "label": v, "on": bool(bot.CONFIG.get(k))} for k, v in manage.SWITCHES.items()]
+    data["repo"] = os.environ.get("GITHUB_REPOSITORY", "mozssss-ai/tehilim-bot")
     data["updated"] = now.strftime("%d/%m/%Y %H:%M")
     data["next_post"] = upcoming[0] if upcoming else None
     for r in data["reels"] or []:

@@ -76,8 +76,14 @@ def main():
     try:
         import extras
         extras.check_inbox(token)
+        d = extras.load_ded(); d.pop("inbox_error", None); extras.save_ded(d)
     except Exception as e:
         print("בדיקת הודעות פרטיות (הקדשות) נכשלה:", str(e)[:300])
+        try:
+            import extras
+            d = extras.load_ded(); d["inbox_error"] = str(e)[:300]; extras.save_ded(d)
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
