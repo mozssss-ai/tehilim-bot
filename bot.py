@@ -537,8 +537,22 @@ def main():
     print(f"מעלה את פרק {gematria(unit['chapter'])} (של {day})\n{text}")
     if args.dry_run:
         return
-    video = build_video(unit, ROOT / "out" / "reel.mp4")
+    import extras
+    ded = None
+    try:
+        ded = extras.take_dedication()
+    except Exception as e:
+        print("קריאת תור ההקדשות נכשלה:", e)
+    if ded:
+        text = extras.dedication_caption(text, ded)
+        print("מוקדש", ded["text"])
+    video = build_video(extras.apply_dedication(unit, ded) if ded else unit, ROOT / "out" / "reel.mp4")
     media_id = publish_reel(video, text, os.environ["IG_TOKEN"])
+    if ded:
+        try:
+            extras.finish_dedication(ded, unit, media_id, os.environ["IG_TOKEN"])
+        except Exception as e:
+            print("סיום ההקדשה נכשל:", e)
     story_id = None
     if CONFIG.get("also_story", True):
         try:
@@ -559,12 +573,18 @@ def main():
             print(f"הועלה גם לסטורי ({parts} חלקים):", story_id)
         except Exception as e:  # סטורי שנכשל לא מבטל את הריל
             print("העלאת הסטורי נכשלה:", e)
+    more = []
+    try:
+        more = extras.after_reel(unit, day, kind, media_id, os.environ["IG_TOKEN"], publish)
+    except Exception as e:  # תוספת שנכשלה לא מבטלת את הריל
+        print("תוספת נכשלה:", e)
     slot = planned_slot(day) if (kind == "cycle" and day == now.date() and day_kind(day) != "holy") else None
     state["posted"].append({"chapter": unit["chapter"], "day": day.isoformat(), "kind": kind,
                             "day_kind": day_kind(day), "slot": slot,
                             "at": now.isoformat(timespec="minutes"), "media_id": media_id,
                             "story_id": story_id, "cta": cta,
-                            "music": BUILT.get("music"), "secs": BUILT.get("secs")})
+                            "music": BUILT.get("music"), "secs": BUILT.get("secs"),
+                            "dedication": ded["text"] if ded else None, "extras": more})
     save_state(state)
     print(f"הועלה בהצלחה: {media_id}")
 

@@ -94,6 +94,26 @@ def siyum_card(out, book_no=None):
     return out
 
 
+def invite_story(out):
+    """סטורי שמזמין את הצופים לשלוח הקדשה בהודעה פרטית."""
+    im = Image.open(A / "bg_card.png").convert("RGB")
+    d = ImageDraw.Draw(im)
+    text(d, (960, 120), 'בס"ד', HEB(30, 800), anchor="rm")
+    logo(im, 540, 330, 560)
+    label(d, 600, "רוצים להקדיש פרק?", 92)
+    text(d, (540, 760), "לרפואה, להצלחה או לעילוי נשמת", SEC(60))
+    text(d, (540, 840), "של מישהו יקר לכם", SEC(60))
+    divider(d, 940)
+    text(d, (540, 1040), "שלחו לנו הודעה פרטית:", HEB(48, 700))
+    d.rounded_rectangle((150, 1100, 930, 1300), 30, fill=WHITE, outline=GOLD, width=6)
+    text(d, (540, 1165), "לרפואת יוסף בן שרה", SEC(58))
+    text(d, (540, 1240), "(שם + שם האם)", HEB(40, 500), fill=GOLD)
+    text(d, (540, 1420), "הפרק יוקדש בכיתוב ובתמונה,", SEC(54))
+    text(d, (540, 1495), "ונשלח לכם הודעה כשהוא עולה", SEC(54))
+    im.save(out)
+    return out
+
+
 def dedicate(src, line, out):
     """פס הקדשה בתחתית התמונה, בלי לכסות את הטקסט של הפרק."""
     im = Image.open(src).convert("RGB")
@@ -119,5 +139,6 @@ if __name__ == "__main__":
     o.mkdir(parents=True, exist_ok=True)
     shabbat_story("שבת שלום", "פרשת תולדות", o / "shabbat.png")
     siyum_card(o / "siyum.png")
+    invite_story(o / "invite.png")
     dedicate(ROOT / "images" / "001_1.png", "הפרק מוקדש לרפואת פלוני בן פלונית", o / "dedication.png")
     print("ok", o)

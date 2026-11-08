@@ -73,6 +73,11 @@ def main():
     if changed or not FILE.exists():
         FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"סה\"כ טופלו עד היום: {len(data['done'])}")
+    try:
+        import extras
+        extras.check_inbox(token)
+    except Exception as e:
+        print("בדיקת הודעות פרטיות (הקדשות) נכשלה:", str(e)[:300])
 
 
 if __name__ == "__main__":
