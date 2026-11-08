@@ -13,7 +13,7 @@ import tinysoundfont
 
 SR = 44100
 OUT = Path(__file__).resolve().parent / "assets" / "music"
-SECONDS = 30
+SECONDS = 95
 NAMES = {"C": 0, "C#": 1, "Db": 1, "D": 2, "D#": 3, "Eb": 3, "E": 4, "F": 5, "F#": 6, "Gb": 6,
          "G": 7, "G#": 8, "Ab": 8, "A": 9, "A#": 10, "Bb": 10, "B": 11}
 
@@ -243,6 +243,84 @@ def ballad(name, prog, inst, bpm, mel_inst=None, melody=None):  # בלדות מ�
     return p
 
 
+def cello_suite():  # באך – סוויטה לצ'לו מס' 1, פרלוד
+    p = Piece("14_bach_cello_suite", 66, {0: CELLO, 1: SLOW_STR})
+    bars = [["G2", "D3", "B3", "A3", "B3", "D3", "B3", "D3"], ["G2", "E3", "C4", "B3", "C4", "E3", "C4", "E3"],
+            ["G2", "F#3", "C4", "B3", "C4", "F#3", "C4", "F#3"], ["G2", "G3", "B3", "A3", "B3", "G3", "B3", "F#3"],
+            ["G2", "E3", "B3", "A3", "B3", "G3", "F#3", "G3"], ["E3", "G3", "F#3", "G3", "B2", "D3", "C#3", "B2"]]
+    t = 0
+    for b in bars:
+        for rep in range(2):
+            for j, n in enumerate(b):
+                p.note(0, t + j * .25, .3, n, 78)
+            t += 2
+    return p
+
+
+def minuet():  # באך – מינואט בסול מז'ור (ממחברת אנה מגדלנה)
+    p = Piece("15_bach_minuet", 84, {0: HARP, 1: NYLON})
+    mel = [("D5", 1), ("G4", .5), ("A4", .5), ("B4", .5), ("C5", .5), ("D5", 1), ("G4", 1), ("G4", 1),
+           ("E5", 1), ("C5", .5), ("D5", .5), ("E5", .5), ("F#5", .5), ("G5", 1), ("G4", 1), ("G4", 1),
+           ("C5", 1), ("D5", .5), ("C5", .5), ("B4", .5), ("A4", .5), ("B4", 1), ("C5", .5), ("B4", .5),
+           ("A4", .5), ("G4", .5), ("F#4", 1), ("G4", .5), ("A4", .5), ("B4", .5), ("G4", .5), ("A4", 3)]
+    t = p.line(0, 0, mel, 76)
+    bass = ["G3", "B3", "C4", "B3", "C4", "B3", "A3", "G3", "D4", "D3", "D3"]
+    for i, b in enumerate(bass):
+        p.note(1, i * 3, 3, b, 55)
+    return p
+
+
+def chopin_prelude():  # שופן – פרלוד במי מינור
+    p = Piece("16_chopin_prelude_em", 50, {0: PIANO})
+    chords = [["G3", "B3", "E4"], ["G3", "B3", "E4"], ["F#3", "A3", "D#4"], ["F#3", "A3", "D#4"],
+              ["F3", "A3", "D#4"], ["F3", "A3", "D4"], ["E3", "A3", "D4"], ["E3", "G3", "C#4"],
+              ["E3", "G3", "C4"], ["D#3", "F#3", "C4"], ["D#3", "F#3", "B3"], ["E3", "G3", "B3"]]
+    for i, c in enumerate(chords):
+        for k in range(4):
+            p.chord(0, i * 2 + k * .5, c, .5, 40)
+    p.line(0, 0, [("B4", 6), ("C5", .5), ("B4", 1.5), ("B4", 6), ("A#4", .5), ("B4", .5), ("C5", 1),
+                  ("B4", 4)], 66)
+    return p
+
+
+def mozart():  # מוצרט – סונטה בדו מז'ור K.545
+    p = Piece("17_mozart_k545", 70, {0: PIANO})
+    p.line(0, 0, [("C5", 2), ("E5", 1), ("G5", 1), ("B4", 1.5), ("C5", .25), ("D5", .25), ("C5", 2),
+                  ("A5", 2), ("G5", 1), ("C6", 1), ("G5", 1), ("F5", .5), ("E5", .5), ("F5", 2)], 72)
+    alb = [["C3", "G3", "E3", "G3"]] * 4 + [["D3", "G3", "F3", "G3"], ["C3", "G3", "E3", "G3"]] * 1 + \
+          [["C3", "A3", "F3", "A3"]] * 2 + [["C3", "G3", "E3", "G3"], ["B2", "G3", "D3", "G3"]] + [["C3", "G3", "E3", "G3"]] * 2
+    for i, b in enumerate(alb):
+        for j, n in enumerate(b):
+            p.note(0, i + j * .25, .3, n, 50)
+    return p
+
+
+def generated(name, key_chords, inst, mel_inst, bpm, seed):
+    """בלדה מקורית: ארפג'יו על מהלך אקורדים + מנגינה שנבנית מצלילי האקורד בצעדים קטנים."""
+    import random
+    rnd = random.Random(seed)
+    p = Piece(name, bpm, {0: inst, 1: PAD, 2: mel_inst})
+    t, prev = 0, None
+    rhythms = [[2, 1, 1], [1, 1, 2], [3, 1], [1.5, .5, 2], [4], [2, 2]]
+    for rep in range(2):
+        for c in key_chords:
+            root, rest = c[0], c[1:]
+            pat = [root, rest[0], rest[1], rest[2], rest[1], rest[0], rest[1], rest[2]]
+            for j, n in enumerate(pat):
+                p.note(0, t + j * .5, 1.5, n, 62 if j else 70)
+            p.chord(1, t, rest, 4, 28)
+            if rep == 1 or t >= 8:
+                tones = [m(x) + 12 for x in rest] + [m(x) + 24 for x in rest[:1]]
+                tt = t
+                for d in rnd.choice(rhythms):
+                    cand = sorted(tones, key=lambda k: abs(k - prev) if prev else 0)
+                    k = cand[0] if prev and rnd.random() < .6 else rnd.choice(tones)
+                    p.note(2, tt, d * .95, k, 70)
+                    prev, tt = k, tt + d
+            t += 4
+    return p
+
+
 def pieces():
     yield canon()
     yield prelude()
@@ -263,6 +341,22 @@ def pieces():
     yield ballad("12_ballad_minor_Am", [["A2", "E4", "A4", "C5"], ["F2", "F4", "A4", "C5"], ["C3", "E4", "G4", "C5"],
                                         ["G2", "D4", "G4", "B4"]], NYLON, 64, CELLO,
                  [("E4", 2), ("A4", 2), ("G4", 2), ("E4", 2), ("F4", 2), ("E4", 1), ("D4", 1), ("E4", 4)])
+    yield cello_suite()
+    yield minuet()
+    yield chopin_prelude()
+    yield mozart()
+    gens = [
+        ("18_original_piano_cello_Eb", [["Eb2", "G3", "Bb3", "Eb4"], ["C3", "G3", "C4", "Eb4"], ["Ab2", "Ab3", "C4", "Eb4"], ["Bb2", "F3", "Bb3", "D4"]], PIANO, CELLO, 64),
+        ("19_original_guitar_flute_D", [["D3", "F#3", "A3", "D4"], ["A2", "E3", "A3", "C#4"], ["B2", "F#3", "B3", "D4"], ["G2", "D3", "G3", "B3"]], NYLON, FLUTE, 70),
+        ("20_original_harp_strings_A", [["A2", "E3", "A3", "C#4"], ["F#2", "C#3", "F#3", "A3"], ["D3", "A3", "D4", "F#4"], ["E3", "B3", "E4", "G#4"]], HARP, SLOW_STR, 66),
+        ("21_original_choir_C", [["C3", "G3", "C4", "E4"], ["F2", "F3", "A3", "C4"], ["A2", "E3", "A3", "C4"], ["G2", "D3", "G3", "B3"]], PIANO, 52, 60),
+        ("22_original_musicbox_F", [["F3", "A3", "C4", "F4"], ["C3", "G3", "C4", "E4"], ["D3", "A3", "D4", "F4"], ["Bb2", "F3", "Bb3", "D4"]], CELESTA, VIBES, 72),
+        ("23_original_minor_Dm", [["D3", "A3", "D4", "F4"], ["Bb2", "F3", "Bb3", "D4"], ["F2", "C3", "F3", "A3"], ["A2", "E3", "A3", "C#4"]], PIANO, OBOE, 62),
+        ("24_original_guitar_strings_E", [["E2", "B2", "E3", "G#3"], ["C#3", "G#3", "C#4", "E4"], ["A2", "E3", "A3", "C#4"], ["B2", "F#3", "B3", "D#4"]], NYLON, STRINGS, 68),
+        ("25_original_harp_flute_G", [["G2", "D3", "G3", "B3"], ["E2", "B2", "E3", "G3"], ["C3", "G3", "C4", "E4"], ["D3", "A3", "D4", "F#4"]], HARP, FLUTE, 70),
+    ]
+    for i, (nm, ch, ins, mel, bpm) in enumerate(gens):
+        yield generated(nm, ch, ins, mel, bpm, seed=100 + i)
     yield ballad("13_ballad_vibes_F", [["F2", "A3", "C4", "F4"], ["D3", "A3", "D4", "F4"], ["Bb2", "F3", "Bb3", "D4"],
                                        ["C3", "G3", "C4", "E4"]], VIBES, 68)
 

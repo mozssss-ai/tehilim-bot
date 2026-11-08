@@ -517,7 +517,15 @@ def main():
     story_id = None
     if CONFIG.get("also_story", True):
         try:
-            story_id = publish(video, "", os.environ["IG_TOKEN"], "STORIES")
+            story_video = video
+            dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                                        "-of", "csv=p=0", str(video)], capture_output=True, text=True).stdout or 0)
+            if dur > 59:  # סטורי מוגבל לדקה – מקצרים, עם דעיכה בסוף
+                story_video = ROOT / "out" / "story.mp4"
+                subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(video), "-t", "59",
+                                "-af", "afade=t=out:st=57:d=2", "-c:v", "libx264", "-crf", "20",
+                                "-c:a", "aac", "-movflags", "+faststart", str(story_video)], check=True)
+            story_id = publish(story_video, "", os.environ["IG_TOKEN"], "STORIES")
             print("הועלה גם לסטורי:", story_id)
         except Exception as e:  # סטורי שנכשל לא מבטל את הריל
             print("העלאת הסטורי נכשלה:", e)
