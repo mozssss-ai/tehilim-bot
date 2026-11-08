@@ -2,3 +2,5 @@ pyluach==2.3.0
 astral==3.2
 requests==2.32.3
 pillow==11.0.0
+qrcode==7.4.2
+numpy==2.1.3

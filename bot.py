@@ -248,6 +248,12 @@ def build_video(unit: dict, out: Path) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
     frames = [(ROOT / p, CONFIG["seconds_per_page"]) for p in unit["images"]]
     missing = [str(p) for p, _ in frames if not p.exists()]
+    if not missing and CONFIG.get("replace_phone_with_qr", True):
+        # מוריד את מספר הטלפון מתחתית התמונה ושם במקומו QR לקבוצה (לא נוגע בקבצים המקוריים)
+        import design
+        (ROOT / "out" / "clean").mkdir(parents=True, exist_ok=True)
+        frames = [(design.clean_footer(p, ROOT / "out" / "clean" / p.name, CONFIG["whatsapp_link"]), s)
+                  if "out" not in p.parts else (p, s) for p, s in frames]
     # חלקים צריכים להיות רצופים (_1, _2, ...). אם חסר חלק – לא מעלים פרק חלקי.
     nums = sorted(int(Path(p).stem.split("_")[1]) for p in unit["images"])
     if not nums or nums != list(range(1, len(nums) + 1)):

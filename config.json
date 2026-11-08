@@ -81,11 +81,12 @@
   ],
   "cta_explore_rate": 0.2,
   "marketing_refresh_hours": 3,
-  "shabbat_story": false,
-  "siyum_reel": false,
-  "dedications": false,
+  "shabbat_story": true,
+  "siyum_reel": true,
+  "dedications": true,
   "dedication_invite_days": [
     6,
     2
-  ]
+  ],
+  "replace_phone_with_qr": true
 }

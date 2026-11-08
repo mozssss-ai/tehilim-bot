@@ -74,6 +74,8 @@ def apply_dedication(unit: dict, ded: dict) -> dict:
     first = ROOT / unit["images"][0]
     (OUT / "ded").mkdir(parents=True, exist_ok=True)
     new = OUT / "ded" / first.name
+    if CFG.get("replace_phone_with_qr", True):
+        first = design.clean_footer(first, OUT / "ded" / ("clean_" + first.name), CFG["whatsapp_link"])
     design.dedicate(first, f"הפרק מוקדש {ded['text']}", new)
     return {**unit, "images": [str(new.relative_to(ROOT))] + unit["images"][1:]}
 

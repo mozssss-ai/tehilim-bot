@@ -114,6 +114,51 @@ def invite_story(out):
     return out
 
 
+def clean_footer(src, out, link):
+    """מוריד מתמונת הפרק את השורות "השאירו הודעה למספר" + מספר הטלפון,
+    משחזר במקומן את הרקע המקורי (bg_card), ושם קוד QR לקבוצה."""
+    import numpy as np
+    import qrcode
+    im = Image.open(src).convert("RGB")
+    bg = Image.open(A / "bg_card.png").convert("RGB")
+    if im.size != bg.size:
+        im.save(out)
+        return out
+    diff = (np.abs(np.asarray(im, dtype=int) - np.asarray(bg, dtype=int)).max(axis=2) > 40)
+    rows = diff[:, 150:930].sum(axis=1) > 3
+    # קבוצות שורות עם טקסט בתחתית הכרטיס – שתי האחרונות הן "השאירו הודעה" והמספר
+    blocks, y = [], 1500
+    while y < 1880:
+        if rows[y]:
+            y0 = y
+            while y < 1880 and rows[y]:
+                y += 1
+            blocks.append((y0, y))
+        y += 1
+    blocks = [b for b in blocks if b[1] - b[0] >= 6]
+    if len(blocks) < 3:
+        im.save(out)
+        return out
+    top, bottom = blocks[-2][0] - 4, blocks[-1][1] + 4
+    above = blocks[-3][1]
+    im.paste(bg.crop((90, top, 990, bottom)), (90, top))
+    # QR באמצע הרווח שהתפנה
+    space_top, space_bottom = above + 10, min(bottom + 40, 1850)
+    size = max(90, space_bottom - space_top)
+    q = qrcode.QRCode(border=2, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=10)
+    q.add_data(link)
+    q.make()
+    qr = q.make_image(fill_color=NAVY, back_color="white").convert("RGB").resize((size, size), Image.NEAREST)
+    im.paste(bg.crop((90, above + 2, 990, space_bottom)), (90, above + 2))
+    x = 540 - size // 2
+    im.paste(qr, (x, space_top))
+    d = ImageDraw.Draw(im)
+    text(d, (x - 30, space_top + size // 2 - 18), "סרקו", SEC(34), fill=GOLD, anchor="rm")
+    text(d, (x - 30, space_top + size // 2 + 20), "והצטרפו", SEC(34), fill=GOLD, anchor="rm")
+    im.save(out)
+    return out
+
+
 def dedicate(src, line, out):
     """פס הקדשה בתחתית התמונה, בלי לכסות את הטקסט של הפרק."""
     im = Image.open(src).convert("RGB")
@@ -140,5 +185,7 @@ if __name__ == "__main__":
     shabbat_story("שבת שלום", "פרשת תולדות", o / "shabbat.png")
     siyum_card(o / "siyum.png")
     invite_story(o / "invite.png")
+    clean_footer(ROOT / "images" / "001_1.png", o / "clean_001.png", "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn")
+    clean_footer(ROOT / "images" / "119_3.png", o / "clean_119.png", "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn")
     dedicate(ROOT / "images" / "001_1.png", "הפרק מוקדש לרפואת פלוני בן פלונית", o / "dedication.png")
     print("ok", o)
