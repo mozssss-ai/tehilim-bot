@@ -205,10 +205,11 @@ ${Object.entries(D.cta||{}).map(([k,v]) => `<tr><td><b>${String.fromCharCode(65+
 ${D.slot_rows.map(s => `<tr><td>${s.kind==='erev'?'ערב שבת/חג':'חול'}</td><td>${s.slot}</td><td class="n">${s.n}</td><td class="n">${fmt(s.avg_reach)}</td></tr>`).join('')}</table>`
  : '<p class="empty">הנתונים יופיעו אחרי הריילס הראשונים של המחזור.</p>'}</div>
 
-<h2>המנגינות המובילות</h2>
-<div class="card">${(D.music_rows||[]).length ? `<table><tr><th>מנגינה</th><th class="n">ריילס</th><th class="n">חשיפה ממוצעת</th></tr>
-${D.music_rows.map(s => `<tr><td>${esc(s.track.replace(/^\d+_/,'').replace(/_/g,' '))}</td><td class="n">${s.n}</td><td class="n">${fmt(s.avg_reach)}</td></tr>`).join('')}</table>`
- : '<p class="empty">יתמלא כשיעלו ריילס עם המנגינות החדשות.</p>'}</div>
+<h2>מוזיקה</h2>
+<div class="card"><p class="sub" style="margin:0 0 6px">נספרים רק ריילס של הפרק היומי שעלו בשעה המתוכננת (${D.fair_count||0} עד עכשיו) – בלי ההשלמות שעלו בלילה.</p>
+${(D.style_rows||[]).length ? `<table><tr><th>סגנון</th><th class="n">ריילס</th><th class="n">חשיפה ממוצעת</th></tr>
+${D.style_rows.map(s => `<tr><td>${esc(s.style)}</td><td class="n">${s.n}</td><td class="n">${fmt(s.avg_reach)}</td></tr>`).join('')}</table>`
+ : '<p class="empty">יתמלא אחרי הריילס הראשונים שעולים בשעה המתוכננת.</p>'}</div>
 
 <h2>חגים קרובים</h2>
 <div class="card">${(D.holidays||[]).map(h => `<div class="hol cm">

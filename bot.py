@@ -274,6 +274,18 @@ def build_video(unit: dict, out: Path) -> Path:
         cmd += ["-loop", "1", "-t", str(secs), "-i", str(path)]
     tracks = sorted((ROOT / "assets" / "music").glob("*.mp3"))
     music = tracks[unit["chapter"] % len(tracks)] if tracks else ROOT / CONFIG["music"]
+    # אם הבוט כבר אימת שסגנון מוזיקה מסוים מביא יותר חשיפה – ברוב הפרקים בוחרים ממנו (ובשאר ממשיכים לגוון ולבדוק)
+    try:
+        import random
+        from music_styles import STYLES
+        mk = json.loads((ROOT / "marketing.json").read_text(encoding="utf-8"))
+        best = mk.get("music_best_style")
+        if tracks and best in STYLES and random.Random(unit["chapter"] * 31).random() < 0.7:
+            pool = [t for t in tracks if t.name[:2] in STYLES[best]]
+            if pool:
+                music = pool[unit["chapter"] % len(pool)]
+    except Exception:
+        pass
     BUILT["music"], BUILT["secs"] = music.stem if music.exists() else None, total
     if music.exists():
         cmd += ["-stream_loop", "-1", "-i", str(music)]

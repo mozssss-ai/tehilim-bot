@@ -146,7 +146,8 @@ def insights(m, reels, ready, replied):
     out = []
     # משווים רק ריילס שעברו לפחות יום מאז שעלו (ריל חדש עוד לא צבר חשיפה)
     day_ago = dt.datetime.now(TZ) - dt.timedelta(hours=24)
-    ready = [r for r in ready if dt.datetime.fromisoformat(r["at"]) < day_ago] or ready
+    ready_all = ready
+    ready = [r for r in ready if r.get("slot") and dt.datetime.fromisoformat(r["at"]) < day_ago]
     add = lambda i, lvl, title, text, ev="": out.append({"id": i, "level": lvl, "title": title, "text": text, "evidence": ev})
     acc = m.get("account", {})
     week, month = acc.get("week", {}), acc.get("month", {})
@@ -196,12 +197,17 @@ def insights(m, reels, ready, replied):
             f"הבוט ממשיך לבדוק את זה ככל שמצטברים ריילס.",
             f"הכי חזק: פרק {bot.gematria(high[-1]['chapter'])} ({high[-1]['reach']} חשיפות) · "
             f"הכי חלש: פרק {bot.gematria(low[0]['chapter'])} ({low[0]['reach']})")
-    elif ready:
+    else:
         add("learning-reels", "info", "הבוט עדיין לומד",
-            f"יש נתונים מלאים על {len(ready)} ריילס. מ-6 ריילס הבוט יתחיל להשוות בין ריילס חזקים לחלשים "
-            "(אורך, שעה, הקדשה, מוזיקה) ולהגיד מה עובד.")
+            f"להשוואות נכנסים רק ריילס של הפרק היומי שעלו בשעה המתוכננת – לא ההשלמות שעלו בלילה. "
+            f"יש כרגע {len(ready)} כאלה; מ-6 הבוט יתחיל להשוות בין ריילס חזקים לחלשים (אורך, שעה, הקדשה, מוזיקה).")
+    if m.get("music_best_style"):
+        add(f"style-{m['music_best_style']}", "mid", f"סגנון \"{m['music_best_style']}\" מוביל",
+            "הבוט כבר בוחר ממנו ברוב הפרקים. אם תרצה, אכין עוד מנגינות בסגנון הזה (רק באישורך) כדי לגוון בלי לאבד את מה שעובד.",
+            " · ".join(f"{s['style']}: {s['avg_reach']} ({s['n']})" for s in m.get("style_rows", [])[:4]))
 
-    # 3. שיתופים ושמירות – מה מביא אנשים חדשים
+    # 3. שיתופים ושמירות – מה מביא אנשים חדשים (כל הריילס)
+    ready = ready_all
     if len(ready) >= 3:
         reach = sum(r["reach"] for r in ready)
         sh = sum(r.get("shares") or 0 for r in ready)
@@ -284,6 +290,8 @@ def analyse(m, state, replied):
                                                    "total_interactions", "ig_reels_avg_watch_time", "permalink")},
                       "joins": joins_by_media.get(p.get("media_id"), 0), "cta": p.get("cta", 0)})
     ready = [r for r in reels if r.get("reach")]
+    # "הוגנים": ריילס של הפרק היומי שעלו בשעה המתוכננת (בלי השלמות לילה) – רק הם נכנסים להשוואות
+    fair = [r for r in ready if r.get("slot")]
 
     hyps = []
 
@@ -356,22 +364,37 @@ def analyse(m, state, replied):
         hyps.append({"title": "האם ריילס קצרים נצפים עד הסוף יותר", "status": "testing",
                      "text": f"נאסף זמן צפייה ממוצע לכל ריל ({len(watch)}/4 ריילס)."})
 
-    # 4. מוזיקה
-    by_music = defaultdict(list)
-    for r in ready:
+    # 4. מוזיקה – לפי מנגינה ולפי סגנון (רק ריילס הוגנים)
+    from music_styles import style_of
+    by_music, by_style = defaultdict(list), defaultdict(list)
+    for r in fair:
         if r.get("music"):
             by_music[r["music"]].append(r["reach"])
+            if style_of(r["music"]):
+                by_style[style_of(r["music"])].append(r["reach"])
     music_rows = sorted(({"track": k, "n": len(v), "avg_reach": round(statistics.mean(v))} for k, v in by_music.items()),
                         key=lambda x: -x["avg_reach"])
-    hyps.append({"title": "איזו מוזיקה עובדת הכי טוב", "status": "testing" if len(music_rows) < 10 else "validated",
-                 "text": (f"מוביל עד עכשיו: {music_rows[0]['track']} ({music_rows[0]['avg_reach']} חשיפות בממוצע). "
-                          if music_rows else "") + f"נבדקו {len(music_rows)} מתוך 25 מנגינות."})
+    style_rows = sorted(({"style": k, "n": len(v), "avg_reach": round(statistics.mean(v))} for k, v in by_style.items()),
+                        key=lambda x: -x["avg_reach"])
+    ok = [s for s in style_rows if s["n"] >= 3]
+    if len(ok) >= 2 and ok[0]["avg_reach"] > 1.2 * statistics.mean(s["avg_reach"] for s in ok[1:]):
+        m["music_best_style"] = ok[0]["style"]
+        hyps.append({"title": "איזה סגנון מוזיקה עובד הכי טוב", "status": "validated",
+                     "text": f"סגנון \"{ok[0]['style']}\" מביא בממוצע {ok[0]['avg_reach']} חשיפות – יותר משאר הסגנונות. "
+                             "הבוט בוחר ממנו ברוב הפרקים, וממשיך לבדוק את השאר."})
+    else:
+        m.pop("music_best_style", None)
+        hyps.append({"title": "איזה סגנון מוזיקה עובד הכי טוב", "status": "testing",
+                     "text": f"נבדקים 5 סגנונות (פסנתר, נבל, גיטרה, מיתרים, פעמונים). צריך 3 ריילס בשעה המתוכננת "
+                             f"לפחות בשני סגנונות ({len(fair)} ריילס כאלה עד עכשיו)."})
 
     # ---------------------------------------------------------------- תובנות והמלצות (נבנות מהנתונים בכל הרצה)
     m["recommendations"] = insights(m, reels, ready, replied)
     m["hypotheses"] = hyps
     m["slot_rows"] = slot_rows
     m["music_rows"] = music_rows[:10]
+    m["style_rows"] = style_rows
+    m["fair_count"] = len(fair)
     m["reels"] = sorted(reels, key=lambda r: r.get("at", ""), reverse=True)[:40]
     m["totals"] = {"posted": len(state.get("posted", [])), "tehilim_comments": len(replied.get("done", [])),
                    "dms_sent": dms_ok, "reach_sum": sum(r["reach"] for r in ready),
@@ -535,7 +558,7 @@ def render(m, state):
         t = rel + dt.timedelta(minutes=26)
     data = {k: m.get(k) for k in ("account", "followers_history", "daily_new_followers", "recent_comments",
                                   "hypotheses", "recommendations", "slot_rows", "music_rows", "reels",
-                                  "totals", "cta", "api_errors")}
+                                  "totals", "cta", "api_errors", "style_rows", "fair_count")}
     data["upcoming"] = upcoming
     try:
         data["preview"] = previews(upcoming, now)
