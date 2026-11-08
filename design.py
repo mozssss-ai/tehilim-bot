@@ -263,11 +263,10 @@ def clean_footer(src, out, link):
 
 def chapter_label(h):
     """'קי"ט' -> 'קיט' (בלי גרשיים באמצע); 'ד\'' נשאר 'ד\''."""
-    h = h.replace('"', "").replace("״", "")
-    return h
+    return h.replace('"', "").replace("״", "").replace("'", "").replace("׳", "")
 
 
-def reel_cover(chapter_h, out, variant="a"):
+def reel_cover(chapter_h, out, variant="a"):  # אושר: עיגול (a), בלי גרש/גרשיים
     """תמונת שער אחידה לריל (מופיעה בפרופיל)."""
     im = Image.open(A / "bg_card.png").convert("RGB")
     d = ImageDraw.Draw(im)
@@ -284,9 +283,8 @@ def reel_cover(chapter_h, out, variant="a"):
         text(d, (540, 860), "פרק", SEC(110), fill=NAVY)
         text(d, (540, 1040), lab, fit(d, lab, 300, 700), fill=GOLD)
         divider(d, 1200, 300, 780)
-    divider(d, 1380, 380, 700)
-    text(d, (540, 1470), "פרק אחד בכל יום", SEC(70), fill=NAVY)
-    text(d, (540, 1560), "הצטרפו אלינו", HEB(50, 700), fill=GOLD)
+    divider(d, 1400, 380, 700)
+    text(d, (540, 1500), "פרק אחד בכל יום", SEC(72), fill=NAVY)
     im.save(out)
     return out
 

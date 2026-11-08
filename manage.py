@@ -13,7 +13,8 @@ sys.path.insert(0, str(ROOT))
 import bot, extras  # noqa: E402
 
 SWITCHES = {"shabbat_story": "סטורי שבת וערב חג", "holiday_stories": "סטורי חנוכה, פורים ושאר החגים", "siyum_reel": "ריל סיום הספר", "dedications": "הקדשות מהצופים",
-            "also_story": "העלאת הריל גם לסטורי", "replace_phone_with_qr": "QR במקום מספר הטלפון"}
+            "also_story": "העלאת הריל גם לסטורי", "replace_phone_with_qr": "QR במקום מספר הטלפון",
+            "reel_cover": "תמונת שער אחידה לריילס"}
 
 
 def run(title: str, body: str = "") -> str:

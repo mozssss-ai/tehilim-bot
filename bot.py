@@ -349,12 +349,17 @@ def host_video(video: Path) -> str:
     return f"https://raw.githubusercontent.com/{repo}/media/{name}"
 
 
+COVER = {}  # כתובת תמונת השער של הריל הנוכחי (נקבעת ב-main)
+
+
 def create_container(uid: str, video: Path, text: str, token: str, media_type: str = "REELS") -> str:
     if media_type == "STORIES":
         base = {"media_type": "STORIES", "access_token": token}
     else:
         base = {"media_type": "REELS", "caption": text, "share_to_feed": "true",
                 "thumb_offset": "500", "access_token": token}
+        if COVER.get("url"):
+            base["cover_url"] = COVER["url"]
     # דרך 1: העלאה ישירה של הקובץ
     try:
         c = ig_request("POST", f"{GRAPH}/{uid}/media", data={**base, "upload_type": "resumable"})
@@ -570,7 +575,19 @@ def main():
         text = extras.dedication_caption(text, ded)
         print("מוקדש", ded["text"])
     video = build_video(extras.apply_dedication(unit, ded) if ded else unit, ROOT / "out" / "reel.mp4")
-    media_id = publish_reel(video, text, os.environ["IG_TOKEN"])
+    cov = ROOT / "docs" / "6dd35a90fba60637" / "covers" / f"{unit['chapter']:03d}.jpg"
+    if CONFIG.get("reel_cover", True) and cov.exists():
+        COVER["url"] = (f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', 'mozssss-ai/tehilim-bot')}"
+                        f"/main/docs/6dd35a90fba60637/covers/{unit['chapter']:03d}.jpg")
+    try:
+        media_id = publish_reel(video, text, os.environ["IG_TOKEN"])
+    except RuntimeError as e:
+        if not COVER.get("url"):
+            raise
+        print("העלאה עם תמונת שער נכשלה – מנסה בלי:", str(e)[:300])
+        COVER.clear()
+        media_id = publish_reel(video, text, os.environ["IG_TOKEN"])
+    COVER.clear()
     if ded:
         try:
             extras.finish_dedication(ded, unit, media_id, os.environ["IG_TOKEN"])
