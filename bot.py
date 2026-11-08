@@ -266,7 +266,7 @@ def build_video(unit: dict, out: Path) -> Path:
 # ---------------------------------------------------------------- instagram
 def _clean(kw):
     for k in ("params", "data"):
-        if kw.get(k) and "access_token" in kw[k]:
+        if isinstance(kw.get(k), dict) and "access_token" in kw[k]:
             kw[k]["access_token"] = kw[k]["access_token"].strip().strip('"').strip()
     if kw.get("headers", {}).get("Authorization"):
         kw["headers"]["Authorization"] = "OAuth " + kw["headers"]["Authorization"][6:].strip().strip('"').strip()
