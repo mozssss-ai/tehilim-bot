@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>תהילים כל יום · לוח בקרה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#14123a;--muted:#6b6a80;--line:#e7e3d8;--navy:#090446;--gold:#ad8330;--gold-soft:#f3ead7;
+--ok:#1f7a4d;--ok-bg:#e3f3ea;--no:#a23b3b;--no-bg:#f8e5e5;--wait:#8a6a1f;--wait-bg:#f6eed9;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0c22;--card:#17163a;--ink:#f1efe8;--muted:#a3a1b8;--line:#2a2950;
+--navy:#c9b27a;--gold:#d8b46a;--gold-soft:#2b2640;--ok:#6fd3a0;--ok-bg:#16352a;--no:#f09a9a;--no-bg:#3a1d24;--wait:#e6c777;--wait-bg:#33301d;}}
+:root[data-theme="dark"]{--bg:#0d0c22;--card:#17163a;--ink:#f1efe8;--muted:#a3a1b8;--line:#2a2950;--navy:#c9b27a;--gold:#d8b46a;--gold-soft:#2b2640;
+--ok:#6fd3a0;--ok-bg:#16352a;--no:#f09a9a;--no-bg:#3a1d24;--wait:#e6c777;--wait-bg:#33301d;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Heebo,system-ui,sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px}
+header{padding:8px 0 14px}
+h1{font:28px/1.15 "Secular One",Heebo,sans-serif;margin:0;color:var(--navy)}
+.sub{color:var(--muted);font-size:13px}
+h2{font:19px/1.3 "Secular One",Heebo,sans-serif;margin:26px 0 10px;color:var(--navy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+.next{background:var(--navy);color:#fff;border:0}
+:root[data-theme="dark"] .next{color:#0d0c22}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .next{color:#0d0c22}}
+.next b{font:24px "Secular One",sans-serif}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 10px 8px}
+.tile .v{font:22px/1.2 "Secular One",sans-serif;font-variant-numeric:tabular-nums}
+.tile .l{font-size:12px;color:var(--muted)}
+.tile .d{font-size:12px;color:var(--ok)}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:99px;padding:1px 10px;margin-inline-start:6px}
+.validated{background:var(--ok-bg);color:var(--ok)}.rejected{background:var(--no-bg);color:var(--no)}.testing{background:var(--wait-bg);color:var(--wait)}
+.hyp h3,.rec h3{margin:0 0 4px;font-size:15px}
+.hyp p,.rec p{margin:0;color:var(--muted)}
+.rec{border-inline-start:4px solid var(--gold)}
+.rec.high{border-inline-start-color:var(--no)}
+.rec.idea{border-inline-start-color:var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th{font-weight:500;color:var(--muted);font-size:12px;text-align:right;padding:4px 4px 6px}
+td{padding:7px 4px;border-top:1px solid var(--line)}
+td.n,th.n{text-align:left}
+a{color:var(--gold)}
+.reel{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.reel .ch{font:18px "Secular One",sans-serif;min-width:54px}
+.reel .stats{display:flex;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap;justify-content:flex-end}
+.reel .stats span b{color:var(--ink);font-weight:700}
+.cm{padding:8px 0;border-top:1px solid var(--line)}.cm:first-child{border-top:0}
+.cm .u{font-weight:700;font-size:13px}.cm .t{margin:2px 0}.cm .p{font-size:12px;color:var(--muted)}
+svg text{font-family:Heebo,sans-serif}
+.empty{color:var(--muted);font-size:14px}
+details summary{cursor:pointer;color:var(--muted);font-size:13px}
+.cta{white-space:pre-line;font-size:13px;color:var(--muted);margin-top:2px}
+.bar{height:8px;border-radius:4px;background:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const D = /*DATA*/null;
+const $ = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content; };
+const fmt = (n) => (n === null || n === undefined) ? '–' : Number(n).toLocaleString('he-IL');
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ST = {validated:'אומת ✓', rejected:'לא אומת', testing:'בבדיקה'};
+const app = document.getElementById('app');
+const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
+
+function followersChart(){
+  const h = D.followers_history || {}; const keys = Object.keys(h).sort();
+  if (keys.length < 2) return `<p class="empty">הגרף יתמלא כשיצטברו כמה ימים של נתונים (${keys.length} עד עכשיו).</p>`;
+  const vals = keys.map(k => h[k]); const mn = Math.min(...vals), mx = Math.max(...vals);
+  const w = 520, ht = 120, pad = 22; const sx = i => w - pad - i * (w - 2*pad) / (keys.length - 1);
+  const sy = v => ht - pad - (mx === mn ? 0.5 : (v - mn) / (mx - mn)) * (ht - 2*pad);
+  const pts = vals.map((v,i) => `${sx(i)},${sy(v)}`).join(' ');
+  return `<svg viewBox="0 0 ${w} ${ht}" width="100%" role="img" aria-label="עוקבים לאורך זמן">
+    <polyline points="${pts}" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="${sx(keys.length-1)}" cy="${sy(vals.at(-1))}" r="4" fill="var(--gold)"/>
+    <text x="${sx(keys.length-1)}" y="${sy(vals.at(-1)) - 9}" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="700">${fmt(vals.at(-1))}</text>
+    <text x="${sx(0)}" y="${ht-4}" text-anchor="end" font-size="11" fill="var(--muted)">${keys[0].slice(5).split('-').reverse().join('/')}</text>
+    <text x="${sx(keys.length-1)}" y="${ht-4}" text-anchor="start" font-size="11" fill="var(--muted)">${keys.at(-1).slice(5).split('-').reverse().join('/')}</text>
+  </svg>`;
+}
+
+function reachBars(){
+  const rs = (D.reels || []).filter(r => r.reach).slice(0, 14);
+  if (!rs.length) return `<p class="empty">החשיפה של כל ריל מופיעה כאן כמה שעות אחרי שהוא עולה.</p>`;
+  const mx = Math.max(...rs.map(r => r.reach));
+  return `<table><tr><th>פרק</th><th>חשיפה</th><th class="n"></th></tr>` + rs.map(r => `<tr>
+    <td style="width:52px">${esc(r.chapter_h)}</td>
+    <td><div class="bar" style="width:${Math.max(4, 100*r.reach/mx)}%"></div></td>
+    <td class="n" style="width:56px">${fmt(r.reach)}</td></tr>`).join('') + `</table>`;
+}
+
+const clicks = (W.website_clicks || 0) + (W.profile_links_taps || 0);
+const follows = W['follows_and_unfollows:FOLLOWER'] ?? W.follows_and_unfollows;
+let html = `
+<header><h1>תהילים כל יום</h1><div class="sub">@${esc(A.username || 'tehilim_kol_yom')} · עודכן ${esc(D.updated)}</div></header>
+${D.next_post ? `<div class="card next">הפרק הבא: <b>פרק ${esc(D.next_post.chapter)}</b><br>עולה ב-${esc(D.next_post.at)}${D.next_post.kind==='catch_up'?' (השלמה)':''}</div>` : ''}
+<div class="tiles">
+  <div class="tile"><div class="v">${fmt(A.followers)}</div><div class="l">עוקבים</div>${follows ? `<div class="d">+${fmt(follows)} השבוע</div>`:''}</div>
+  <div class="tile"><div class="v">${fmt(W.reach)}</div><div class="l">חשיפה · 7 ימים</div></div>
+  <div class="tile"><div class="v">${fmt(W.profile_views)}</div><div class="l">כניסות לפרופיל</div></div>
+  <div class="tile"><div class="v">${fmt(clicks)}</div><div class="l">לחיצות על הקישור לקבוצה</div></div>
+  <div class="tile"><div class="v">${fmt(T.tehilim_comments)}</div><div class="l">כתבו "תהילים"</div></div>
+  <div class="tile"><div class="v">${fmt(T.dms_sent)}</div><div class="l">קיבלו קישור בפרטי</div></div>
+</div>
+
+<h2>עוקבים</h2><div class="card">${followersChart()}</div>
+
+<h2>מה הבוט בודק עכשיו</h2>
+${(D.hypotheses||[]).map(h => `<div class="card hyp"><h3>${esc(h.title)}<span class="pill ${h.status}">${ST[h.status]}</span></h3><p>${esc(h.text)}</p></div>`).join('')}
+
+<h2>המלצות שיווק</h2>
+${(D.recommendations||[]).map(r => `<div class="card rec ${r.level}"><h3>${r.level==='idea'?'💡 ':''}${esc(r.title)}</h3><p>${esc(r.text)}</p></div>`).join('')}
+
+<h2>חשיפה לכל ריל</h2><div class="card">${reachBars()}</div>
+
+<h2>ריילס אחרונים</h2>
+<div class="card">${(D.reels||[]).slice(0,15).map(r => `<div class="reel cm">
+  <div class="ch">${r.permalink?`<a href="${esc(r.permalink)}">${esc(r.chapter_h)}</a>`:esc(r.chapter_h)}</div>
+  <div class="stats"><span>👁 <b>${fmt(r.views ?? r.reach)}</b></span><span>❤ <b>${fmt(r.likes)}</b></span>
+  <span>↗ <b>${fmt(r.shares)}</b></span><span>🔖 <b>${fmt(r.saved)}</b></span><span>🙏 <b>${fmt(r.joins)}</b></span></div></div>`).join('') || '<p class="empty">עוד אין ריילס.</p>'}
+  <p class="sub" style="margin:8px 0 0">👁 צפיות · ❤ לייקים · ↗ שיתופים · 🔖 שמירות · 🙏 ביקשו להצטרף</p></div>
+
+<h2>ניסוי הכיתוב (A/B)</h2>
+<div class="card"><table><tr><th>נוסח</th><th class="n">ריילס</th><th class="n">חשיפה</th><th class="n">הצטרפו</th></tr>
+${Object.entries(D.cta||{}).map(([k,v]) => `<tr><td><b>${String.fromCharCode(65+ +k)}</b><div class="cta">${esc(v.text)}</div></td><td class="n">${v.n}</td><td class="n">${fmt(v.reach)}</td><td class="n">${fmt(v.joins)}</td></tr>`).join('')}
+</table></div>
+
+<h2>שעות העלאה</h2>
+<div class="card">${(D.slot_rows||[]).length ? `<table><tr><th>יום</th><th>שעה</th><th class="n">ריילס</th><th class="n">חשיפה ממוצעת</th></tr>
+${D.slot_rows.map(s => `<tr><td>${s.kind==='erev'?'ערב שבת/חג':'חול'}</td><td>${s.slot}</td><td class="n">${s.n}</td><td class="n">${fmt(s.avg_reach)}</td></tr>`).join('')}</table>`
+ : '<p class="empty">הנתונים יופיעו אחרי הריילס הראשונים של המחזור.</p>'}</div>
+
+<h2>המנגינות המובילות</h2>
+<div class="card">${(D.music_rows||[]).length ? `<table><tr><th>מנגינה</th><th class="n">ריילס</th><th class="n">חשיפה ממוצעת</th></tr>
+${D.music_rows.map(s => `<tr><td>${esc(s.track.replace(/^\d+_/,'').replace(/_/g,' '))}</td><td class="n">${s.n}</td><td class="n">${fmt(s.avg_reach)}</td></tr>`).join('')}</table>`
+ : '<p class="empty">יתמלא כשיעלו ריילס עם המנגינות החדשות.</p>'}</div>
+
+<h2>תגובות אחרונות</h2>
+<div class="card">${(D.recent_comments||[]).slice(0,15).map(c => `<div class="cm"><div class="u">${esc(c.user)}</div><div class="t">${esc(c.text)}</div><div class="p">${esc(c.post)}</div></div>`).join('') || '<p class="empty">עוד אין תגובות.</p>'}</div>
+
+<h2>הפרקים הבאים</h2>
+<div class="card"><table>${(D.upcoming||[]).map(u => `<tr><td>פרק ${esc(u.chapter)}${u.kind==='catch_up'?' <span class="sub">(השלמה)</span>':''}</td><td class="n">${esc(u.at)}</td></tr>`).join('')}</table></div>
+
+<h2>סיכום</h2>
+<div class="card"><table>
+<tr><td>ריילס שהבוט העלה</td><td class="n">${fmt(T.posted)}</td></tr>
+<tr><td>סה"כ חשיפה</td><td class="n">${fmt(T.reach_sum)}</td></tr>
+<tr><td>סה"כ צפיות</td><td class="n">${fmt(T.views_sum)}</td></tr>
+<tr><td>לייקים · שיתופים · שמירות</td><td class="n">${fmt(T.likes_sum)} · ${fmt(T.shares_sum)} · ${fmt(T.saves_sum)}</td></tr>
+<tr><td>חשיפה · 28 ימים</td><td class="n">${fmt(M.reach)}</td></tr>
+</table></div>
+${(D.api_errors||[]).length ? `<details class="card"><summary>הערות טכניות (${D.api_errors.length})</summary><pre style="white-space:pre-wrap;font-size:11px;direction:ltr;text-align:left">${esc(D.api_errors.join('\n'))}</pre></details>` : ''}
+`;
+app.append($(html));
+</script>
+</body>
+</html>

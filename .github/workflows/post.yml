@@ -49,6 +49,12 @@ jobs:
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
         run: python comments.py
+      - name: marketing analysis + phone dashboard
+        if: always()
+        continue-on-error: true
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+        run: python marketing.py
       - name: update status page
         if: always()
         run: python bot.py --status
@@ -57,6 +63,6 @@ jobs:
         run: |
           git config user.name "tehilim-bot"
           git config user.email "tehilim-bot@users.noreply.github.com"
-          git add state.json STATUS.md replied.json 2>/dev/null || git add state.json STATUS.md
+          git add state.json STATUS.md replied.json marketing.json docs 2>/dev/null || git add state.json STATUS.md
           git commit -m "bot update" || exit 0
           git pull --rebase -q && git push

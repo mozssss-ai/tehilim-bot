@@ -138,11 +138,34 @@ def hebrew_date(day: dt.date) -> str:
             .replace("״", '"').replace("׳", "'").replace(" חשון ", " מרחשוון "))
 
 
-def caption(unit: dict, day: dt.date) -> str:
+BUILT = {}  # פרטים על הריל האחרון שנבנה (מוזיקה, אורך) – נשמרים ב-state לסטטיסטיקות
+MARKETING_FILE = ROOT / "marketing.json"
+
+
+def cta_index(day: dt.date) -> int:
+    """ניסוי A/B על משפט ההנעה לפעולה בכיתוב.
+    עד שלכל נוסח יש 3 ריילס – מחליפים לפי הסדר. אחר כך: ברוב הימים הנוסח שהביא הכי הרבה
+    הצטרפויות (תגובות "תהילים" ביחס לחשיפה), ובחלק מהימים נוסח אחר – כדי להמשיך לבדוק."""
+    import random
+    variants = CONFIG.get("cta_variants") or [""]
+    m = json.loads(MARKETING_FILE.read_text(encoding="utf-8")) if MARKETING_FILE.exists() else {}
+    stats = m.get("cta", {})
+    counts = [stats.get(str(i), {}).get("n", 0) for i in range(len(variants))]
+    if min(counts) < 3:
+        return min(range(len(variants)), key=lambda i: (counts[i], (i - day.toordinal()) % len(variants)))
+    rng = random.Random(day.toordinal() * 7 + 1)
+    if rng.random() < CONFIG.get("cta_explore_rate", 0.2):
+        return rng.randrange(len(variants))
+    return int(m.get("cta_best", 0))
+
+
+def caption(unit: dict, day: dt.date, cta: int = 0) -> str:
+    variants = CONFIG.get("cta_variants") or [""]
     return CONFIG["caption"].format(
         chapter=gematria(unit["chapter"]),
         hebrew_date=hebrew_date(day),
         group_link=CONFIG["whatsapp_link"],
+        cta=variants[cta % len(variants)],
     )
 
 
@@ -244,6 +267,7 @@ def build_video(unit: dict, out: Path) -> Path:
         cmd += ["-loop", "1", "-t", str(secs), "-i", str(path)]
     tracks = sorted((ROOT / "assets" / "music").glob("*.mp3"))
     music = tracks[unit["chapter"] % len(tracks)] if tracks else ROOT / CONFIG["music"]
+    BUILT["music"], BUILT["secs"] = music.stem if music.exists() else None, total
     if music.exists():
         cmd += ["-stream_loop", "-1", "-i", str(music)]
     else:
@@ -508,7 +532,8 @@ def main():
             with open(os.environ["GITHUB_OUTPUT"], "a") as f:
                 f.write(f"post=true\nwait={wait}\n")
         return
-    text = caption(unit, day if day == now.date() else now.date())
+    cta = cta_index(now.date())
+    text = caption(unit, day if day == now.date() else now.date(), cta)
     print(f"מעלה את פרק {gematria(unit['chapter'])} (של {day})\n{text}")
     if args.dry_run:
         return
@@ -538,7 +563,8 @@ def main():
     state["posted"].append({"chapter": unit["chapter"], "day": day.isoformat(), "kind": kind,
                             "day_kind": day_kind(day), "slot": slot,
                             "at": now.isoformat(timespec="minutes"), "media_id": media_id,
-                            "story_id": story_id})
+                            "story_id": story_id, "cta": cta,
+                            "music": BUILT.get("music"), "secs": BUILT.get("secs")})
     save_state(state)
     print(f"הועלה בהצלחה: {media_id}")
 

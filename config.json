@@ -35,7 +35,7 @@
   "join_image": "assets/join_reel.png",
   "music": "assets/music.mp3",
   "whatsapp_link": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
-  "caption": "פרק {chapter} | {hebrew_date} 📖\n⏸️ לחצו לחיצה ארוכה על המסך כדי לעצור ולקרוא\n\nאומרים יחד פרק תהילים אחד בכל יום.\nרוצים לקבל את הפרק כל יום בוואטסאפ?\nכתבו \"תהילים\" בתגובה ונשלח לכם קישור בפרטי 💬\n\n#תהילים #תהיליםכליום #פרקתהילים #ספרתהילים",
+  "caption": "פרק {chapter} | {hebrew_date} 📖\n⏸️ לחצו לחיצה ארוכה על המסך כדי לעצור ולקרוא\n\nאומרים יחד פרק תהילים אחד בכל יום.\n{cta}\n\n#תהילים #תהיליםכליום #פרקתהילים #ספרתהילים",
   "ig_user_id": "17841455606505848",
   "also_story": true,
   "comment_keywords": [
@@ -75,5 +75,12 @@
   "full_page_seconds": 20,
   "full_page_ink": 0.14,
   "min_page_seconds": 6,
-  "max_reel_seconds": 90
+  "max_reel_seconds": 90,
+  "cta_variants": [
+    "רוצים לקבל את הפרק כל יום בוואטסאפ?\nכתבו \"תהילים\" בתגובה ונשלח לכם קישור בפרטי 💬",
+    "רוצים להצטרף אלינו? כתבו \"תהילים\" בתגובה\nונשלח לכם בפרטי את הקישור לקבוצה 💬",
+    "כתבו \"תהילים\" בתגובה ונשלח לכם בפרטי את הקישור לקבוצה 💬\nשתפו את הפרק עם מי שצריך ישועה 🙏"
+  ],
+  "cta_explore_rate": 0.2,
+  "marketing_refresh_hours": 3
 }
