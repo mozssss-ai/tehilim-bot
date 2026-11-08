@@ -107,7 +107,7 @@ function followersChart(){
 }
 
 function reachBars(){
-  const rs = (D.reels || []).filter(r => r.reach).slice(0, 14);
+  const rs = (D.reels || []).filter(r => r.reach).slice(0, 7);
   if (!rs.length) return `<p class="empty">החשיפה של כל ריל מופיעה כאן כמה שעות אחרי שהוא עולה.</p>`;
   const mx = Math.max(...rs.map(r => r.reach));
   return `<table><tr><th>פרק</th><th>חשיפה</th><th class="n"></th></tr>` + rs.map(r => `<tr>
@@ -145,13 +145,17 @@ ${P.reel ? `<div class="card">
 </div>` : ''}
 
 <h2>תגובות אחרונות</h2>
-<div class="card">${(D.recent_comments||[]).slice(0,15).map(c => `<div class="cm"><div class="u">${esc(c.user)}</div><div class="t">${esc(c.text)}</div><div class="p">${esc(c.post)}</div></div>`).join('') || '<p class="empty">עוד אין תגובות.</p>'}</div>
+<div class="card">${(D.recent_comments||[]).slice(0,5).map(c => `<div class="cm"><div class="u">${esc(c.user)}</div><div class="t">${esc(c.text)}</div><div class="p">${esc(c.post)}</div></div>`).join('') || '<p class="empty">עוד אין תגובות.</p>'}</div>
 
 <h2>ריילס אחרונים</h2>
-<div class="card">${(D.reels||[]).slice(0,15).map(r => `<div class="reel cm">
+<div class="card">${(D.reels||[]).slice(0,5).map(r => `<div class="reel cm">
   <div class="ch">${r.permalink?`<a href="${esc(r.permalink)}">${esc(r.chapter_h)}</a>`:esc(r.chapter_h)}</div>
   <div class="stats"><span>👁 <b>${fmt(r.views ?? r.reach)}</b></span><span>❤ <b>${fmt(r.likes)}</b></span>
   <span>↗ <b>${fmt(r.shares)}</b></span><span>🔖 <b>${fmt(r.saved)}</b></span><span>🙏 <b>${fmt(r.joins)}</b></span></div></div>`).join('') || '<p class="empty">עוד אין ריילס.</p>'}
+  ${(D.reels||[]).length>5?`<details><summary>עוד ${Math.min(D.reels.length,20)-5} ריילס</summary>${D.reels.slice(5,20).map(r => `<div class="reel cm">
+  <div class="ch">${r.permalink?`<a href="${esc(r.permalink)}">${esc(r.chapter_h)}</a>`:esc(r.chapter_h)}</div>
+  <div class="stats"><span>👁 <b>${fmt(r.views ?? r.reach)}</b></span><span>❤ <b>${fmt(r.likes)}</b></span>
+  <span>↗ <b>${fmt(r.shares)}</b></span><span>🔖 <b>${fmt(r.saved)}</b></span><span>🙏 <b>${fmt(r.joins)}</b></span></div></div>`).join('')}</details>`:''}
   <p class="sub" style="margin:8px 0 0">👁 צפיות · ❤ לייקים · ↗ שיתופים · 🔖 שמירות · 🙏 ביקשו להצטרף</p></div>
 
 <h2>חשיפה לכל ריל</h2><div class="card">${reachBars()}</div>
