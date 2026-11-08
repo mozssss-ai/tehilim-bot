@@ -65,7 +65,7 @@ document.querySelectorAll('.seg button').forEach(b => b.onclick = () => setMode(
 function grid() {
   const q = $('#q').value.trim().replace(/["'״׳]/g, '');
   $('#grid').innerHTML = M.chapters.filter(c => !q || String(c.ch) === q || c.h.replace(/["'״׳]/g, '') === q)
-    .map(c => `<div class="ch" data-ch="${c.ch}"><img loading="lazy" src="thumb/${c.pages[0].name}.jpg" alt="פרק ${c.h}">
+    .map(c => `<div class="ch" data-ch="${c.ch}"><img loading="lazy" src="thumb/${c.pages[0].name}.jpg?h=${c.pages[0].hash}" alt="פרק ${c.h}">
       <div>${c.h}</div><small>${c.pages.length > 1 ? c.pages.length + ' חלקים' : '&nbsp;'}</small></div>`).join('');
   document.querySelectorAll('.ch').forEach(el => el.onclick = () => openCh(+el.dataset.ch));
 }
@@ -74,7 +74,7 @@ function openCh(n) {
   $('#vt').textContent = 'פרק ' + c.h;
   $('#pages').innerHTML = c.pages.map(p => {
     const r = p.patch;
-    const patch = (mode === 'qr' && r) ? `<img class="patch" src="patch/${p.name}.png" style="left:${r[0] / 10.8}%;top:${r[1] / 19.2}%;width:${r[2] / 10.8}%">` : '';
+    const patch = (mode === 'qr' && r) ? `<img class="patch" src="patch/${p.name}.png?h=${p.hash}" style="left:${r[0] / 10.8}%;top:${r[1] / 19.2}%;width:${r[2] / 10.8}%">` : '';
     return `<div><div class="pg"><img src="${raw(p.file)}" crossorigin="anonymous" alt="">${patch}</div>
       <div class="pgbar"><span>${c.pages.length > 1 ? 'חלק ' + p.part : ''}</span><button class="btn" data-dl="${p.name}">הורדה</button></div></div>`;
   }).join('');
@@ -87,13 +87,13 @@ async function download(c, p) {
   const base = await load(raw(p.file));
   const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1920;
   const g = cv.getContext('2d'); g.drawImage(base, 0, 0, 1080, 1920);
-  if (mode === 'qr' && p.patch) { const pt = await load(`patch/${p.name}.png`); g.drawImage(pt, p.patch[0], p.patch[1]); }
+  if (mode === 'qr' && p.patch) { const pt = await load(`patch/${p.name}.png?h=${p.hash}`); g.drawImage(pt, p.patch[0], p.patch[1]); }
   cv.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }, 'image/png');
 }
 $('#dlall').onclick = async () => { const c = M.chapters.find(x => x.ch === cur); for (const p of c.pages) { await download(c, p); } };
 $('#close').onclick = () => { $('#view').classList.remove('open'); cur = null; };
 $('#q').oninput = grid;
-fetch('manifest.json').then(r => r.json()).then(m => { M = m; setMode(mode); grid(); });
+fetch('manifest.json?t=' + Date.now(), {cache: 'no-store'}).then(r => r.json()).then(m => { M = m; setMode(mode); grid(); });
 </script>
 </body>
 </html>
