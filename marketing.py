@@ -285,6 +285,41 @@ def analyse(m, state, replied):
 
 
 # ------------------------------------------------------------------ page
+def next_times(now, state, upcoming):
+    """מתי כל תוסף אמור לעלות בפעם הבאה (לשעון הספירה לאחור בדשבורד)."""
+    posted_cycle = {p["day"] for p in state.get("posted", []) if p.get("kind") == "cycle"}
+
+    def daily_release(day):
+        return bot.release_time(day)
+
+    def next_day(cond, start=None):
+        day = start or now.date()
+        for _ in range(400):
+            if cond(day) and day.isoformat() not in posted_cycle and daily_release(day) > now - dt.timedelta(minutes=5):
+                return day
+            day += dt.timedelta(days=1)
+        return None
+
+    out = {}
+    nxt = upcoming[0] if upcoming else None
+    if nxt:
+        out["also_story"] = {"when": nxt["iso"], "what": f"יחד עם פרק {nxt['chapter']}"}
+        out["replace_phone_with_qr"] = {"when": nxt["iso"], "what": f"בריל של פרק {nxt['chapter']}"}
+    d = next_day(lambda x: bot.day_kind(x) == "erev")
+    if d:
+        out["shabbat_story"] = {"when": daily_release(d).isoformat(), "what": "אחרי הפרק של " + bot.hebrew_date(d)}
+    days = bot.CONFIG.get("dedication_invite_days", [6, 2])
+    d = next_day(lambda x: x.weekday() in days)
+    if d:
+        out["dedications"] = {"when": daily_release(d).isoformat(), "what": "סטורי הזמנה להקדשות, " + bot.hebrew_date(d)}
+    start = dt.date.fromisoformat(bot.CONFIG["cycle_start"])
+    d = start + dt.timedelta(days=149)
+    while d < now.date() or d.isoformat() in posted_cycle:
+        d += dt.timedelta(days=150)
+    out["siyum_reel"] = {"when": daily_release(d).isoformat(), "what": "אחרי פרק ק\"נ, " + bot.hebrew_date(d)}
+    return out
+
+
 def render(m, state):
     now = dt.datetime.now(TZ)
     upcoming = []
@@ -302,7 +337,7 @@ def render(m, state):
         (unit, day, kind), when = job
         rel = max(bot.release_time(day), when) if kind == "cycle" else when
         upcoming.append({"chapter": bot.gematria(unit["chapter"]), "at": rel.strftime("%d/%m %H:%M"),
-                         "kind": kind})
+                         "iso": rel.isoformat(), "kind": kind})
         st["posted"].append({"chapter": unit["chapter"], "day": day.isoformat(), "kind": kind,
                              "at": rel.isoformat(timespec="minutes")})
         t = rel + dt.timedelta(minutes=26)
@@ -315,7 +350,8 @@ def render(m, state):
     data["dedications"] = {"queue": [{**q, "eta": extras.queue_eta(i)} for i, q in enumerate(ded.get("queue", []))],
                            "done": ded.get("done", [])[-10:][::-1], "inbox_error": ded.get("inbox_error")}
     import manage
-    data["switches"] = [{"key": k, "label": v, "on": bool(bot.CONFIG.get(k))} for k, v in manage.SWITCHES.items()]
+    data["switches"] = [{"key": k, "label": v, "on": bool(bot.CONFIG.get(k)), **next_times(now, state, upcoming).get(k, {})}
+                        for k, v in manage.SWITCHES.items()]
     data["repo"] = os.environ.get("GITHUB_REPOSITORY", "mozssss-ai/tehilim-bot")
     data["updated"] = now.strftime("%d/%m/%Y %H:%M")
     data["next_post"] = upcoming[0] if upcoming else None
