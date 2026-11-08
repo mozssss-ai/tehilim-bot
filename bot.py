@@ -34,7 +34,8 @@ TZ = ZoneInfo("Asia/Jerusalem")
 CITY = LocationInfo("Ashkelon", "Israel", "Asia/Jerusalem", 31.668, 34.571)
 CONFIG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
 # רשימת הפרקים נבנית לבד מתיקיית images: 001_1.png, 001_2.png ... 150_1.png
-UNITS = [{"chapter": c, "images": sorted(f"images/{p.name}" for p in (ROOT / "images").glob(f"{c:03d}_*.png"))}
+UNITS = [{"chapter": c, "images": sorted((f"images/{p.name}" for p in (ROOT / "images").glob(f"{c:03d}_*.png")),
+                                         key=lambda s: int(Path(s).stem.split("_")[1]))}
          for c in range(1, 151)]
 STATE_FILE = ROOT / "state.json"
 LEARN_FILE = ROOT / "learn.json"
