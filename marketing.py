@@ -374,7 +374,7 @@ def holidays(now, n=8):
                                                ms["question"], ms["icon"], ms["lit"])
                     item.update({"name": f.replace("״", '"'), "greeting": ms["title"]})
                 item.update({"story": bot.release_time(prev).isoformat(), "img": save_jpg(Image.open(img), PREVIEW / f"hol_{key}.jpg"),
-                             "audio": raw + f"{track}.mp3" if track else None, "day": prev.isoformat()})
+                             "audio": raw + f"{track}.mp3" if track and (bot.ROOT / "assets/music/holiday" / f"{track}.mp3").exists() else None, "day": prev.isoformat()})
                 res.append(item)
         d += dt.timedelta(days=1)
     return res
