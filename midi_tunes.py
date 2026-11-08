@@ -9,11 +9,11 @@ from make_music import Piece
 
 PIECES = {  # מפתח חג: (קובץ MIDI, {track: GM program}, התחלה בשניות, שינוי עוצמה לפי track)
     "sukkot": ("autumn-score.midi", {1: 73, 2: 73, 3: 46, 4: 49, 5: 42}, 0.0, {1: 1.0, 2: .0, 3: .6, 4: .55, 5: .7}),
-    "purim": ("anitrasdance.midi", {1: 73, 2: 68, 3: 45, 4: 45, 5: 45, 6: 45, 7: 45}, 0.0,
+    "purim_a_rejected": ("anitrasdance.midi", {1: 73, 2: 68, 3: 45, 4: 45, 5: 45, 6: 45, 7: 45}, 0.0,
               {1: 1.0, 2: .7, 3: .6, 4: .55, 5: .55, 6: .55, 7: .7}),
-    "purim_b": ("autumn-score-2.midi", {1: 73, 2: 73, 3: 48, 4: 48, 5: 42}, 0.0, {1: 1.0, 2: 0, 3: .55, 4: .5, 5: .7}),
-    "yom_kippur": ("pathetique-2.midi", {1: 0, 2: 0}, 0.0, {1: 1.0, 2: .8}),
-    "yom_kippur_b": ("waltz-op39-15.midi", {1: 0, 2: 0}, 0.0, {1: 1.0, 2: .8}),
+    "purim": ("autumn-score-2.midi", {1: 73, 2: 73, 3: 48, 4: 48, 5: 42}, 0.0, {1: 1.0, 2: 0, 3: .55, 4: .5, 5: .7}),
+    "yom_kippur_a_rejected": ("pathetique-2.midi", {1: 0, 2: 0}, 0.0, {1: 1.0, 2: .8}),
+    "yom_kippur": ("waltz-op39-15.midi", {1: 0, 2: 0}, 0.0, {1: 1.0, 2: .8}),
     "tu_beav": ("debussy_Ste_Bergamesq_Clair.midi", {1: 0, 2: 0}, 0.0, {1: 1.0, 2: .85}),
 }
 
