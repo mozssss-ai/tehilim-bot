@@ -196,6 +196,31 @@ def next_job(now: dt.datetime, state: dict):
 
 
 # ---------------------------------------------------------------- video
+def text_amount(path: Path) -> float:
+    """כמה טקסט יש בעמוד: אחוז הפיקסלים הכהים באזור הפסוקים (בין הכותרת ללוגו)."""
+    from PIL import Image
+    im = Image.open(path).convert("L").resize((270, 480))
+    box = im.crop((20, 90, 250, 360))  # אזור הפסוקים
+    dark = sum(1 for v in box.getdata() if v < 110)
+    return dark / (box.width * box.height)
+
+
+def reading_times(pages, join_secs):
+    """זמן לכל עמוד לפי כמות הטקסט בו: עמוד מלא ~ full_page_seconds, עמוד קצר פחות.
+    כל עמוד לפחות min_page_seconds, וכל הריל לפחות min_reel_seconds."""
+    full = CONFIG.get("full_page_seconds", 32)
+    lo = CONFIG.get("min_page_seconds", 8)
+    ref = CONFIG.get("full_page_ink", 0.16)
+    t = [max(lo, min(full * 1.15, full * text_amount(p) / ref)) for p in pages]
+    need = CONFIG.get("min_reel_seconds", 30) - join_secs
+    if sum(t) < need:
+        t = [x * need / sum(t) for x in t]
+    cap = CONFIG.get("max_reel_seconds", 180) - join_secs
+    if sum(t) > cap:  # פרקים ארוכים מאוד (כמו קי"ט) – לא יותר מ-3 דקות
+        t = [max(lo * 0.75, x * cap / sum(t)) for x in t]
+    return [round(x, 2) for x in t]
+
+
 def build_video(unit: dict, out: Path) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
     frames = [(ROOT / p, CONFIG["seconds_per_page"]) for p in unit["images"]]
@@ -209,9 +234,7 @@ def build_video(unit: dict, out: Path) -> Path:
     join = ROOT / CONFIG["join_image"]
     join_secs = CONFIG["seconds_join"] if join.exists() else 0
     # לפחות min_reel_seconds (ברירת מחדל 30) – הזמן מתחלק שווה בין עמודי הפרק, כדי שיהיה זמן לקרוא
-    per_page = max(CONFIG["seconds_per_page"],
-                   (CONFIG.get("min_reel_seconds", 30) - join_secs) / max(1, len(frames)))
-    frames = [(f, round(per_page, 2)) for f, _ in frames]
+    frames = [(f, s) for f, s in zip([f for f, _ in frames], reading_times([f for f, _ in frames], join_secs))]
     if join_secs:
         frames.append((join, join_secs))
     total = sum(s for _, s in frames)
