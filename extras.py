@@ -215,7 +215,7 @@ def after_reel(unit, day, kind, media_id, token, publish):
     if CFG.get("dedications") and dt.datetime.now(bot.TZ).weekday() in CFG.get("dedication_invite_days", [6, 2]):
         v = card_video(design.invite_story(OUT / "invite.png"), OUT / "invite.mp4", 8)
         done.append(("invite_story", publish(v, "", token, "STORIES")))
-    if CFG.get("siyum_reel") and unit["chapter"] == 150:
+    if CFG.get("siyum_reel") and unit["chapter"] == 150 and kind == "cycle":
         v = card_video(design.siyum_card(OUT / "siyum.png"), OUT / "siyum.mp4", 12)
         cap = ("סיימנו יחד את ספר התהילים! 🎉📖\nתודה לכל מי שאמר איתנו, פרק אחרי פרק.\n"
                "מחר מתחילים מחזור חדש מפרק א' – זה הזמן הכי טוב להצטרף.\n"
