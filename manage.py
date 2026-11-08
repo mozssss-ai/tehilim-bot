@@ -16,9 +16,37 @@ SWITCHES = {"shabbat_story": "סטורי שבת שלום", "siyum_reel": "ריל
             "also_story": "העלאת הריל גם לסטורי", "replace_phone_with_qr": "QR במקום מספר הטלפון"}
 
 
-def run(title: str) -> str:
+def run(title: str, body: str = "") -> str:
     t = title.strip()
     d = extras.load_ded()
+    body = (body or "").replace("\r", "").strip()
+    o = extras.load_ovr()
+    o.setdefault("caption", {}); o.setdefault("story", {})
+
+    def save_o():
+        extras.OVR_FILE.write_text(json.dumps(o, ensure_ascii=False, indent=2), encoding="utf-8")
+    import re
+    m = re.match(r"^(ביטול )?כיתוב לפרק (\d+)", t)
+    if m:
+        ch = str(int(m.group(2)))
+        if m.group(1):
+            o["caption"].pop(ch, None); save_o()
+            return f"✅ פרק {bot.gematria(int(ch))} יעלה עם הכיתוב הרגיל."
+        if not body:
+            return "❌ לא נמצא כיתוב בגוף הבקשה."
+        o["caption"][ch] = body; save_o()
+        return f"✅ הכיתוב של פרק {bot.gematria(int(ch))} עודכן."
+    m = re.match(r"^(ביטול )?כותרת סטורי (\d{4}-\d{2}-\d{2})", t)
+    if m:
+        day = m.group(2)
+        if m.group(1):
+            o["story"].pop(day, None); save_o()
+            return "✅ הסטורי יעלה עם הכותרת הרגילה."
+        lines = [x.strip() for x in body.split("\n") if x.strip()]
+        if not lines:
+            return "❌ לא נמצאה כותרת בגוף הבקשה."
+        o["story"][day] = {"title": lines[0], "subtitle": lines[1] if len(lines) > 1 else ""}; save_o()
+        return f"✅ כותרת הסטורי עודכנה: {lines[0]}"
     if t.startswith("הקדשה"):
         text = extras.parse_dedication(t.split(":", 1)[-1] if ":" in t else t[5:])
         if not text:
@@ -69,7 +97,7 @@ def run(title: str) -> str:
 
 
 if __name__ == "__main__":
-    msg = run(os.environ.get("ISSUE_TITLE", " ".join(sys.argv[1:])))
+    msg = run(os.environ.get("ISSUE_TITLE", " ".join(sys.argv[1:])), os.environ.get("ISSUE_BODY", ""))
     print(msg)
     if os.environ.get("GITHUB_OUTPUT"):
         with open(os.environ["GITHUB_OUTPUT"], "a") as f:

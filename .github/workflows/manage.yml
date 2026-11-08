@@ -22,13 +22,14 @@ jobs:
       - id: run
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
         run: python manage.py
       - name: refresh dashboard
         run: python marketing.py
       - run: |
           git config user.name "tehilim-bot"; git config user.email "tehilim-bot@users.noreply.github.com"
-          git add -A dedications.json config.json docs marketing.json
+          git add -A dedications.json config.json overrides.json docs marketing.json
           git commit -m "dashboard: ${{ github.event.issue.title }}" || true
           git pull --rebase -q && git push
       - name: answer and close

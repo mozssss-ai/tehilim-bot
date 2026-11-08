@@ -65,6 +65,10 @@ details summary{cursor:pointer;color:var(--muted);font-size:13px}
 .sw .btn.sm{grid-row:1/3;grid-column:2;padding:4px 10px;font-weight:500}
 .state{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;min-width:48px;text-align:center}
 .state.on{background:var(--ok);color:var(--card)}.state.off{background:var(--line);color:var(--muted)}
+.frames{display:flex;gap:6px;overflow-x:auto;margin:10px 0;padding-bottom:4px}
+.frames img{height:220px;border-radius:8px;border:1px solid var(--line);display:block}
+.cap{white-space:pre-line;font-size:13px;background:var(--bg);border-radius:10px;padding:10px;margin:6px 0}
+.gal{margin:16px 0 0}
 .bar{height:8px;border-radius:4px;background:var(--gold)}
 </style>
 </head>
@@ -78,7 +82,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&l
 const ST = {validated:'אומת ✓', rejected:'לא אומת', testing:'בבדיקה'};
 const app = document.getElementById('app');
 const issue = (title, body) => `https://github.com/${D.repo||'mozssss-ai/tehilim-bot'}/issues/new?title=${encodeURIComponent(title)}${body?'&body='+encodeURIComponent(body):''}`;
-const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
+const P = D.preview || {}; const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
 
 function followersChart(){
   const h = D.followers_history || {}; const keys = Object.keys(h).sort();
@@ -121,6 +125,32 @@ ${D.next_post ? `<div class="card next"><div class="nl">הפרק הבא${D.next_
   <div class="tile"><div class="v">${fmt(T.tehilim_comments)}</div><div class="l">כתבו "תהילים"</div></div>
   <div class="tile"><div class="v">${fmt(T.dms_sent)}</div><div class="l">קיבלו קישור בפרטי</div></div>
 </div>
+
+<a class="btn wide gal" href="gallery/">🖼️ כל תמונות הפרקים · עם טלפון / עם QR</a>
+
+<h2>מה עומד לעלות</h2>
+${P.reel ? `<div class="card">
+  <div class="sw-main"><b>ריל · פרק ${esc(P.reel.chapter)}</b>${P.reel.edited?'<span class="state on">כיתוב מתוקן</span>':''}</div>
+  <div class="sub">עולה ב-${esc(P.reel.at)} · <span class="cd" data-when="${esc(P.reel.when)}"></span></div>
+  <div class="frames">${P.reel.frames.map(f => `<a href="preview/${f}?v=${D.updated}"><img src="preview/${f}?v=${encodeURIComponent(D.updated)}" alt=""></a>`).join('')}</div>
+  <div class="cap">${esc(P.reel.caption)}</div>
+  <div class="btns"><a class="btn" href="${issue('כיתוב לפרק '+P.reel.ch, P.reel.caption)}">✏ לתקן את הכיתוב</a>
+  ${P.reel.edited?`<a class="btn" href="${issue('ביטול כיתוב לפרק '+P.reel.ch)}">↩ לחזור לכיתוב הרגיל</a>`:''}</div>
+</div>` : ''}
+${P.story ? `<div class="card">
+  <div class="sw-main"><b>סטורי ${P.story.title.includes('שבת')?'שבת':'חג'} · ${esc(P.story.date_h)}</b>${P.story.edited?'<span class="state on">מתוקן</span>':''}</div>
+  <div class="sub"><span class="cd" data-when="${esc(P.story.when)}"></span></div>
+  <div class="frames"><a href="preview/story.jpg"><img src="preview/story.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a>
+  <a href="preview/invite.jpg"><img src="preview/invite.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a></div>
+  <div class="sub">משמאל: סטורי ההזמנה להקדשות (ראשון ורביעי)</div>
+  <div class="btns"><a class="btn" href="${issue('כותרת סטורי '+P.story.day, P.story.title+'\n'+P.story.subtitle)}">✏ לתקן כותרת</a>
+  ${P.story.edited?`<a class="btn" href="${issue('ביטול כותרת סטורי '+P.story.day)}">↩ לחזור לרגיל</a>`:''}</div>
+  <p class="sub" style="margin:6px 0 0">בבקשת התיקון: שורה 1 = הכותרת, שורה 2 = השורה שמתחתיה.</p>
+</div>` : ''}
+
+<h2>חגים קרובים</h2>
+<div class="card">${(D.holidays||[]).map(h => `<div class="sw cm"><div class="sw-main"><b>${esc(h.name)}</b><span class="sub">${esc(h.date_h)}</span></div>
+<div class="sw-next">נכנס <span class="cd" data-when="${esc(h.start)}"></span>${h.story?` · סטורי "${esc(h.greeting)}"`:''}</div></div>`).join('')}</div>
 
 <h2>הקדשות</h2>
 <div class="card">

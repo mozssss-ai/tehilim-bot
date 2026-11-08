@@ -541,6 +541,10 @@ def main():
         return
     cta = cta_index(now.date())
     text = caption(unit, day if day == now.date() else now.date(), cta)
+    ovr_file = ROOT / "overrides.json"
+    ovr = json.loads(ovr_file.read_text(encoding="utf-8")) if ovr_file.exists() else {}
+    if str(unit["chapter"]) in ovr.get("caption", {}):  # כיתוב שתוקן ידנית מהדשבורד
+        text = ovr["caption"][str(unit["chapter"])]
     print(f"מעלה את פרק {gematria(unit['chapter'])} (של {day})\n{text}")
     if args.dry_run:
         return
@@ -593,6 +597,9 @@ def main():
                             "music": BUILT.get("music"), "secs": BUILT.get("secs"),
                             "dedication": ded["text"] if ded else None, "extras": more})
     save_state(state)
+    if str(unit["chapter"]) in ovr.get("caption", {}):
+        ovr["caption"].pop(str(unit["chapter"]))
+        ovr_file.write_text(json.dumps(ovr, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"הועלה בהצלחה: {media_id}")
 
 

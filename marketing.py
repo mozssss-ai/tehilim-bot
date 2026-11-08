@@ -18,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 import bot  # noqa: E402
+from PIL import Image  # noqa: E402
 
 FILE = ROOT / "marketing.json"
 PAGE_DIR = ROOT / "docs" / "6dd35a90fba60637"
@@ -284,6 +285,89 @@ def analyse(m, state, replied):
                    "likes_sum": sum(r.get("likes") or 0 for r in ready)}
 
 
+# ------------------------------------------------------------------ previews & holidays
+PREVIEW = PAGE_DIR / "preview"
+
+
+def save_jpg(im, path, size=(360, 640)):
+    """שומר רק אם התוכן השתנה – כדי לא ליצור שינויים מיותרים במאגר."""
+    import io
+    buf = io.BytesIO()
+    im.convert("RGB").resize(size, Image.LANCZOS).save(buf, "JPEG", quality=80)
+    if not path.exists() or path.read_bytes() != buf.getvalue():
+        path.write_bytes(buf.getvalue())
+    return path.name
+
+
+def previews(upcoming, now):
+    import design
+    import extras
+    PREVIEW.mkdir(parents=True, exist_ok=True)
+    out = {}
+    if upcoming:
+        nxt = upcoming[0]
+        unit = next(u for u in bot.UNITS if u["chapter"] == nxt["ch"])
+        ded = extras.load_ded()["queue"][0] if bot.CONFIG.get("dedications") and extras.load_ded()["queue"] else None
+        u2 = extras.apply_dedication(unit, ded) if ded else unit
+        frames = []
+        for i, f in enumerate(u2["images"], 1):
+            p = bot.ROOT / f
+            if bot.CONFIG.get("replace_phone_with_qr", True) and "out" not in p.parts:
+                p = design.clean_footer(p, bot.ROOT / "out" / "clean" / p.name, bot.CONFIG["whatsapp_link"])
+            frames.append(save_jpg(Image.open(p), PREVIEW / f"reel_{i}.jpg"))
+        for old in PREVIEW.glob("reel_*.jpg"):
+            if old.name not in frames:
+                old.unlink()
+        day = dt.date.fromisoformat(nxt["day"])
+        text = bot.caption(unit, max(day, now.date()), bot.cta_index(now.date()))
+        if ded:
+            text = extras.dedication_caption(text, ded)
+        ovr = extras.load_ovr().get("caption", {}).get(str(unit["chapter"]))
+        out["reel"] = {"chapter": nxt["chapter"], "ch": unit["chapter"], "when": nxt["iso"], "at": nxt["at"],
+                       "frames": frames, "caption": ovr or text, "edited": bool(ovr),
+                       "dedication": ded["text"] if ded else None}
+    # סטורי שבת/חג הבא
+    d = now.date()
+    for _ in range(400):
+        if bot.day_kind(d) == "erev" and bot.release_time(d) > now - dt.timedelta(minutes=5):
+            break
+        d += dt.timedelta(days=1)
+    base = extras.shabbat_texts(d)
+    title, sub, q = extras.story_override(d, base)
+    save_jpg(Image.open(design.shabbat_story(title, sub, bot.ROOT / "out" / "prev_story.png", q)), PREVIEW / "story.jpg")
+    out["story"] = {"day": d.isoformat(), "when": bot.release_time(d).isoformat(), "date_h": bot.hebrew_date(d),
+                    "title": title, "subtitle": sub, "edited": (title, sub) != base[:2], "img": "story.jpg"}
+    save_jpg(Image.open(design.invite_story(bot.ROOT / "out" / "prev_invite.png")), PREVIEW / "invite.jpg")
+    return out
+
+
+def holidays(now, n=8):
+    """החגים הקרובים: שם, תאריך, מתי נכנס החג, ומתי עולה הסטורי (בימים טובים)."""
+    import extras
+    from pyluach import dates as hd
+    skip = {"פורים קטן", "שושן פורים", "פסח שני", "שושן פורים קטן"}
+    fest_of = lambda x, w: hd.HebrewDate.from_pydate(x).festival(israel=True, hebrew=True, include_working_days=w)
+    res, d = [], now.date()
+    for _ in range(800):
+        if len(res) >= n:
+            break
+        f = fest_of(d, True)
+        prev = d - dt.timedelta(days=1)
+        if f and f not in skip and fest_of(prev, True) != f:
+            start = bot.sunset(prev)
+            if start > now:
+                if fest_of(d, False):  # יום טוב – יש סטורי
+                    t, sub, _ = extras.shabbat_texts(prev)
+                    res.append({"name": sub.replace("שבת שלום · ", ""), "greeting": t, "date_h": bot.hebrew_date(d),
+                                "date": d.strftime("%d/%m/%Y"), "start": start.isoformat(),
+                                "story": bot.release_time(prev).isoformat()})
+                else:
+                    res.append({"name": f.replace("״", '"'), "greeting": "", "date_h": bot.hebrew_date(d),
+                                "date": d.strftime("%d/%m/%Y"), "start": start.isoformat(), "story": None})
+        d += dt.timedelta(days=1)
+    return res
+
+
 # ------------------------------------------------------------------ page
 def next_times(now, state, upcoming):
     """מתי כל תוסף אמור לעלות בפעם הבאה (לשעון הספירה לאחור בדשבורד)."""
@@ -337,7 +421,7 @@ def render(m, state):
         (unit, day, kind), when = job
         rel = max(bot.release_time(day), when) if kind == "cycle" else when
         upcoming.append({"chapter": bot.gematria(unit["chapter"]), "at": rel.strftime("%d/%m %H:%M"),
-                         "iso": rel.isoformat(), "kind": kind})
+                         "iso": rel.isoformat(), "kind": kind, "ch": unit["chapter"], "day": day.isoformat()})
         st["posted"].append({"chapter": unit["chapter"], "day": day.isoformat(), "kind": kind,
                              "at": rel.isoformat(timespec="minutes")})
         t = rel + dt.timedelta(minutes=26)
@@ -345,6 +429,12 @@ def render(m, state):
                                   "hypotheses", "recommendations", "slot_rows", "music_rows", "reels",
                                   "totals", "cta", "api_errors")}
     data["upcoming"] = upcoming
+    try:
+        data["preview"] = previews(upcoming, now)
+    except Exception as e:
+        data["preview"] = {}
+        print("תצוגה מקדימה נכשלה:", e)
+    data["holidays"] = holidays(now)
     import extras
     ded = extras.load_ded()
     data["dedications"] = {"queue": [{**q, "eta": extras.queue_eta(i)} for i, q in enumerate(ded.get("queue", []))],

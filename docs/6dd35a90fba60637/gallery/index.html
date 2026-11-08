@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>תמונות הפרקים · תהילים כל יום</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#14123a;--muted:#6b6a80;--line:#e7e3d8;--navy:#090446;--gold:#ad8330;--gold-soft:#f3ead7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0c22;--card:#17163a;--ink:#f1efe8;--muted:#a3a1b8;--line:#2a2950;--navy:#c9b27a;--gold:#d8b46a;--gold-soft:#2b2640}}
+:root[data-theme="dark"]{--bg:#0d0c22;--card:#17163a;--ink:#f1efe8;--muted:#a3a1b8;--line:#2a2950;--navy:#c9b27a;--gold:#d8b46a;--gold-soft:#2b2640}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Heebo,system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 60px}
+h1{font:26px "Secular One",sans-serif;color:var(--navy);margin:4px 0}
+a{color:var(--gold)}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:10px 0 14px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px}
+.seg button{border:0;background:none;font:700 14px Heebo;color:var(--muted);padding:6px 14px;border-radius:99px;cursor:pointer}
+.seg button.on{background:var(--navy);color:var(--bg)}
+input[type=search]{flex:1;min-width:140px;font:15px Heebo;padding:8px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.ch{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;text-align:center}
+.ch img{width:100%;aspect-ratio:9/16;object-fit:cover;display:block}
+.ch div{font:16px "Secular One",sans-serif;padding:4px 0}.ch small{display:block;font:12px Heebo;color:var(--muted);margin-top:-4px;padding-bottom:4px}
+.view{position:fixed;inset:0;background:var(--bg);overflow:auto;display:none;z-index:5}
+.view.open{display:block}
+.vh{position:sticky;top:0;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line);gap:8px;z-index:2}
+.vh b{font:20px "Secular One",sans-serif}
+.btn{border:0;font:700 14px Heebo;padding:8px 14px;border-radius:99px;background:var(--gold-soft);color:var(--ink);cursor:pointer;text-decoration:none;white-space:nowrap}
+.pages{max-width:540px;margin:0 auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:16px}
+.pg{position:relative;width:100%;aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#ddd}
+.pg img{position:absolute;inset:0;width:100%;height:100%}
+.pg img.patch{height:auto}
+.pgbar{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="../">→ חזרה לדשבורד</a>
+  <h1>תמונות הפרקים</h1>
+  <div class="top">
+    <div class="seg"><button data-v="qr" class="on">עם QR</button><button data-v="phone">עם מספר טלפון</button></div>
+    <input type="search" id="q" placeholder="חיפוש פרק (למשל קיט או 119)">
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="view" id="view">
+  <div class="vh"><button class="btn" id="close">סגירה</button><b id="vt"></b><button class="btn" id="dlall">הורדת הכל</button></div>
+  <div class="pages" id="pages"></div>
+</div>
+<script>
+let M = null, mode = 'qr', cur = null;
+const raw = f => `https://raw.githubusercontent.com/${M.repo}/main/${f}`;
+const $ = s => document.querySelector(s);
+try { mode = localStorage.getItem('gal-mode') || 'qr'; } catch (e) {}
+function setMode(m) {
+  mode = m; try { localStorage.setItem('gal-mode', m); } catch (e) {}
+  document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.v === m));
+  if (cur) openCh(cur);
+}
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => setMode(b.dataset.v));
+function grid() {
+  const q = $('#q').value.trim().replace(/["'״׳]/g, '');
+  $('#grid').innerHTML = M.chapters.filter(c => !q || String(c.ch) === q || c.h.replace(/["'״׳]/g, '') === q)
+    .map(c => `<div class="ch" data-ch="${c.ch}"><img loading="lazy" src="thumb/${c.pages[0].name}.jpg" alt="פרק ${c.h}">
+      <div>${c.h}</div><small>${c.pages.length > 1 ? c.pages.length + ' חלקים' : '&nbsp;'}</small></div>`).join('');
+  document.querySelectorAll('.ch').forEach(el => el.onclick = () => openCh(+el.dataset.ch));
+}
+function openCh(n) {
+  cur = n; const c = M.chapters.find(x => x.ch === n);
+  $('#vt').textContent = 'פרק ' + c.h;
+  $('#pages').innerHTML = c.pages.map(p => {
+    const r = p.patch;
+    const patch = (mode === 'qr' && r) ? `<img class="patch" src="patch/${p.name}.png" style="left:${r[0] / 10.8}%;top:${r[1] / 19.2}%;width:${r[2] / 10.8}%">` : '';
+    return `<div><div class="pg"><img src="${raw(p.file)}" crossorigin="anonymous" alt="">${patch}</div>
+      <div class="pgbar"><span>${c.pages.length > 1 ? 'חלק ' + p.part : ''}</span><button class="btn" data-dl="${p.name}">הורדה</button></div></div>`;
+  }).join('');
+  document.querySelectorAll('[data-dl]').forEach(b => b.onclick = () => download(c, c.pages.find(p => p.name === b.dataset.dl)));
+  $('#view').classList.add('open'); $('#view').scrollTop = 0;
+}
+function load(src) { return new Promise((ok, no) => { const i = new Image(); i.crossOrigin = 'anonymous'; i.onload = () => ok(i); i.onerror = no; i.src = src; }); }
+async function download(c, p) {
+  const name = `תהילים_פרק_${p.name}${mode === 'qr' ? '_QR' : ''}.png`;
+  const base = await load(raw(p.file));
+  const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 1920;
+  const g = cv.getContext('2d'); g.drawImage(base, 0, 0, 1080, 1920);
+  if (mode === 'qr' && p.patch) { const pt = await load(`patch/${p.name}.png`); g.drawImage(pt, p.patch[0], p.patch[1]); }
+  cv.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }, 'image/png');
+}
+$('#dlall').onclick = async () => { const c = M.chapters.find(x => x.ch === cur); for (const p of c.pages) { await download(c, p); } };
+$('#close').onclick = () => { $('#view').classList.remove('open'); cur = null; };
+$('#q').oninput = grid;
+fetch('manifest.json').then(r => r.json()).then(m => { M = m; setMode(mode); grid(); });
+</script>
+</body>
+</html>
