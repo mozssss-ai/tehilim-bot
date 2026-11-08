@@ -14,7 +14,7 @@ import bot, extras  # noqa: E402
 
 SWITCHES = {"shabbat_story": "סטורי שבת וערב חג", "holiday_stories": "סטורי חנוכה, פורים ושאר החגים", "siyum_reel": "ריל סיום הספר", "dedications": "הקדשות מהצופים",
             "also_story": "העלאת הריל גם לסטורי", "replace_phone_with_qr": "QR במקום מספר הטלפון",
-            "reel_cover": "תמונת שער אחידה לריילס"}
+            "reel_cover": "תמונת שער אחידה לריילס", "intro": "פתיח עם הלוגו בתחילת הריל"}
 
 
 def run(title: str, body: str = "") -> str:

@@ -296,7 +296,17 @@ def build_video(unit: dict, out: Path) -> Path:
         f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=decrease,"
         f"pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,fps=30,format=yuv420p[v{i}];"
         for i in range(a))
-    fx += "".join(f"[v{i}]" for i in range(a)) + f"concat=n={a}:v=1:a=0[v];"
+    intro = ROOT / "assets" / "intro.mp4"
+    if CONFIG.get("intro", True) and intro.exists():
+        # פתיח: הלוגו צף פנימה, ואז מעבר רך לפרק
+        cmd += ["-i", str(intro)]
+        idur, xf = 1.6, 0.4
+        fx += "".join(f"[v{i}]" for i in range(a)) + f"concat=n={a}:v=1:a=0,settb=AVTB,fps=30[vp];"
+        fx += (f"[{a + 1}:v]settb=AVTB,fps=30,format=yuv420p,setsar=1[vi];"
+               f"[vi][vp]xfade=transition=fade:duration={xf}:offset={round(idur - xf, 2)},format=yuv420p[v];")
+        total = round(total + idur - xf, 2)
+    else:
+        fx += "".join(f"[v{i}]" for i in range(a)) + f"concat=n={a}:v=1:a=0[v];"
     fx += f"[{a}:a]atrim=0:{total},afade=t=in:d=0.8,afade=t=out:st={max(total - 1.5, 0)}:d=1.5,asetpts=N/SR/TB[a]"
     cmd += ["-filter_complex", fx, "-map", "[v]", "-map", "[a]",
             "-c:v", "libx264", "-profile:v", "high", "-preset", "medium", "-crf", "20",
