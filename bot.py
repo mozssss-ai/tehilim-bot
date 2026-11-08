@@ -517,16 +517,21 @@ def main():
     story_id = None
     if CONFIG.get("also_story", True):
         try:
-            story_video = video
             dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
                                         "-of", "csv=p=0", str(video)], capture_output=True, text=True).stdout or 0)
-            if dur > 59:  # סטורי מוגבל לדקה – מקצרים, עם דעיכה בסוף
-                story_video = ROOT / "out" / "story.mp4"
-                subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(video), "-t", "59",
-                                "-af", "afade=t=out:st=57:d=2", "-c:v", "libx264", "-crf", "20",
-                                "-c:a", "aac", "-movflags", "+faststart", str(story_video)], check=True)
-            story_id = publish(story_video, "", os.environ["IG_TOKEN"], "STORIES")
-            print("הועלה גם לסטורי:", story_id)
+            parts = max(1, int(-(-dur // 59)))  # סטורי מוגבל לדקה – מפצלים לחלקים שווים
+            seg = dur / parts
+            story_ids = []
+            for i in range(parts):
+                part = video
+                if parts > 1:
+                    part = ROOT / "out" / f"story_{i + 1}.mp4"
+                    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{i * seg:.2f}", "-i", str(video),
+                                    "-t", f"{seg:.2f}", "-c:v", "libx264", "-crf", "20", "-c:a", "aac",
+                                    "-movflags", "+faststart", str(part)], check=True)
+                story_ids.append(publish(part, "", os.environ["IG_TOKEN"], "STORIES"))
+            story_id = ",".join(story_ids)
+            print(f"הועלה גם לסטורי ({parts} חלקים):", story_id)
         except Exception as e:  # סטורי שנכשל לא מבטל את הריל
             print("העלאת הסטורי נכשלה:", e)
     slot = planned_slot(day) if (kind == "cycle" and day == now.date() and day_kind(day) != "holy") else None
