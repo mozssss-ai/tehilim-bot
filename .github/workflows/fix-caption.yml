@@ -1,0 +1,26 @@
+name: fix caption
+on:
+  workflow_dispatch:
+  push:
+    paths: [".github/run-fix"]
+permissions:
+  contents: write
+concurrency:
+  group: post
+  cancel-in-progress: false
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+        run: python fix_caption.py
+      - run: |
+          git config user.name "tehilim-bot"; git config user.email "tehilim-bot@users.noreply.github.com"
+          git add state.json; git commit -m "fix caption" || exit 0
+          git pull --rebase -q && git push
