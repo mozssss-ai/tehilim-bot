@@ -188,7 +188,9 @@ def analyse(m, state, replied):
                        "score": rate(joins * 3 + shares, reach), "text": variants[i]}
     m["cta"] = cta
     enough = [k for k, v in cta.items() if v["n_ready"] >= 3]
-    if len(enough) == len(variants) and len(variants) > 1:
+    if len(variants) < 2:
+        pass  # ניסוי כיתוב רק בנוסחים שמשה חיים אישר (cta_variants ב-config)
+    elif len(enough) == len(variants) and len(variants) > 1:
         best = max(enough, key=lambda k: cta[k]["score"])
         rest = [cta[k]["score"] for k in enough if k != best]
         if cta[best]["score"] > 1.2 * statistics.mean(rest) and cta[best]["joins"] >= 3:
@@ -245,8 +247,7 @@ def analyse(m, state, replied):
         joins = sum(r["joins"] for r in ready)
         if shares < 0.01 * sum(r["reach"] for r in ready):
             recs.append(("high", "מעט שיתופים",
-                         "שיתוף הוא מה שמביא אנשים חדשים. כדאי לבקש מחברי הקבוצה בוואטסאפ לשתף את הריל היומי לסטטוס – "
-                         "הבוט כבר בודק נוסח כיתוב שמבקש לשתף (נוסח C)."))
+                         "שיתוף הוא מה שמביא אנשים חדשים. כדאי לבקש מחברי הקבוצה בוואטסאפ לשתף את הריל היומי לסטטוס."))
         if joins == 0 and len(ready) >= 3:
             recs.append(("high", "עוד אף אחד לא כתב \"תהילים\"",
                          "כדאי לנעוץ פוסט \"איך מצטרפים\" ראשון בפרופיל, ולהזכיר בסטורי פעם בשבוע: "

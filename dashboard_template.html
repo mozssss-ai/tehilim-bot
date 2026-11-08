@@ -94,12 +94,12 @@ function reachBars(){
 }
 
 const clicks = (W.website_clicks || 0) + (W.profile_links_taps || 0);
-const follows = W['follows_and_unfollows:FOLLOWER'] ?? W.follows_and_unfollows;
+const follows = W['follows_and_unfollows:FOLLOWER'], unf = W['follows_and_unfollows:NON_FOLLOWER'];
 let html = `
 <header><h1>תהילים כל יום</h1><div class="sub">@${esc(A.username || 'tehilim_kol_yom')} · עודכן ${esc(D.updated)}</div></header>
 ${D.next_post ? `<div class="card next">הפרק הבא: <b>פרק ${esc(D.next_post.chapter)}</b><br>עולה ב-${esc(D.next_post.at)}${D.next_post.kind==='catch_up'?' (השלמה)':''}</div>` : ''}
 <div class="tiles">
-  <div class="tile"><div class="v">${fmt(A.followers)}</div><div class="l">עוקבים</div>${follows ? `<div class="d">+${fmt(follows)} השבוע</div>`:''}</div>
+  <div class="tile"><div class="v">${fmt(A.followers)}</div><div class="l">עוקבים</div>${follows!=null ? `<div class="d">+${fmt(follows)} / −${fmt(unf||0)} השבוע</div>`:''}</div>
   <div class="tile"><div class="v">${fmt(W.reach)}</div><div class="l">חשיפה · 7 ימים</div></div>
   <div class="tile"><div class="v">${fmt(W.profile_views)}</div><div class="l">כניסות לפרופיל</div></div>
   <div class="tile"><div class="v">${fmt(clicks)}</div><div class="l">לחיצות על הקישור לקבוצה</div></div>
@@ -124,10 +124,10 @@ ${(D.recommendations||[]).map(r => `<div class="card rec ${r.level}"><h3>${r.lev
   <span>↗ <b>${fmt(r.shares)}</b></span><span>🔖 <b>${fmt(r.saved)}</b></span><span>🙏 <b>${fmt(r.joins)}</b></span></div></div>`).join('') || '<p class="empty">עוד אין ריילס.</p>'}
   <p class="sub" style="margin:8px 0 0">👁 צפיות · ❤ לייקים · ↗ שיתופים · 🔖 שמירות · 🙏 ביקשו להצטרף</p></div>
 
-<h2>ניסוי הכיתוב (A/B)</h2>
+${Object.keys(D.cta||{}).length>1?`<h2>ניסוי הכיתוב (A/B)</h2>
 <div class="card"><table><tr><th>נוסח</th><th class="n">ריילס</th><th class="n">חשיפה</th><th class="n">הצטרפו</th></tr>
 ${Object.entries(D.cta||{}).map(([k,v]) => `<tr><td><b>${String.fromCharCode(65+ +k)}</b><div class="cta">${esc(v.text)}</div></td><td class="n">${v.n}</td><td class="n">${fmt(v.reach)}</td><td class="n">${fmt(v.joins)}</td></tr>`).join('')}
-</table></div>
+</table></div>`:''}
 
 <h2>שעות העלאה</h2>
 <div class="card">${(D.slot_rows||[]).length ? `<table><tr><th>יום</th><th>שעה</th><th class="n">ריילס</th><th class="n">חשיפה ממוצעת</th></tr>
