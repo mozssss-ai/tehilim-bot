@@ -50,8 +50,10 @@ step "שומר" python watchdog.py
 step "דף מצב" python bot.py --status
 
 echo; echo "===== שמירה"
-git add -A state.json STATUS.md replied.json marketing.json dedications.json overrides.json whatsapp.json \
-  rec_status.json config.json learn.json usage.json docs 2>/dev/null
+for f in state.json STATUS.md replied.json marketing.json dedications.json overrides.json whatsapp.json \
+  rec_status.json config.json learn.json usage.json docs; do
+  [ -e "$f" ] && git add -A "$f"
+done
 if ! git diff --cached --quiet; then
   git commit -q -m "bot update [skip ci]"
   REMOTE="https://oauth2:${GL_TOKEN}@gitlab.com/${CI_PROJECT_PATH}.git"
