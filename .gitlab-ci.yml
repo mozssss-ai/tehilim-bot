@@ -1,0 +1,28 @@
+# הבוט של "תהילים כל יום".
+# רץ לפי שעות קבועות (Build → Pipeline schedules, נוצרות אוטומטית מ-forge.py),
+# וגם מיד כשנפתחת בקשה מהדשבורד (webhook). שמירות של הבוט עצמו לא מפעילות הרצה.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - when: always
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  GIT_DEPTH: "10"
+  TZ: "Asia/Jerusalem"
+  PYTHONUNBUFFERED: "1"
+
+# השם "pages" גורם ל-GitLab לפרסם את התיקייה public כאתר – זה הדשבורד
+pages:
+  image: python:3.12-slim
+  resource_group: bot        # הרצה אחת בכל פעם
+  timeout: 60m
+  cache:
+    key: pip-v1
+    paths: [.cache/pip]
+  script:
+    - sh ci/run.sh
+  artifacts:
+    paths: [public]
+    expire_in: 2 days

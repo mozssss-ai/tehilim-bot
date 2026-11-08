@@ -17,6 +17,8 @@ import design  # noqa: E402
 
 G = ROOT / "docs" / "6dd35a90fba60637" / "gallery"
 MAN = G / "manifest.json"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import forge  # noqa: E402
 
 
 def sha(p):
@@ -54,7 +56,7 @@ def main():
             orig.resize((270, 480), Image.LANCZOS).save(G / "thumb" / f"{name}.jpg", quality=78)
             pages.append({"file": f, "name": name, "part": i, "hash": h, "patch": rect})
         chapters.append({"ch": u["chapter"], "h": bot.gematria(u["chapter"]), "pages": pages})
-    MAN.write_text(json.dumps({"repo": "mozssss-ai/tehilim-bot", "chapters": chapters}, ensure_ascii=False),
+    MAN.write_text(json.dumps({"repo": forge.repo(), "raw_api": forge.raw_api_base(), "chapters": chapters}, ensure_ascii=False),
                    encoding="utf-8")
     print(f"גלריה: {sum(len(c['pages']) for c in chapters)} תמונות, {changed} עודכנו")
 

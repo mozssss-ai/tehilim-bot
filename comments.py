@@ -21,6 +21,10 @@ def main():
     if not token:
         print("אין IG_TOKEN – מדלג.")
         return
+    import datetime as _dt
+    if bot.is_forbidden(_dt.datetime.now(bot.TZ)):
+        print("שבת/חג – לא עונים לתגובות ולהודעות עד צאת השבת/החג.")
+        return
     cfg = bot.CONFIG
     keywords = cfg.get("comment_keywords", ["תהילים"])
     data = json.loads(FILE.read_text(encoding="utf-8")) if FILE.exists() else {"done": []}

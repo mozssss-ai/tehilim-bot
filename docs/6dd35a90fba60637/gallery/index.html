@@ -53,7 +53,7 @@ input[type=search]{flex:1;min-width:140px;font:15px Heebo;padding:8px 12px;borde
 </div>
 <script>
 let M = null, mode = 'qr', cur = null;
-const raw = f => `https://raw.githubusercontent.com/${M.repo}/main/${f}`;
+const raw = f => M.raw_api ? `${M.raw_api}${encodeURIComponent(f)}/raw?ref=main` : `https://raw.githubusercontent.com/${M.repo}/main/${f}`;
 const $ = s => document.querySelector(s);
 try { mode = localStorage.getItem('gal-mode') || 'qr'; } catch (e) {}
 function setMode(m) {

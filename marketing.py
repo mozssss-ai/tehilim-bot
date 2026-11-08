@@ -497,7 +497,7 @@ def holidays(now, n=8):
     skip = {"פורים קטן", "שושן פורים", "פסח שני", "שושן פורים קטן"}
     res, d = [], now.date()
     PREVIEW.mkdir(parents=True, exist_ok=True)
-    raw = "https://raw.githubusercontent.com/mozssss-ai/tehilim-bot/main/assets/music/holiday/"
+    raw = "audio/"  # מועתק לאתר בכל הרצה (ראו ci/run.sh)
     for _ in range(800):
         if len(res) >= n:
             break
@@ -540,12 +540,33 @@ def health(m, state, now):
     if j:
         h["ok"] = False
         h["issues"].append(f"פרק {bot.gematria(j[0]['chapter'])} באיחור – הבוט עוד לא העלה אותו")
-    runs = os.environ.get("RECENT_RUNS")
-    if runs:
-        fails = [r for r in json.loads(runs) if r.get("conclusion") == "failure"]
-        h["fails_24h"] = len(fails)
-        if fails:
-            h["issues"].append(f"{len(fails)} הרצות נכשלו ב-24 השעות האחרונות")
+    failed = ROOT / "out" / "failed.txt"
+    if failed.exists():
+        steps = [x for x in failed.read_text(encoding="utf-8").splitlines() if x.strip()]
+        if steps:
+            h["ok"] = False
+            h["issues"].append("בהרצה האחרונה נכשל: " + ", ".join(steps))
+    import forge
+    if forge.token():
+        try:
+            fails = [p for p in forge.recent_pipelines(24) if p.get("status") == "failed"]
+            h["fails_24h"] = len(fails)
+            if fails:
+                h["issues"].append(f"{len(fails)} הרצות נכשלו ב-24 השעות האחרונות")
+        except Exception as e:
+            print("קריאת ההרצות האחרונות נכשלה:", e)
+        gl = forge.token_days()
+        if gl is not None:
+            h["gl_token_days"] = gl
+            if gl < 21:
+                h["ok"] = False
+                h["issues"].append(f"המפתח של הבוט ב-GitLab פג בעוד {gl} ימים – צריך ליצור חדש")
+        used = forge.minutes_this_month()
+        if used is not None:
+            h["minutes"] = used
+            h["minutes_quota"] = 400
+            if used > 340:
+                h["issues"].append(f"נוצלו {used:.0f} מתוך 400 דקות הרצה החודש – כדאי לצמצם הרצות")
     exp = m.get("token_expires")
     if exp:
         days = (dt.datetime.fromtimestamp(exp, TZ) - now).days
@@ -640,7 +661,10 @@ def render(m, state):
     import manage
     data["switches"] = [{"key": k, "label": v, "on": bool(bot.CONFIG.get(k)), **next_times(now, state, upcoming).get(k, {})}
                         for k, v in manage.SWITCHES.items()]
-    data["repo"] = os.environ.get("GITHUB_REPOSITORY", "mozssss-ai/tehilim-bot")
+    import forge
+    data["repo"] = forge.repo()
+    data["issue_base"] = forge.issue_new_base()
+    data["runs_at"] = "כל בוקר, בצהריים ובערב בשעות ההעלאה (בשבת רק במוצאי שבת)"
     data["updated"] = now.strftime("%d/%m/%Y %H:%M")
     data["updated_iso"] = now.isoformat()
     data["data_refreshed"] = m.get("refreshed")

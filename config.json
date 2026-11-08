@@ -91,5 +91,8 @@
   "replace_phone_with_qr": true,
   "holiday_stories": true,
   "reel_cover": true,
-  "intro": true
+  "intro": true,
+  "early_start_minutes": 0,
+  "gitlab_project": "TBD/tehilim-bot",
+  "pages_url": ""
 }

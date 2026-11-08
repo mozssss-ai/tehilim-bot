@@ -6,12 +6,12 @@
   * ימי חול: העלאה בשעה POST_TIME (ברירת מחדל 19:30, שעון ישראל).
   * ערב שבת / ערב חג: העלאה מוקדמת, לפחות שעתיים לפני השקיעה.
   * שבת / חג: לא מעלים. הפרק של השבת עולה שעה אחרי צאת השבת/החג.
-  * הבוט רץ כל חצי שעה (GitHub Actions) ומחליט לבד אם הגיע הזמן להעלות.
+  * הבוט רץ כמה פעמים ביום (GitLab CI, בשעות ההעלאה) ומחליט לבד אם הגיע הזמן להעלות.
 
 הרצה:
   python bot.py                 # בודק אם צריך להעלות, ומעלה
   python bot.py --dry-run       # מראה מה היה קורה, בלי להעלות
-  python bot.py --check         # רק בודק אם הגיע זמן העלאה (ל-GitHub Actions)
+  python bot.py --check         # רק בודק אם הגיע זמן העלאה (להרצה האוטומטית)
   python bot.py --plan 21       # מדפיס תוכנית העלאות ל-21 הימים הבאים
   python bot.py --build N       # בונה את הסרטון של יחידה N לבדיקה (out/)
 """
@@ -340,23 +340,9 @@ def ig_request(method, url, **kw):
 
 
 def host_video(video: Path) -> str:
-    """מעלה את הסרטון לענף 'media' במאגר (ציבורי) ומחזיר כתובת שאינסטגרם יכול להוריד ממנה.
-    בענף נשמר תמיד רק הסרטון האחרון (force push), כדי שהמאגר לא יתנפח."""
-    repo = os.environ["GITHUB_REPOSITORY"]
-    name = f"reel_{int(time.time())}.mp4"
-    work = ROOT / "out" / "media"
-    work.mkdir(parents=True, exist_ok=True)
-    (work / name).write_bytes(video.read_bytes())
-    remote = f"https://x-access-token:{os.environ['GITHUB_TOKEN']}@github.com/{repo}.git"
-    git = lambda *a: subprocess.run(["git", "-C", str(work), *a], check=True, capture_output=True)
-    git("init", "-q", "-b", "media")
-    git("-c", "user.name=tehilim-bot", "-c", "user.email=bot@users.noreply.github.com",
-        "add", name)
-    git("-c", "user.name=tehilim-bot", "-c", "user.email=bot@users.noreply.github.com",
-        "commit", "-q", "-m", "reel")
-    git("push", "-q", "--force", remote, "media")
-    time.sleep(15)
-    return f"https://raw.githubusercontent.com/{repo}/media/{name}"
+    """גיבוי: מעלה את הסרטון לענף 'media' ומחזיר כתובת ציבורית שאינסטגרם יכול להוריד ממנה."""
+    import forge
+    return forge.push_media(video)
 
 
 COVER = {}  # כתובת תמונת השער של הריל הנוכחי (נקבעת ב-main)
@@ -546,7 +532,7 @@ def main():
     wait = 0
     if not job and args.check:
         # הגעה מוקדמת: אם ההעלאה מתוכננת בשעה הקרובה – מתחילים עכשיו ומחכים עד הדקה המדויקת,
-        # כך שעיכובים של GitHub לא גורמים לפספס את שעת השיא
+        # כך שעיכובים בהפעלה לא גורמים לפספס את שעת השיא
         lead = dt.timedelta(minutes=CONFIG.get("early_start_minutes", 55))
         soon = next_job(now + lead, state)
         if soon and soon[2] == "cycle":
@@ -562,9 +548,10 @@ def main():
             print("IG_TOKEN עדיין לא הוגדר – מדלג (שום פרק לא מסומן כהועלה).")
             return
         print(f"due: chapter {unit['chapter']} of {day}" + (f" – מחכה {wait // 60} דקות לשעה המדויקת" if wait else ""))
-        if os.environ.get("GITHUB_OUTPUT"):
-            with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-                f.write(f"post=true\nwait={wait}\n")
+        outf = os.environ.get("GITHUB_OUTPUT") or str(ROOT / "out" / "check.env")
+        Path(outf).parent.mkdir(parents=True, exist_ok=True)
+        with open(outf, "a") as f:
+            f.write(f"post=true\nwait={wait}\n")
         return
     cta = cta_index(now.date())
     text = caption(unit, day if day == now.date() else now.date(), cta)
@@ -587,8 +574,9 @@ def main():
     video = build_video(extras.apply_dedication(unit, ded) if ded else unit, ROOT / "out" / "reel.mp4")
     cov = ROOT / "docs" / "6dd35a90fba60637" / "covers" / f"{unit['chapter']:03d}.jpg"
     if CONFIG.get("reel_cover", True) and cov.exists():
-        COVER["url"] = (f"https://raw.githubusercontent.com/{os.environ.get('GITHUB_REPOSITORY', 'mozssss-ai/tehilim-bot')}"
-                        f"/main/docs/6dd35a90fba60637/covers/{unit['chapter']:03d}.jpg")
+        import forge
+        if forge.pages_url():
+            COVER["url"] = forge.page_file(f"{forge.PRIVATE}/covers/{unit['chapter']:03d}.jpg")
     try:
         media_id = publish_reel(video, text, os.environ["IG_TOKEN"])
     except RuntimeError as e:

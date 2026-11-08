@@ -90,7 +90,10 @@ const fmt = (n) => (n === null || n === undefined) ? '–' : Number(n).toLocaleS
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ST = {validated:'אומת ✓', rejected:'לא אומת', testing:'בבדיקה'};
 const app = document.getElementById('app');
-const issue = (title, body) => `https://github.com/${D.repo||'mozssss-ai/tehilim-bot'}/issues/new?title=${encodeURIComponent(title)}${body?'&body='+encodeURIComponent(body):''}`;
+const issue = (title, body) => D.issue_base
+  ? `${D.issue_base}?issue[title]=${encodeURIComponent(title)}${body?'&issue[description]='+encodeURIComponent(body):''}`
+  : `https://github.com/${D.repo}/issues/new?title=${encodeURIComponent(title)}${body?'&body='+encodeURIComponent(body):''}`;
+const SUBMIT = D.issue_base ? 'Create issue' : 'Submit';
 const P = D.preview || {}; const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
 const PW = A.prevweek || {}; const H = D.health || {}; const WA = D.whatsapp || [];
 const delta = (a, b) => (a == null || b == null || !b) ? '' : (a >= b ? `<div class="d">▲ ${Math.round(100*(a-b)/b)}% מהשבוע שעבר</div>` : `<div class="d down">▼ ${Math.round(100*(b-a)/b)}% מהשבוע שעבר</div>`);
@@ -132,12 +135,12 @@ ${D.next_post ? `<div class="card next"><div class="nl">הפרק הבא${D.next_
 <div class="card health ${H.ok===false||(H.issues||[]).length?'bad':'good'}">
   <b>${H.ok===false||(H.issues||[]).length ? '⚠️ יש משהו לבדוק' : '✅ הבוט תקין'}</b>
   ${(H.issues||[]).map(i => `<div>${esc(i)}</div>`).join('')}
-  <div class="sub">הרצה אחרונה: ${H.run?ago(H.run):'–'}${H.last_post?` · פרק אחרון שעלה: ${esc(H.last_post.chapter)} (${ago(H.last_post.at)})`:''}${H.token_days===null?' · מפתח אינסטגרם: בתוקף ללא הגבלה':H.token_days!=null?` · מפתח אינסטגרם: בתוקף עוד ${H.token_days} ימים`:''}</div>
+  <div class="sub">הרצה אחרונה: ${H.run?ago(H.run):'–'}${H.last_post?` · פרק אחרון שעלה: ${esc(H.last_post.chapter)} (${ago(H.last_post.at)})`:''}${H.token_days===null?' · מפתח אינסטגרם: בתוקף ללא הגבלה':H.token_days!=null?` · מפתח אינסטגרם: בתוקף עוד ${H.token_days} ימים`:''}${H.gl_token_days!=null?` · מפתח GitLab: עוד ${H.gl_token_days} ימים`:''}${H.minutes!=null?` · דקות הרצה החודש: ${Math.round(H.minutes)} מתוך ${H.minutes_quota}`:''}</div>
 </div>
 <div class="tiles">
   <div class="tile"><div class="v">${fmt(WA.length?WA.at(-1).n:null)}</div><div class="l">חברים בקבוצת הוואטסאפ</div>
     ${WA.length>1?`<div class="d">${WA.at(-1).n-WA.at(-2).n>=0?'+':''}${WA.at(-1).n-WA.at(-2).n} מהעדכון הקודם</div>`:''}
-    <a class="mini" href="${issue('קבוצה: ', 'כתבו בכותרת אחרי "קבוצה:" כמה חברים יש עכשיו בקבוצה, ולחצו Submit.')}">עדכון</a></div>
+    <a class="mini" href="${issue('קבוצה: ', 'כתבו בכותרת אחרי "קבוצה:" כמה חברים יש עכשיו בקבוצה, ולחצו '+SUBMIT+'.')}">עדכון</a></div>
   <div class="tile"><div class="v">${fmt(A.followers)}</div><div class="l">עוקבים</div>${follows!=null ? `<div class="d">+${fmt(follows)} / −${fmt(unf||0)} השבוע</div>`:''}</div>
   <div class="tile"><div class="v">${fmt(W.reach)}</div><div class="l">חשיפה · 7 ימים</div>${delta(W.reach, PW.reach)}</div>
   <div class="tile"><div class="v">${fmt(W.profile_views)}</div><div class="l">כניסות לפרופיל</div>${delta(W.profile_views, PW.profile_views)}</div>
@@ -192,9 +195,9 @@ ${(() => { const s = (D.switches||[]).find(x => x.key === 'dedications'); return
 <div class="card">
 ${(D.dedications?.queue||[]).length ? D.dedications.queue.map((q,i) => `<div class="cm"><div class="t"><b>${esc(q.text)}</b></div>
 <div class="p">${q.username && q.username!=='ידני' ? '@'+esc(q.username)+' · ' : ''}יעלה בפרק של ${esc(q.eta)}</div>
-<div class="btns"><a class="btn" href="${issue('תקן הקדשה '+q.id+': '+q.text, 'תקנו את הנוסח בכותרת אחרי הנקודתיים ולחצו Submit.')}">✏ לתקן</a>${i?`<a class="btn" href="${issue('הקדם הקדשה '+q.id)}">⬆ להקדים</a>`:''}<a class="btn danger" href="${issue('מחק הקדשה '+q.id)}">🗑 למחוק</a></div></div>`).join('')
+<div class="btns"><a class="btn" href="${issue('תקן הקדשה '+q.id+': '+q.text, 'תקנו את הנוסח בכותרת אחרי הנקודתיים ולחצו '+SUBMIT+'.')}">✏ לתקן</a>${i?`<a class="btn" href="${issue('הקדם הקדשה '+q.id)}">⬆ להקדים</a>`:''}<a class="btn danger" href="${issue('מחק הקדשה '+q.id)}">🗑 למחוק</a></div></div>`).join('')
  : '<p class="empty">אין הקדשות בתור כרגע.</p>'}
-<a class="btn wide" href="${issue('הקדשה: לרפואת ', 'כתבו בכותרת את ההקדשה אחרי המילה "הקדשה:" ולחצו Submit.')}">➕ הוספת הקדשה</a>
+<a class="btn wide" href="${issue('הקדשה: לרפואת ', 'כתבו בכותרת את ההקדשה אחרי המילה "הקדשה:" ולחצו '+SUBMIT+'.')}">➕ הוספת הקדשה</a>
 ${D.dedications?.inbox_error ? `<p class="sub" style="color:var(--no)">הבוט לא מצליח לקרוא הודעות פרטיות כרגע: ${esc(D.dedications.inbox_error.slice(0,140))}</p>`:''}
 </div>
 ${(D.dedications?.done||[]).length ? `<div class="card"><div class="sub" style="margin-bottom:4px">הקדשות שעלו</div>${D.dedications.done.map(q => `<div class="cm"><div class="t">${esc(q.text)}</div><div class="p">פרק ${esc(q.chapter)} · ${esc((q.posted||'').slice(0,10).split('-').reverse().join('/'))}${q.notified?' · נשלחה הודעה ✓':''}</div></div>`).join('')}</div>`:''}
@@ -255,7 +258,7 @@ ${D.style_rows.map(s => `<tr><td>${esc(s.style)}</td><td class="n">${s.n}</td><t
 ${s.on && s.when ? `<div class="sw-next">${esc(s.what||'')} · <span class="cd" data-when="${esc(s.when)}"></span></div>`
   : `<div class="sw-next">${s.on?'':'לא יעלה עד שידלק'}</div>`}
 <a class="btn sm" href="${issue((s.on?'כבה ':'הדלק ')+s.key)}">${s.on?'לכבות':'להדליק'}</a></div>`).join('')}
-<p class="sub" style="margin:8px 0 0">כל כפתור פותח בקשה מוכנה ב-GitHub. לוחצים "Submit", והבוט מבצע תוך כדקה.</p></div>
+<p class="sub" style="margin:8px 0 0">כל כפתור פותח בקשה מוכנה ב-${D.issue_base?'GitLab':'GitHub'}. לוחצים "${SUBMIT}", והבוט מבצע תוך כמה דקות.</p></div>
 
 <h2>סיכום</h2>
 <div class="card"><table>
@@ -283,7 +286,7 @@ function upd(){
   const u = Date.parse(D.updated_iso || ''); if (!u) return;
   const mins = Math.round((Date.now() - u) / 60000);
   const el = document.getElementById('upd');
-  if (el) el.textContent = 'עודכן ' + (mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק'` : `לפני ${Math.floor(mins/60)} שע'`) + ' · מתעדכן לבד כל רבע שעה';
+  if (el) el.textContent = 'עודכן ' + (mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק'` : `לפני ${Math.floor(mins/60)} שע'`) + ' · מתעדכן לבד ' + (D.runs_at || 'כל רבע שעה');
 }
 upd(); setInterval(upd, 30000);
 tick(); setInterval(tick, 1000);
