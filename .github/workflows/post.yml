@@ -3,7 +3,7 @@ name: post daily chapter
 on:
   schedule:
     # כל חצי שעה, מסביב לשעון. הבוט מחליט לבד אם להעלות (ולא מעלה בשבת ובחג).
-    - cron: "5,35 * * * *"
+    - cron: "5,20,35,50 * * * *"
   workflow_dispatch:
   push:
     paths: [".github/run-post"]
