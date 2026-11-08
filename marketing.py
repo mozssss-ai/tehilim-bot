@@ -132,6 +132,138 @@ def collect(api, m):
     m["api_errors"] = api.errors[-15:]
 
 
+# ------------------------------------------------------------------ insights
+REC_FILE = ROOT / "rec_status.json"
+
+
+def pct(a, b):
+    return round(100 * a / b) if b else 0
+
+
+def insights(m, reels, ready, replied):
+    """כל תובנה: id, level (high/mid/info/idea), title, text, evidence. נבנית רק מנתונים אמיתיים,
+    ונעלמת לבד כשהמצב משתנה. משה חיים יכול לסמן "בוצע"/"לא רלוונטי" מהדשבורד (rec_status.json)."""
+    out = []
+    # משווים רק ריילס שעברו לפחות יום מאז שעלו (ריל חדש עוד לא צבר חשיפה)
+    day_ago = dt.datetime.now(TZ) - dt.timedelta(hours=24)
+    ready = [r for r in ready if dt.datetime.fromisoformat(r["at"]) < day_ago] or ready
+    add = lambda i, lvl, title, text, ev="": out.append({"id": i, "level": lvl, "title": title, "text": text, "evidence": ev})
+    acc = m.get("account", {})
+    week, month = acc.get("week", {}), acc.get("month", {})
+    now = dt.datetime.now(TZ)
+    reach_w, prof_w = week.get("reach") or 0, week.get("profile_views") or 0
+    clicks_w = (week.get("website_clicks") or 0) + (week.get("profile_links_taps") or 0)
+    week_ago = now - dt.timedelta(days=7)
+    joins_w = sum(1 for r in replied.get("done", []) if dt.datetime.fromisoformat(r["at"]) > week_ago)
+
+    # 1. משפך: חשיפה -> כניסה לפרופיל -> לחיצה על הקישור / "תהילים" בתגובה
+    if reach_w >= 100:
+        ev = f"7 ימים: {reach_w} חשיפות → {prof_w} כניסות לפרופיל ({pct(prof_w, reach_w)}%) → " \
+             f"{clicks_w} לחיצות על הקישור · {joins_w} כתבו \"תהילים\""
+        steps = [("profile", prof_w / reach_w, .03, "רואים את הריילס, אבל מעט נכנסים לפרופיל",
+                  "החיבור בין הריל לעמוד חלש. הכי משפיע: לבקש בכיתוב משהו פשוט לעשות עכשיו (כתבו \"תהילים\"), "
+                  "ובפינה של הריל יש כבר QR – אפשר לשקול להזכיר בסוף הריל \"הקישור בביו\"."),
+                 ("link", (clicks_w / prof_w) if prof_w else 1, .08, "נכנסים לפרופיל, אבל לא לוחצים על הקישור",
+                  "הביו הוא המקום שבו מחליטים. כדאי שהשורה הראשונה תסביר מה מקבלים (\"פרק תהילים אחד ביום בוואטסאפ\") "
+                  "ושהקישור לקבוצה יהיה היחיד בביו.")]
+        weak = [s for s in steps if s[1] < s[2]]
+        if weak:
+            w = min(weak, key=lambda s: s[1] / s[2])
+            add(f"funnel-{w[0]}", "high", w[3], w[4], ev)
+        else:
+            add("funnel-ok", "info", "המשפך עובד", "החשיפה הופכת לכניסות ולחיצות ביחס טוב – השלב הבא הוא להגדיל חשיפה (שיתופים).", ev)
+
+    # 2. מה מבדיל ריל חזק מריל חלש
+    if len(ready) >= 6:
+        rs = sorted(ready, key=lambda r: r["reach"])
+        q = max(2, len(rs) // 4)
+        low, high = rs[:q], rs[-q:]
+        avg = lambda xs, k: statistics.mean([x[k] for x in xs if x.get(k)] or [0])
+        hour = lambda r: int(r["at"][11:13])
+        diffs = []
+        if avg(high, "secs") and avg(low, "secs"):
+            diffs.append(("len", abs(avg(high, "secs") - avg(low, "secs")) / max(avg(low, "secs"), 1),
+                          f"ריילס חזקים: {round(avg(high, 'secs'))} שנ' בממוצע, חלשים: {round(avg(low, 'secs'))} שנ'"))
+        hh, hl = statistics.mean(map(hour, high)), statistics.mean(map(hour, low))
+        diffs.append(("hour", abs(hh - hl) / 12, f"ריילס חזקים עלו בממוצע ב-{hh:.0f}:00, חלשים ב-{hl:.0f}:00"))
+        dh = sum(1 for r in high if r.get("dedication")) / len(high)
+        dl = sum(1 for r in low if r.get("dedication")) / len(low)
+        if dh or dl:
+            diffs.append(("ded", abs(dh - dl), f"{pct(dh, 1)}% מהחזקים היו מוקדשים, לעומת {pct(dl, 1)}% מהחלשים"))
+        best = max(diffs, key=lambda x: x[1])
+        add(f"top-vs-low-{best[0]}", "mid", "מה מבדיל ריל חזק מחלש",
+            f"השוואה בין {q} הריילס החזקים ל-{q} החלשים. ההבדל הבולט: {best[2]}. "
+            f"הבוט ממשיך לבדוק את זה ככל שמצטברים ריילס.",
+            f"הכי חזק: פרק {bot.gematria(high[-1]['chapter'])} ({high[-1]['reach']} חשיפות) · "
+            f"הכי חלש: פרק {bot.gematria(low[0]['chapter'])} ({low[0]['reach']})")
+    elif ready:
+        add("learning-reels", "info", "הבוט עדיין לומד",
+            f"יש נתונים מלאים על {len(ready)} ריילס. מ-6 ריילס הבוט יתחיל להשוות בין ריילס חזקים לחלשים "
+            "(אורך, שעה, הקדשה, מוזיקה) ולהגיד מה עובד.")
+
+    # 3. שיתופים ושמירות – מה מביא אנשים חדשים
+    if len(ready) >= 3:
+        reach = sum(r["reach"] for r in ready)
+        sh = sum(r.get("shares") or 0 for r in ready)
+        sv = sum(r.get("saved") or 0 for r in ready)
+        ev = f"{sh} שיתופים ו-{sv} שמירות על {reach} חשיפות ({len(ready)} ריילס)"
+        if sh / reach < .01:
+            add("shares-low", "high", "מעט שיתופים",
+                "שיתוף הוא הדרך העיקרית שבה אנשים חדשים מגיעים. הכי יעיל: לבקש בקבוצת הוואטסאפ לשתף את הריל היומי לסטטוס "
+                "(הקישור לכל ריל נמצא בדשבורד, תחת \"ריילס אחרונים\").", ev)
+        elif sv > 2 * sh:
+            add("saves-high", "info", "אנשים שומרים את הפרקים", "סימן שהתוכן חשוב להם וחוזרים אליו – טוב לאלגוריתם.", ev)
+
+    # 4. כמה מהריל רואים
+    watch = [(r["secs"], r["ig_reels_avg_watch_time"] / 1000) for r in ready if r.get("secs") and r.get("ig_reels_avg_watch_time")]
+    if len(watch) >= 4:
+        comp = statistics.mean(w / s for s, w in watch)
+        ev = f"זמן צפייה ממוצע {statistics.mean(w for _, w in watch):.1f} שנ' מתוך {statistics.mean(s for s, _ in watch):.0f} שנ' ({pct(comp, 1)}%)"
+        if comp < .35:
+            add("watch-low", "mid", "רוב הצופים עוזבים מוקדם",
+                "השניות הראשונות קובעות. אפשר לשקול ריילס קצרים יותר בפרקים ארוכים, או להתחיל את הריל בשורה מושכת – "
+                "תגיד לי אם לבדוק את זה כניסוי.", ev)
+        else:
+            add("watch-ok", "info", "צופים בחלק גדול מהריל", "אורך הריילס מתאים לקהל.", ev)
+
+    # 5. עוקבים
+    hist = m.get("followers_history", {})
+    keys = sorted(hist)
+    if len(keys) >= 7:
+        a, b = hist[keys[-7]], hist[keys[-1]]
+        add("followers-trend", "info" if b >= a else "mid",
+            "צמיחה בעוקבים" if b > a else ("העוקבים יציבים" if b == a else "ירידה בעוקבים"),
+            "מעקב שבועי אחרי מספר העוקבים." + ("" if b >= a else " כדאי לבדוק בדשבורד מה השתנה השבוע (שעות, תוכן)."),
+            f"לפני שבוע {a} → היום {b} ({b - a:+d})")
+
+    # 6. הקדשות
+    try:
+        import extras
+        ded = extras.load_ded()
+        done, queue = ded.get("done", []), ded.get("queue", [])
+        if done or queue:
+            dmed = [r for r in ready if r.get("dedication")]
+            plain = [r for r in ready if not r.get("dedication")]
+            ev = f"{len(done)} פרקים הוקדשו, {len(queue)} בתור"
+            if len(dmed) >= 2 and len(plain) >= 2:
+                s1 = statistics.mean([(r.get("shares") or 0) / r["reach"] for r in dmed])
+                s0 = statistics.mean([(r.get("shares") or 0) / r["reach"] for r in plain])
+                ev += f" · שיתופים לכל 100 חשיפות: מוקדש {100 * s1:.1f}, רגיל {100 * s0:.1f}"
+            add("dedications", "info", "הקדשות מהצופים", "ההקדשות יוצרות קשר אישי עם העמוד – מי שהקדיש נוטה לשתף.", ev)
+    except Exception:
+        pass
+
+    # 7. רעיונות שעדיין לא בוצעו
+    add("idea-collab", "idea", "שיתוף פעולה עם עמוד דומה",
+        "ריל משותף (Collab) מופיע אצל שני הקהלים בבת אחת. אם תסגור שיתוף עם עמוד תורה/תפילה, הבוט יכול להוסיף אותו כשותף לריל.")
+
+    status = load(REC_FILE, {})
+    hidden = {k for k, v in status.items()
+              if v.get("state") == "not_relevant" or (now - dt.datetime.fromisoformat(v["at"])).days < 30}
+    order = {"high": 0, "mid": 1, "info": 2, "idea": 3}
+    return sorted([x for x in out if x["id"] not in hidden], key=lambda x: order[x["level"]])
+
+
 # ------------------------------------------------------------------ analysis
 def rate(num, den):
     return round(num / den, 4) if den else 0
@@ -235,44 +367,8 @@ def analyse(m, state, replied):
                  "text": (f"מוביל עד עכשיו: {music_rows[0]['track']} ({music_rows[0]['avg_reach']} חשיפות בממוצע). "
                           if music_rows else "") + f"נבדקו {len(music_rows)} מתוך 25 מנגינות."})
 
-    # ---------------------------------------------------------------- recommendations
-    acc = m.get("account", {})
-    week = acc.get("week", {})
-    recs = []
-    reach_w, profile_w = week.get("reach") or 0, week.get("profile_views") or 0
-    clicks_w = (week.get("website_clicks") or 0) + (week.get("profile_links_taps") or 0)
-    if ready:
-        avg_reach = statistics.mean(r["reach"] for r in ready)
-        saves = sum(r.get("saved") or 0 for r in ready)
-        shares = sum(r.get("shares") or 0 for r in ready)
-        joins = sum(r["joins"] for r in ready)
-        if shares < 0.01 * sum(r["reach"] for r in ready):
-            recs.append(("high", "מעט שיתופים",
-                         "שיתוף הוא מה שמביא אנשים חדשים. כדאי לבקש מחברי הקבוצה בוואטסאפ לשתף את הריל היומי לסטטוס."))
-        if joins == 0 and len(ready) >= 3:
-            recs.append(("high", "עוד אף אחד לא כתב \"תהילים\"",
-                         "כדאי לנעוץ פוסט \"איך מצטרפים\" ראשון בפרופיל, ולהזכיר בסטורי פעם בשבוע: "
-                         "\"כתבו תהילים ונשלח לכם קישור\"."))
-        if saves > shares * 2:
-            recs.append(("mid", "אנשים שומרים את הפרקים",
-                         "סימן שהתוכן חשוב להם. אפשר להעלות פעם בשבוע פוסט מסכם – \"הפרקים של השבוע\" – "
-                         "וזה ישמר עוד יותר."))
-        if avg_reach < (acc.get("followers") or 0) * 0.3:
-            recs.append(("mid", "הריילס מגיעים לחלק קטן מהעוקבים",
-                         "תגובות בשעה הראשונה מקדמות ריל. אפשר לבקש מכמה חברים בקבוצה להגיב/לסמן לייק מיד כשהפרק עולה."))
-    if reach_w and profile_w and profile_w / reach_w < 0.02:
-        recs.append(("mid", "מעט כניסות לפרופיל ביחס לחשיפה",
-                     "אנשים רואים אבל לא נכנסים. כדאי שהשורה הראשונה בביו תסביר בחצי משפט מה מקבלים: "
-                     "\"פרק תהילים אחד ביום בוואטסאפ – הצטרפו 👇\"."))
-    if profile_w and clicks_w / max(profile_w, 1) < 0.05:
-        recs.append(("mid", "מי שנכנס לפרופיל כמעט לא לוחץ על הקישור",
-                     "כדאי שהקישור לקבוצה יהיה הקישור היחיד בביו, ושהפוסט הנעוץ הראשון יהיה \"גם אני בקבוצת\"."))
-    recs.append(("idea", "שיתוף פעולה", "לפנות לעמודי תורה/תפילה בגודל דומה ולהציע Collab על ריל – הריל מופיע אצל שני הקהלים."))
-    recs.append(("idea", "רגעי שיא", "בסיום הספר (פרק ק\"נ) – ריל חגיגי \"סיימנו את ספר התהילים יחד\" + הזמנה למחזור הבא. "
-                 "זה תוכן שאנשים משתפים."))
-    recs.append(("idea", "הקדשות", "להציע בכל ריל \"הפרק מוקדש לרפואת/לעילוי נשמת...\" – אנשים משתפים פרק שמוקדש ליקיריהם."))
-    recs.append(("idea", "ערב שבת", "בערב שבת העוקבים פעילים בצהריים – אפשר להוסיף סטורי \"שבת שלום\" עם תזכורת להצטרף."))
-    m["recommendations"] = [{"level": a, "title": b, "text": c} for a, b, c in recs]
+    # ---------------------------------------------------------------- תובנות והמלצות (נבנות מהנתונים בכל הרצה)
+    m["recommendations"] = insights(m, reels, ready, replied)
     m["hypotheses"] = hyps
     m["slot_rows"] = slot_rows
     m["music_rows"] = music_rows[:10]

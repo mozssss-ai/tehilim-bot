@@ -72,6 +72,14 @@ def run(title: str, body: str = "") -> str:
             except Exception:
                 pass
         return f"✅ תוקן: {old} ← {text}"
+    mm = re.match(r"^המלצה (בוצעה|לא רלוונטית) (\S+)", t)
+    if mm:
+        p = ROOT / "rec_status.json"
+        st = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+        st[mm.group(2)] = {"state": "done" if mm.group(1) == "בוצעה" else "not_relevant",
+                           "at": dt.datetime.now(bot.TZ).isoformat(timespec="minutes")}
+        p.write_text(json.dumps(st, ensure_ascii=False, indent=2), encoding="utf-8")
+        return "✅ ההמלצה סומנה ותוסתר" + (" (תחזור רק אם הנתונים ישתנו, אחרי 30 יום)" if mm.group(1) == "בוצעה" else "")
     for verb in ("מחק הקדשה", "הקדם הקדשה"):
         if t.startswith(verb):
             i = t[len(verb):].strip()

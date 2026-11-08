@@ -73,6 +73,8 @@ details summary{cursor:pointer;color:var(--muted);font-size:13px}
 .hol{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:start}
 .hol img{width:96px;border-radius:8px;border:1px solid var(--line);display:block}
 .hol audio{width:100%;height:32px;margin-top:6px}
+.ev{font-size:12px!important;color:var(--gold)!important;margin-top:6px!important;font-variant-numeric:tabular-nums}
+.rec.info{border-inline-start-color:var(--ok)}
 .bar{height:8px;border-radius:4px;background:var(--gold)}
 </style>
 </head>
@@ -158,6 +160,11 @@ ${P.reel ? `<div class="card">
 <div class="card"><table>${(D.upcoming||[]).map(u => `<tr><td>פרק ${esc(u.chapter)}${u.kind==='catch_up'?' <span class="sub">(השלמה)</span>':''}</td><td class="n">${esc(u.at)}</td></tr>`).join('')}</table></div>
 
 <h2>הקדשות</h2>
+${(() => { const s = (D.switches||[]).find(x => x.key === 'dedications'); return `<div class="card">
+  <div class="sw-main"><b>סטורי "רוצים להקדיש פרק?"</b><span class="state ${s&&s.on?'on':'off'}">${s&&s.on?'דולק':'כבוי'}</span></div>
+  <div class="sub">עולה בימי ראשון ורביעי, פעם אחת ביום, אחרי הפרק היומי בערב${s&&s.on&&s.when?` · הבא <span class="cd" data-when="${esc(s.when)}"></span>`:''}</div>
+  <div class="frames"><a href="preview/invite.jpg"><img src="preview/invite.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a></div>
+</div>`; })()}
 <div class="card">
 ${(D.dedications?.queue||[]).length ? D.dedications.queue.map((q,i) => `<div class="cm"><div class="t"><b>${esc(q.text)}</b></div>
 <div class="p">${q.username && q.username!=='ידני' ? '@'+esc(q.username)+' · ' : ''}יעלה בפרק של ${esc(q.eta)}</div>
@@ -172,9 +179,7 @@ ${(D.dedications?.done||[]).length ? `<div class="card"><div class="sub" style="
 ${P.story ? `<div class="card">
   <div class="sw-main"><b>סטורי ${P.story.title.includes('שבת')?'שבת':'חג'} · ${esc(P.story.date_h)}</b>${P.story.edited?'<span class="state on">מתוקן</span>':''}</div>
   <div class="sub"><span class="cd" data-when="${esc(P.story.when)}"></span></div>
-  <div class="frames"><a href="preview/story.jpg"><img src="preview/story.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a>
-  <a href="preview/invite.jpg"><img src="preview/invite.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a></div>
-  <div class="sub">משמאל: סטורי ההזמנה להקדשות (ראשון ורביעי)</div>
+  <div class="frames"><a href="preview/story.jpg"><img src="preview/story.jpg?v=${encodeURIComponent(D.updated)}" alt=""></a></div>
   <div class="btns"><a class="btn" href="${issue('כותרת סטורי '+P.story.day, P.story.title+'\n'+P.story.subtitle)}">✏ לתקן כותרת</a>
   ${P.story.edited?`<a class="btn" href="${issue('ביטול כותרת סטורי '+P.story.day)}">↩ לחזור לרגיל</a>`:''}</div>
   <p class="sub" style="margin:6px 0 0">בבקשת התיקון: שורה 1 = הכותרת, שורה 2 = השורה שמתחתיה.</p>
@@ -182,8 +187,10 @@ ${P.story ? `<div class="card">
 
 <h2>עוקבים</h2><div class="card">${followersChart()}</div>
 
-<h2>המלצות שיווק</h2>
-${(D.recommendations||[]).map(r => `<div class="card rec ${r.level}"><h3>${r.level==='idea'?'💡 ':''}${esc(r.title)}</h3><p>${esc(r.text)}</p></div>`).join('')}
+<h2>תובנות והמלצות</h2>
+${(D.recommendations||[]).map(r => `<div class="card rec ${r.level}"><h3>${r.level==='idea'?'💡 ':r.level==='info'?'📊 ':''}${esc(r.title)}</h3><p>${esc(r.text)}</p>
+${r.evidence?`<p class="ev">${esc(r.evidence)}</p>`:''}
+${r.level!=='info'?`<div class="btns"><a class="btn" href="${issue('המלצה בוצעה '+r.id)}">✓ בוצע</a><a class="btn" href="${issue('המלצה לא רלוונטית '+r.id)}">✕ לא רלוונטי</a></div>`:''}</div>`).join('') || '<p class="empty">אין כרגע המלצות – הבוט ממשיך לאסוף נתונים.</p>'}
 
 <h2>מה הבוט בודק עכשיו</h2>
 ${(D.hypotheses||[]).map(h => `<div class="card hyp"><h3>${esc(h.title)}<span class="pill ${h.status}">${ST[h.status]}</span></h3><p>${esc(h.text)}</p></div>`).join('')}
