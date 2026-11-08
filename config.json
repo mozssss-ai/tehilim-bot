@@ -72,8 +72,8 @@
     }
   },
   "min_reel_seconds": 30,
-  "full_page_seconds": 40,
+  "full_page_seconds": 20,
   "full_page_ink": 0.14,
-  "min_page_seconds": 8,
-  "max_reel_seconds": 180
+  "min_page_seconds": 6,
+  "max_reel_seconds": 90
 }
