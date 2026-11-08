@@ -80,6 +80,26 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 1,
+      "day": "2026-11-05",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-08T06:55+02:00",
+      "media_id": "18121638964991778",
+      "story_id": "18201155650375859",
+      "cta": 0,
+      "music": "02_bach_prelude",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": [
+        [
+          "invite_story",
+          "18109236391976327"
+        ]
+      ]
     }
   ]
 }
