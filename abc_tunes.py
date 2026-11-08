@@ -162,3 +162,62 @@ def yigdal(name="shavuot", bpm=76):
             p.note(ch, t, d * .96, m(n) + sh, vel)
             t += d
     return p
+
+
+# ---------------------------------------------------------------- מתווים שמשה חיים שלח (שמות צלילים, בלי קצב – הקצב משוער)
+SOLFEGE = {"דו": "C", "רה": "D", "מי": "E", "פא": "F", "סול": "G", "לה": "A", "סי": "B"}
+
+
+def phrases_to_seq(phrases, base_oct=4):
+    """phrases: רשימת מחרוזות 'לה – לה – סול ...' (גבוה)/(נמוך) מסמנים אוקטבה. כל צליל שמינית/רבע, סוף משפט ארוך."""
+    seq = []
+    for ph in phrases:
+        toks = [t.strip() for t in ph.replace("–", "-").split("-") if t.strip()]
+        for i, tok in enumerate(toks):
+            octv = base_oct + (1 if "גבוה" in tok else 0) - (1 if "נמוך" in tok else 0)
+            name = SOLFEGE[tok.split("(")[0].strip()]
+            last = i == len(toks) - 1
+            seq.append((f"{name}{octv}", 2 if last else 1))
+    return seq
+
+
+SHOSHANAT_USER = ["לה – לה – סול – לה – סי – דו (גבוה) – סי – לה", "סול – לה – סי – לה – סול – פא – מי",
+                  "לה – סי – דו (גבוה) – רה (גבוה) – דו (גבוה) – סי – לה", "סול – לה – סי – לה – פא – מי – לה"]
+BARYOCHAI_USER = ["מי – מי – רה – דו – רה – מי – פא – מי", "מי – רה – דו – סי (נמוך) – דו – רה – מי",
+                  "סול – סול – פא – מי – פא – סול – לה – סול", "פא – מי – רה – דו – רה – מי – דו – סי (נמוך)"]
+
+
+def from_user(name, phrases, bpm, chords, mel_inst, acc_inst, oompah=True, mel_shift=12):
+    from make_music import m
+    BASS = 32
+    p = Piece(name, bpm, {0: mel_inst, 1: acc_inst, 2: BASS})
+    t = 0.0
+    seq = phrases_to_seq(phrases)
+    for n, d in seq:
+        p.note(0, t, d * .9, m(n) + mel_shift, 88)
+        t += d
+    total = t
+    b, i = 0.0, 0
+    while b < total:
+        notes = CHORD_NOTES[chords[i % len(chords)]]
+        for beat in range(4):
+            if oompah and beat % 2 == 0:
+                p.note(2, b + beat, .45, notes[0] - 12, 70)
+            elif oompah:
+                for k in notes[1:]:
+                    p.note(1, b + beat, .4, k, 50)
+        if not oompah:
+            for k in notes[1:]:
+                p.note(1, b, 3.8, k, 40)
+            p.note(2, b, 3.8, notes[0] - 12, 55)
+        b += 4
+        i += 1
+    return p
+
+
+def shoshanat_user():
+    return from_user("purim", SHOSHANAT_USER, 132, ["Am", "Am", "E", "Am", "Am", "Dm", "E", "Am"], 71, 21)
+
+
+def baryochai_user():
+    return from_user("lag_baomer", BARYOCHAI_USER, 104, ["C", "G", "C", "G", "C", "F", "G", "C"], 0, 46, oompah=False)
