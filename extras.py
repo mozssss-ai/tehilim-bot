@@ -329,7 +329,7 @@ def after_reel(unit, day, kind, media_id, token, publish):
         png = design.shabbat_story(o.get("title") or ms["title"], o.get("subtitle", ms["subtitle"]), OUT / "holiday.png",
                                    ms["question"], ms["icon"], ms["lit"])
         done.append(("holiday_story", publish(card_video(png, OUT / "holiday.mp4", 12, ms["track"]), "", token, "STORIES")))
-    if daily and "invite_story" not in already and CFG.get("dedications") and today.weekday() in CFG.get("dedication_invite_days", [6, 2]):
+    if daily and day == today and "invite_story" not in already and CFG.get("dedications") and today.weekday() in CFG.get("dedication_invite_days", [6, 2]):
         v = card_video(design.invite_story(OUT / "invite.png"), OUT / "invite.mp4", 8)
         done.append(("invite_story", publish(v, "", token, "STORIES")))
     if CFG.get("siyum_reel") and unit["chapter"] == 150 and kind == "cycle":

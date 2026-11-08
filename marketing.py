@@ -456,6 +456,8 @@ def render(m, state):
                         for k, v in manage.SWITCHES.items()]
     data["repo"] = os.environ.get("GITHUB_REPOSITORY", "mozssss-ai/tehilim-bot")
     data["updated"] = now.strftime("%d/%m/%Y %H:%M")
+    data["updated_iso"] = now.isoformat()
+    data["data_refreshed"] = m.get("refreshed")
     data["next_post"] = upcoming[0] if upcoming else None
     for r in data["reels"] or []:
         r["chapter_h"] = bot.gematria(r["chapter"])

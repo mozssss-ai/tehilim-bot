@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>תהילים כל יום · לוח בקרה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Secular+One&display=swap" rel="stylesheet">
@@ -116,7 +117,7 @@ function reachBars(){
 const clicks = (W.website_clicks || 0) + (W.profile_links_taps || 0);
 const follows = W['follows_and_unfollows:FOLLOWER'], unf = W['follows_and_unfollows:NON_FOLLOWER'];
 let html = `
-<header><h1>תהילים כל יום</h1><div class="sub">@${esc(A.username || 'tehilim_kol_yom')} · עודכן ${esc(D.updated)}</div></header>
+<header><h1>תהילים כל יום</h1><div class="sub">@${esc(A.username || 'tehilim_kol_yom')} · <span id="upd">עודכן ${esc(D.updated)}</span></div></header>
 ${D.next_post ? `<div class="card next"><div class="nl">הפרק הבא${D.next_post.kind==='catch_up'?' (השלמה)':''}</div>
 <b>פרק ${esc(D.next_post.chapter)}</b><div class="cd big" data-when="${esc(D.next_post.iso||'')}"></div>
 <div class="nl">${esc(D.next_post.at)}</div></div>` : ''}
@@ -239,13 +240,24 @@ function tick(){
   document.querySelectorAll('.cd[data-when]').forEach(el => {
     const w = Date.parse(el.dataset.when); if (!w) { el.textContent=''; return; }
     let s = Math.round((w - Date.now())/1000);
-    if (s <= 0) { el.textContent = 'עולה עכשיו'; return; }
+    if (s <= 0) { el.textContent = s > -1200 ? 'עולה עכשיו' : 'ממתין להרצה הבאה של הבוט'; return; }
     const d = Math.floor(s/86400); s%=86400; const h = Math.floor(s/3600); s%=3600; const m = Math.floor(s/60); s%=60;
     const p = n => String(n).padStart(2,'0');
     el.textContent = 'בעוד ' + (d ? d + (d===1?' יום ':' ימים ') : '') + `${p(h)}:${p(m)}:${p(s)}`;
   });
 }
+function upd(){
+  const u = Date.parse(D.updated_iso || ''); if (!u) return;
+  const mins = Math.round((Date.now() - u) / 60000);
+  const el = document.getElementById('upd');
+  if (el) el.textContent = 'עודכן ' + (mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק'` : `לפני ${Math.floor(mins/60)} שע'`) + ' · מתעדכן לבד כל רבע שעה';
+}
+upd(); setInterval(upd, 30000);
 tick(); setInterval(tick, 1000);
+// טעינה מחדש אוטומטית כל 5 דקות (וכשחוזרים לדף), כדי שהנתונים תמיד יהיו עדכניים
+let shown = Date.now();
+setInterval(() => { if (!document.hidden) location.reload(); }, 5 * 60 * 1000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - shown > 60000) location.reload(); });
 </script>
 </body>
 </html>
