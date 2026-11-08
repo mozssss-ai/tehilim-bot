@@ -261,6 +261,51 @@ def clean_footer(src, out, link):
     return out
 
 
+def reel_cover(chapter_h, out, parts=None):
+    """תמונת שער אחידה לריל (מופיעה בפרופיל): לוגו, "פרק X" גדול, ו"תהילים כל יום"."""
+    im = Image.open(A / "bg_card.png").convert("RGB")
+    d = ImageDraw.Draw(im)
+    text(d, (960, 120), 'בס"ד', HEB(30, 800), anchor="rm")
+    logo(im, 540, 470, 700)
+    d.ellipse((540 - 300, 960 - 300, 540 + 300, 960 + 300), fill=NAVY)
+    d.ellipse((540 - 270, 960 - 270, 540 + 270, 960 + 270), outline=GOLD, width=10)
+    text(d, (540, 845), "פרק", SEC(110), fill=GOLD)
+    f = fit(d, chapter_h, 250, 470)
+    text(d, (540, 1010), chapter_h, f, fill=WHITE)
+    divider(d, 1360)
+    text(d, (540, 1450), "פרק אחד בכל יום", SEC(70))
+    text(d, (540, 1545), "הצטרפו אלינו 👇".replace(" 👇", ""), HEB(50, 700), fill=GOLD)
+    im.save(out)
+    return out
+
+
+def intro_frames(out_dir, secs=1.6, fps=30):
+    """פתיח: הלוגו צף פנימה (מתקרב ונכנס מלמטה בעדינות) על רקע הכרטיס. מחזיר תיקיית פריימים."""
+    import math
+    out_dir.mkdir(parents=True, exist_ok=True)
+    bg = Image.open(A / "bg_card.png").convert("RGB")
+    l0 = Image.open(A / "logo.png").convert("RGBA")
+    l0 = l0.crop(l0.getbbox())
+    n = int(secs * fps)
+    for i in range(n):
+        t = i / (n - 1)
+        e = 1 - (1 - min(1, t / .75)) ** 3            # ease-out
+        w = int(560 + 260 * e)
+        lg = l0.resize((w, int(l0.height * w / l0.width)), Image.LANCZOS)
+        a = lg.split()[3].point(lambda v: int(v * min(1, t / .45)))
+        lg.putalpha(a)
+        y = int(960 + 120 * (1 - e) + 8 * math.sin(t * math.pi * 2) * (t > .75))
+        fr = bg.copy()
+        fr.paste(lg, (540 - lg.width // 2, y - lg.height // 2), lg)
+        if t > .55:
+            d = ImageDraw.Draw(fr)
+            k = min(1, (t - .55) / .3)
+            col = tuple(int(c1 + (c2 - c1) * k) for c1, c2 in zip((235, 233, 225), GOLD))
+            text(d, (540, y + lg.height // 2 + 70), "פרק אחד בכל יום", SEC(64), fill=col)
+        fr.save(out_dir / f"f{i:03d}.png")
+    return out_dir
+
+
 def dedicate(src, line, out):
     """פס הקדשה בתחתית התמונה, בלי לכסות את הטקסט של הפרק."""
     im = Image.open(src).convert("RGB")

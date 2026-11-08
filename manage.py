@@ -72,6 +72,14 @@ def run(title: str, body: str = "") -> str:
             except Exception:
                 pass
         return f"✅ תוקן: {old} ← {text}"
+    wm = re.match(r"^קבוצה[:\s]*(\d+)", t) or (re.match(r"^קבוצה", t) and re.match(r"^\s*(\d+)", body))
+    if wm:
+        n = int(wm.group(1))
+        p = ROOT / "whatsapp.json"
+        wa = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+        wa[dt.datetime.now(bot.TZ).date().isoformat()] = n
+        p.write_text(json.dumps(wa, ensure_ascii=False, indent=2), encoding="utf-8")
+        return f"✅ עודכן: {n} חברים בקבוצה"
     mm = re.match(r"^המלצה (בוצעה|לא רלוונטית) (\S+)", t)
     if mm:
         p = ROOT / "rec_status.json"

@@ -10,6 +10,8 @@ on:
 
 permissions:
   contents: write
+  issues: write
+  actions: read
 
 concurrency:
   group: post
@@ -54,9 +56,17 @@ jobs:
         continue-on-error: true
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
+          export RECENT_RUNS=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow post.yml --created ">$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)" --json conclusion --limit 100 2>/dev/null || echo "[]")
           python gallery.py
           python marketing.py
+      - name: watchdog (alert if a chapter is late)
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python watchdog.py
       - name: update status page
         if: always()
         run: python bot.py --status
@@ -65,6 +75,6 @@ jobs:
         run: |
           git config user.name "tehilim-bot"
           git config user.email "tehilim-bot@users.noreply.github.com"
-          git add state.json STATUS.md replied.json marketing.json dedications.json overrides.json docs 2>/dev/null || git add state.json STATUS.md
+          git add state.json STATUS.md replied.json marketing.json dedications.json overrides.json whatsapp.json docs 2>/dev/null || git add state.json STATUS.md
           git commit -m "bot update" || exit 0
           git pull --rebase -q && git push

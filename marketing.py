@@ -72,8 +72,8 @@ def collect(api, m):
     acc = api.safe("account", api.uid, fields="followers_count,follows_count,media_count,username,website") or {}
     # מדדי החשבון: אתמול ו-7 הימים האחרונים
     account = {}
-    for label, days in (("day", 1), ("week", 7), ("month", 28)):
-        until = int(now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp())
+    for label, days, back in (("day", 1, 0), ("week", 7, 0), ("prevweek", 7, 7), ("month", 28, 0)):
+        until = int(now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()) - back * 86400
         since = until - days * 86400
         vals = {}
         for metric in ACCOUNT_METRICS:
@@ -111,6 +111,36 @@ def collect(api, m):
         for d in (r or {}).get("data", []):
             c[d["name"]] = d["values"][0]["value"] if d.get("values") else d.get("total_value", {}).get("value")
         c["final"] = (now - ts).days >= 14
+
+    # סטוריז – אינסטגרם שומר את הנתונים שלהם רק 24 שעות, לכן אוספים כל שעה ושומרים
+    story_types = {}
+    for p in load(bot.STATE_FILE, {"posted": []}).get("posted", []):
+        for sid in (p.get("story_id") or "").split(","):
+            if sid:
+                story_types[sid] = f"פרק {bot.gematria(p['chapter'])}"
+        for kind, sid in (p.get("extras") or []):
+            story_types[sid] = {"shabbat_story": "שבת/חג", "invite_story": "הזמנה להקדשות",
+                                "holiday_story": "חג", "siyum_story": "סיום הספר"}.get(kind, kind)
+    sc = m.setdefault("story_cache", {})
+    for s in (api.safe("stories", f"{api.uid}/stories", fields="id,timestamp,permalink") or {}).get("data", []):
+        r = api.safe(f"story {s['id']}", f"{s['id']}/insights", metric="reach,replies,views,shares,total_interactions,navigation",
+                     breakdown="story_navigation_action_type")
+        if r is None:
+            r = api.safe(f"story {s['id']} basic", f"{s['id']}/insights", metric="reach,replies")
+        c = sc.setdefault(s["id"], {"timestamp": s["timestamp"], "type": story_types.get(s["id"], "סטורי")})
+        for d in (r or {}).get("data", []):
+            if d["name"] == "navigation":
+                for b in d.get("total_value", {}).get("breakdowns", []) or []:
+                    for res in b.get("results", []):
+                        c["nav_" + "_".join(res.get("dimension_values", []))] = res.get("value")
+            else:
+                c[d["name"]] = d["values"][0]["value"] if d.get("values") else d.get("total_value", {}).get("value")
+    for k in sorted(sc, key=lambda k: sc[k]["timestamp"])[:-60]:
+        sc.pop(k)
+    # תוקף מפתח הגישה
+    dbg = api.safe("token", "debug_token", input_token=api.token)
+    if dbg and dbg.get("data"):
+        m["token_expires"] = dbg["data"].get("expires_at", 0)
 
     recent_comments = []
     for x in media[:6]:
@@ -499,6 +529,38 @@ def holidays(now, n=8):
     return res
 
 
+def health(m, state, now):
+    """מצב הבוט: הרצה אחרונה, העלאה אחרונה, תקלות, תוקף המפתח."""
+    h = {"run": now.isoformat(), "ok": True, "issues": []}
+    posted = state.get("posted", [])
+    if posted:
+        h["last_post"] = {"chapter": bot.gematria(posted[-1]["chapter"]), "at": posted[-1]["at"]}
+    # פרק שהיה צריך לעלות ולא עלה (יותר משעה וחצי באיחור)
+    j = bot.next_job(now - dt.timedelta(minutes=90), state)
+    if j:
+        h["ok"] = False
+        h["issues"].append(f"פרק {bot.gematria(j[0]['chapter'])} באיחור – הבוט עוד לא העלה אותו")
+    runs = os.environ.get("RECENT_RUNS")
+    if runs:
+        fails = [r for r in json.loads(runs) if r.get("conclusion") == "failure"]
+        h["fails_24h"] = len(fails)
+        if fails:
+            h["issues"].append(f"{len(fails)} הרצות נכשלו ב-24 השעות האחרונות")
+    exp = m.get("token_expires")
+    if exp:
+        days = (dt.datetime.fromtimestamp(exp, TZ) - now).days
+        h["token_days"] = days
+        if days < 10:
+            h["ok"] = False
+            h["issues"].append(f"מפתח הגישה לאינסטגרם פג בעוד {days} ימים")
+    elif exp == 0:
+        h["token_days"] = None  # לא פג
+    errs = m.get("api_errors") or []
+    if any("comments" in e or "media" == e.split(":")[0] for e in errs):
+        h["issues"].append("חלק מהנתונים מאינסטגרם לא נקראו בהרצה האחרונה")
+    return h
+
+
 # ------------------------------------------------------------------ page
 def next_times(now, state, upcoming):
     """מתי כל תוסף אמור לעלות בפעם הבאה (לשעון הספירה לאחור בדשבורד)."""
@@ -566,6 +628,10 @@ def render(m, state):
         data["preview"] = {}
         print("תצוגה מקדימה נכשלה:", e)
     data["holidays"] = holidays(now)
+    data["health"] = health(m, state, now)
+    data["stories"] = sorted(m.get("story_cache", {}).values(), key=lambda s: s["timestamp"], reverse=True)[:10]
+    wa = load(ROOT / "whatsapp.json", {})
+    data["whatsapp"] = [{"date": k, "n": v} for k, v in sorted(wa.items())]
     import extras
     ded = extras.load_ded()
     data["dedications"] = {"queue": [{**q, "eta": extras.queue_eta(i)} for i, q in enumerate(ded.get("queue", []))],

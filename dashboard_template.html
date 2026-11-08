@@ -75,6 +75,9 @@ details summary{cursor:pointer;color:var(--muted);font-size:13px}
 .hol audio{width:100%;height:32px;margin-top:6px}
 .ev{font-size:12px!important;color:var(--gold)!important;margin-top:6px!important;font-variant-numeric:tabular-nums}
 .rec.info{border-inline-start-color:var(--ok)}
+.health{border-inline-start:5px solid var(--ok)}.health.bad{border-inline-start-color:var(--no)}
+.health b{display:block;margin-bottom:2px}.d.down{color:var(--no)}
+.mini{display:inline-block;margin-top:4px;font-size:12px;font-weight:700}
 .bar{height:8px;border-radius:4px;background:var(--gold)}
 </style>
 </head>
@@ -89,6 +92,9 @@ const ST = {validated:'אומת ✓', rejected:'לא אומת', testing:'בבד�
 const app = document.getElementById('app');
 const issue = (title, body) => `https://github.com/${D.repo||'mozssss-ai/tehilim-bot'}/issues/new?title=${encodeURIComponent(title)}${body?'&body='+encodeURIComponent(body):''}`;
 const P = D.preview || {}; const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
+const PW = A.prevweek || {}; const H = D.health || {}; const WA = D.whatsapp || [];
+const delta = (a, b) => (a == null || b == null || !b) ? '' : (a >= b ? `<div class="d">▲ ${Math.round(100*(a-b)/b)}% מהשבוע שעבר</div>` : `<div class="d down">▼ ${Math.round(100*(b-a)/b)}% מהשבוע שעבר</div>`);
+const ago = iso => { const m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'עכשיו' : m < 60 ? `לפני ${m} דק'` : m < 1440 ? `לפני ${Math.floor(m/60)} שע'` : `לפני ${Math.floor(m/1440)} ימים`; };
 
 function followersChart(){
   const h = D.followers_history || {}; const keys = Object.keys(h).sort();
@@ -123,14 +129,22 @@ let html = `
 ${D.next_post ? `<div class="card next"><div class="nl">הפרק הבא${D.next_post.kind==='catch_up'?' (השלמה)':''}</div>
 <b>פרק ${esc(D.next_post.chapter)}</b><div class="cd big" data-when="${esc(D.next_post.iso||'')}"></div>
 <div class="nl">${esc(D.next_post.at)}</div></div>` : ''}
-<div class="tiles">
-  <div class="tile"><div class="v">${fmt(A.followers)}</div><div class="l">עוקבים</div>${follows!=null ? `<div class="d">+${fmt(follows)} / −${fmt(unf||0)} השבוע</div>`:''}</div>
-  <div class="tile"><div class="v">${fmt(W.reach)}</div><div class="l">חשיפה · 7 ימים</div></div>
-  <div class="tile"><div class="v">${fmt(W.profile_views)}</div><div class="l">כניסות לפרופיל</div></div>
-  <div class="tile"><div class="v">${fmt(clicks)}</div><div class="l">לחיצות על הקישור לקבוצה</div></div>
-  <div class="tile"><div class="v">${fmt(T.tehilim_comments)}</div><div class="l">כתבו "תהילים"</div></div>
-  <div class="tile"><div class="v">${fmt(T.dms_sent)}</div><div class="l">קיבלו קישור בפרטי</div></div>
+<div class="card health ${H.ok===false||(H.issues||[]).length?'bad':'good'}">
+  <b>${H.ok===false||(H.issues||[]).length ? '⚠️ יש משהו לבדוק' : '✅ הבוט תקין'}</b>
+  ${(H.issues||[]).map(i => `<div>${esc(i)}</div>`).join('')}
+  <div class="sub">הרצה אחרונה: ${H.run?ago(H.run):'–'}${H.last_post?` · פרק אחרון שעלה: ${esc(H.last_post.chapter)} (${ago(H.last_post.at)})`:''}${H.token_days===null?' · מפתח אינסטגרם: בתוקף ללא הגבלה':H.token_days!=null?` · מפתח אינסטגרם: בתוקף עוד ${H.token_days} ימים`:''}</div>
 </div>
+<div class="tiles">
+  <div class="tile"><div class="v">${fmt(WA.length?WA.at(-1).n:null)}</div><div class="l">חברים בקבוצת הוואטסאפ</div>
+    ${WA.length>1?`<div class="d">${WA.at(-1).n-WA.at(-2).n>=0?'+':''}${WA.at(-1).n-WA.at(-2).n} מהעדכון הקודם</div>`:''}
+    <a class="mini" href="${issue('קבוצה: ', 'כתבו בכותרת אחרי "קבוצה:" כמה חברים יש עכשיו בקבוצה, ולחצו Submit.')}">עדכון</a></div>
+  <div class="tile"><div class="v">${fmt(A.followers)}</div><div class="l">עוקבים</div>${follows!=null ? `<div class="d">+${fmt(follows)} / −${fmt(unf||0)} השבוע</div>`:''}</div>
+  <div class="tile"><div class="v">${fmt(W.reach)}</div><div class="l">חשיפה · 7 ימים</div>${delta(W.reach, PW.reach)}</div>
+  <div class="tile"><div class="v">${fmt(W.profile_views)}</div><div class="l">כניסות לפרופיל</div>${delta(W.profile_views, PW.profile_views)}</div>
+  <div class="tile"><div class="v">${fmt(clicks)}</div><div class="l">לחיצות על הקישור לקבוצה</div>${delta(clicks, (PW.website_clicks||0)+(PW.profile_links_taps||0))}</div>
+  <div class="tile"><div class="v">${fmt(T.tehilim_comments)}</div><div class="l">כתבו "תהילים" · ${fmt(T.dms_sent)} קיבלו קישור</div></div>
+</div>
+
 
 
 
@@ -157,6 +171,12 @@ ${P.reel ? `<div class="card">
   <div class="stats"><span>👁 <b>${fmt(r.views ?? r.reach)}</b></span><span>❤ <b>${fmt(r.likes)}</b></span>
   <span>↗ <b>${fmt(r.shares)}</b></span><span>🔖 <b>${fmt(r.saved)}</b></span><span>🙏 <b>${fmt(r.joins)}</b></span></div></div>`).join('')}</details>`:''}
   <p class="sub" style="margin:8px 0 0">👁 צפיות · ❤ לייקים · ↗ שיתופים · 🔖 שמירות · 🙏 ביקשו להצטרף</p></div>
+
+<h2>סטוריז אחרונים</h2>
+<div class="card">${(D.stories||[]).length ? `<table><tr><th>סטורי</th><th class="n">צפו</th><th class="n">ענו</th><th class="n">יצאו</th></tr>
+${D.stories.map(s => `<tr><td>${esc(s.type)}<div class="sub">${esc((s.timestamp||'').slice(5,16).replace('T',' '))}</div></td><td class="n">${fmt(s.reach)}</td><td class="n">${fmt(s.replies)}</td><td class="n">${fmt(s.nav_swipe_forward ?? s.nav_exited ?? null)}</td></tr>`).join('')}</table>
+<p class="sub" style="margin:6px 0 0">אינסטגרם שומר נתוני סטורי רק 24 שעות – הבוט אוסף אותם כל שעה ושומר.</p>`
+ : '<p class="empty">הנתונים יופיעו אחרי ההרצה הבאה של הבוט.</p>'}</div>
 
 <h2>חשיפה לכל ריל</h2><div class="card">${reachBars()}</div>
 
@@ -189,7 +209,8 @@ ${P.story ? `<div class="card">
   <p class="sub" style="margin:6px 0 0">בבקשת התיקון: שורה 1 = הכותרת, שורה 2 = השורה שמתחתיה.</p>
 </div>` : ''}
 
-<h2>עוקבים</h2><div class="card">${followersChart()}</div>
+<h2>עוקבים וקבוצה</h2><div class="card">${followersChart()}
+${WA.length>1?`<div class="sub" style="margin-top:8px">קבוצת הוואטסאפ: ${WA.map(w=>`${w.date.slice(5).split('-').reverse().join('/')}: ${w.n}`).join(' · ')}</div>`:''}</div>
 
 <h2>תובנות והמלצות</h2>
 ${(D.recommendations||[]).map(r => `<div class="card rec ${r.level}"><h3>${r.level==='idea'?'💡 ':r.level==='info'?'📊 ':''}${esc(r.title)}</h3><p>${esc(r.text)}</p>
