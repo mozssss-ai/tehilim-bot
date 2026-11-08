@@ -261,20 +261,32 @@ def clean_footer(src, out, link):
     return out
 
 
-def reel_cover(chapter_h, out, parts=None):
-    """תמונת שער אחידה לריל (מופיעה בפרופיל): לוגו, "פרק X" גדול, ו"תהילים כל יום"."""
+def chapter_label(h):
+    """'קי"ט' -> 'קיט' (בלי גרשיים באמצע); 'ד\'' נשאר 'ד\''."""
+    h = h.replace('"', "").replace("״", "")
+    return h
+
+
+def reel_cover(chapter_h, out, variant="a"):
+    """תמונת שער אחידה לריל (מופיעה בפרופיל)."""
     im = Image.open(A / "bg_card.png").convert("RGB")
     d = ImageDraw.Draw(im)
     text(d, (960, 120), 'בס"ד', HEB(30, 800), anchor="rm")
-    logo(im, 540, 470, 700)
-    d.ellipse((540 - 300, 960 - 300, 540 + 300, 960 + 300), fill=NAVY)
-    d.ellipse((540 - 270, 960 - 270, 540 + 270, 960 + 270), outline=GOLD, width=10)
-    text(d, (540, 845), "פרק", SEC(110), fill=GOLD)
-    f = fit(d, chapter_h, 250, 470)
-    text(d, (540, 1010), chapter_h, f, fill=WHITE)
-    divider(d, 1360)
-    text(d, (540, 1450), "פרק אחד בכל יום", SEC(70))
-    text(d, (540, 1545), "הצטרפו אלינו 👇".replace(" 👇", ""), HEB(50, 700), fill=GOLD)
+    logo(im, 540, 460, 700)
+    lab = chapter_label(chapter_h)
+    if variant == "a":  # מסגרת זהב עגולה, בלי מילוי
+        d.ellipse((540 - 290, 970 - 290, 540 + 290, 970 + 290), outline=GOLD, width=8)
+        d.ellipse((540 - 266, 970 - 266, 540 + 266, 970 + 266), outline=GOLD, width=2)
+        text(d, (540, 850), "פרק", SEC(100), fill=NAVY)
+        text(d, (540, 1015), lab, fit(d, lab, 260, 440), fill=GOLD)
+    else:  # בסגנון הכותרת של דפי הפרקים – פסים מעוטרים
+        divider(d, 760, 300, 780)
+        text(d, (540, 860), "פרק", SEC(110), fill=NAVY)
+        text(d, (540, 1040), lab, fit(d, lab, 300, 700), fill=GOLD)
+        divider(d, 1200, 300, 780)
+    divider(d, 1380, 380, 700)
+    text(d, (540, 1470), "פרק אחד בכל יום", SEC(70), fill=NAVY)
+    text(d, (540, 1560), "הצטרפו אלינו", HEB(50, 700), fill=GOLD)
     im.save(out)
     return out
 
