@@ -485,6 +485,16 @@ def main():
     now = dt.datetime.fromisoformat(args.now).astimezone(TZ) if args.now else dt.datetime.now(TZ)
     state = load_state()
     job = next_job(now, state)
+    wait = 0
+    if not job and args.check:
+        # הגעה מוקדמת: אם ההעלאה מתוכננת בשעה הקרובה – מתחילים עכשיו ומחכים עד הדקה המדויקת,
+        # כך שעיכובים של GitHub לא גורמים לפספס את שעת השיא
+        lead = dt.timedelta(minutes=CONFIG.get("early_start_minutes", 55))
+        soon = next_job(now + lead, state)
+        if soon and soon[2] == "cycle":
+            target = release_time(soon[1])
+            if now < target <= now + lead and not is_forbidden(target):
+                job, wait = soon, int((target - now).total_seconds()) + 5
     if not job:
         print(f"{now:%Y-%m-%d %H:%M} – אין מה להעלות עכשיו.")
         return
@@ -493,10 +503,10 @@ def main():
         if os.environ.get("IG_TOKEN_SET", "true") != "true":
             print("IG_TOKEN עדיין לא הוגדר – מדלג (שום פרק לא מסומן כהועלה).")
             return
-        print(f"due: chapter {unit['chapter']} of {day}")
+        print(f"due: chapter {unit['chapter']} of {day}" + (f" – מחכה {wait // 60} דקות לשעה המדויקת" if wait else ""))
         if os.environ.get("GITHUB_OUTPUT"):
             with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-                f.write("post=true\n")
+                f.write(f"post=true\nwait={wait}\n")
         return
     text = caption(unit, day if day == now.date() else now.date())
     print(f"מעלה את פרק {gematria(unit['chapter'])} (של {day})\n{text}")

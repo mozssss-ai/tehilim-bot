@@ -18,7 +18,7 @@ concurrency:
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34,6 +34,9 @@ jobs:
       - name: install ffmpeg
         if: steps.check.outputs.post == 'true'
         run: which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+      - name: wait for the exact posting time
+        if: steps.check.outputs.post == 'true' && steps.check.outputs.wait != '0'
+        run: sleep ${{ steps.check.outputs.wait }}
       - name: build and publish reel (+ story)
         if: steps.check.outputs.post == 'true'
         env:
