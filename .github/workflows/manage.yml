@@ -22,6 +22,7 @@ jobs:
       - id: run
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
         run: python manage.py
       - name: refresh dashboard
         run: python marketing.py

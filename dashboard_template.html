@@ -116,7 +116,7 @@ ${D.next_post ? `<div class="card next">הפרק הבא: <b>פרק ${esc(D.next_
 <div class="card">
 ${(D.dedications?.queue||[]).length ? D.dedications.queue.map((q,i) => `<div class="cm"><div class="t"><b>${esc(q.text)}</b></div>
 <div class="p">${q.username && q.username!=='ידני' ? '@'+esc(q.username)+' · ' : ''}יעלה בפרק של ${esc(q.eta)}</div>
-<div class="btns">${i?`<a class="btn" href="${issue('הקדם הקדשה '+q.id)}">⬆ להקדים</a>`:''}<a class="btn danger" href="${issue('מחק הקדשה '+q.id)}">🗑 למחוק</a></div></div>`).join('')
+<div class="btns"><a class="btn" href="${issue('תקן הקדשה '+q.id+': '+q.text, 'תקנו את הנוסח בכותרת אחרי הנקודתיים ולחצו Submit.')}">✏ לתקן</a>${i?`<a class="btn" href="${issue('הקדם הקדשה '+q.id)}">⬆ להקדים</a>`:''}<a class="btn danger" href="${issue('מחק הקדשה '+q.id)}">🗑 למחוק</a></div></div>`).join('')
  : '<p class="empty">אין הקדשות בתור כרגע.</p>'}
 <a class="btn wide" href="${issue('הקדשה: לרפואת ', 'כתבו בכותרת את ההקדשה אחרי המילה "הקדשה:" ולחצו Submit.')}">➕ הוספת הקדשה</a>
 ${D.dedications?.inbox_error ? `<p class="sub" style="color:var(--no)">הבוט לא מצליח לקרוא הודעות פרטיות כרגע: ${esc(D.dedications.inbox_error.slice(0,140))}</p>`:''}

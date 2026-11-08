@@ -3,6 +3,7 @@
   הקדשה: לרפואת יוסף בן שרה      ← מוסיף לתור
   מחק הקדשה <id>                 ← מוחק מהתור
   הקדם הקדשה <id>                ← מעביר לראש התור
+  תקן הקדשה <id>: <נוסח חדש>     ← מתקן נוסח (ושולח עדכון לשולח)
   הדלק <מפתח> / כבה <מפתח>        ← מדליק/מכבה תוסף
 """
 import datetime as dt, json, os, sys
@@ -27,6 +28,22 @@ def run(title: str) -> str:
         d["queue"].append(item)
         extras.save_ded(d)
         return f"✅ נוסף לתור: {text} (יעלה בפרק של {extras.queue_eta(len(d['queue']) - 1)})"
+    if t.startswith("תקן הקדשה"):
+        i, _, new = t[len("תקן הקדשה"):].partition(":")
+        item = next((q for q in d["queue"] if q["id"] == i.strip()), None)
+        text = extras.parse_dedication(new)
+        if not item:
+            return "❌ ההקדשה לא נמצאה בתור (אולי כבר עלתה)."
+        if not text:
+            return "❌ לא הבנתי את הנוסח המתוקן."
+        old, item["text"] = item["text"], text
+        extras.save_ded(d)
+        if item.get("user_id"):
+            try:
+                extras.send_dm(item["user_id"], f"עדכנו את ההקדשה ✓\nהפרק יוקדש {text}.", os.environ.get("IG_TOKEN", ""))
+            except Exception:
+                pass
+        return f"✅ תוקן: {old} ← {text}"
     for verb in ("מחק הקדשה", "הקדם הקדשה"):
         if t.startswith(verb):
             i = t[len(verb):].strip()

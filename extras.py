@@ -157,8 +157,19 @@ def check_inbox(token):
     d = load_ded()
     seen = set(d["seen"])
     convs, uid, username = conversations(token)
+    CORRECT = re.compile(r"תיקון|טעות|לתקן|תתקנו|במקום|התכוונתי|סליחה")
+    CANCEL = re.compile(r"^\s*(בטל|ביטול|לבטל|תבטלו)")
+
+    def dm(user, msg, item=None):
+        try:
+            send_dm(user, msg, token)
+        except Exception as e:
+            if item is not None:
+                item["confirm_error"] = str(e)[:200]
+
     for c in convs:
-        for m in (c.get("messages") or {}).get("data", []):
+        # הודעות מגיעות מהחדשה לישנה – מטפלים מהישנה לחדשה, כדי שתיקון יבוא אחרי ההקדשה המקורית
+        for m in reversed((c.get("messages") or {}).get("data", [])):
             frm = m.get("from") or {}
             if m["id"] in seen or frm.get("id") == uid or frm.get("username") == username:
                 continue
@@ -167,26 +178,42 @@ def check_inbox(token):
             age = dt.datetime.now(dt.timezone.utc) - dt.datetime.fromisoformat(m["created_time"].replace("+0000", "+00:00"))
             if age > dt.timedelta(hours=23):
                 continue
-            text = parse_dedication(m.get("message", ""))
+            msg, user = m.get("message", ""), frm.get("id")
+            pending = [q for q in d["queue"] if q.get("user_id") == user]
+            if CANCEL.search(msg) and pending:
+                d["queue"].remove(pending[-1])
+                dm(user, f"ההקדשה \"{pending[-1]['text']}\" בוטלה. אפשר לשלוח הקדשה חדשה בכל עת 🙏")
+                continue
+            text = parse_dedication(msg)
             if text:
                 if any(q["text"] == text for q in d["queue"]):
                     continue
-                item = {"id": m["id"], "user_id": frm.get("id"), "username": frm.get("username", ""),
+                if pending and CORRECT.search(msg):
+                    # תיקון של הקדשה שעוד לא עלתה – מחליפים את הנוסח ושומרים על המקום בתור
+                    item = pending[-1]
+                    item.update({"text": text, "corrected": dt.datetime.now(bot.TZ).isoformat(timespec="minutes")})
+                    eta = queue_eta(d["queue"].index(item))
+                    dm(user, f"תיקנו ✓\nהפרק יוקדש {text}.\nההקדשה תעלה בפרק של {eta}.", item)
+                    print("הקדשה תוקנה:", text)
+                    continue
+                item = {"id": m["id"], "user_id": user, "username": frm.get("username", ""),
                         "text": text, "received": dt.datetime.now(bot.TZ).isoformat(timespec="minutes")}
                 d["queue"].append(item)
                 eta = queue_eta(len(d["queue"]) - 1)
-                try:
-                    send_dm(item["user_id"], f"קיבלנו, תודה 🙏\nהפרק יוקדש {text}.\n"
-                                             f"ההקדשה תעלה בפרק של {eta} – בתמונה ובכיתוב.", token)
-                except Exception as e:
-                    item["confirm_error"] = str(e)[:200]
+                posted = [x for x in d.get("done", []) if x.get("user_id") == user]
+                extra = ""
+                if pending:
+                    extra = "\n\nאם רציתם לתקן את ההקדשה הקודמת ולא להוסיף עוד אחת – כתבו: תיקון: והנוסח הנכון."
+                elif CORRECT.search(msg) and posted:
+                    extra = (f"\n\nההקדשה הקודמת כבר עלתה בפרק {bot.gematria(posted[-1]['chapter'])} ואי אפשר לשנות פרק שעלה, "
+                             "לכן נקדיש לכם בנוסח המתוקן את הפרק הזה.")
+                dm(user, f"קיבלנו, תודה 🙏\nהפרק יוקדש {text}.\nההקדשה תעלה בפרק של {eta} – בתמונה ובכיתוב.\n"
+                         f"רוצים לתקן? כתבו: תיקון: והנוסח הנכון. לביטול כתבו: ביטול." + extra, item)
                 print("הקדשה חדשה בתור:", text)
-            elif re.search(r"הקדש|מוקדש|לרפוא|לעילוי|נשמת", m.get("message", "")):
-                try:
-                    send_dm(frm.get("id"), "כדי להקדיש פרק, שלחו הודעה אחת בנוסח הזה:\n"
-                                           "לרפואת יוסף בן שרה / לעילוי נשמת יוסף בן שרה\n(שם + שם האם)", token)
-                except Exception:
-                    pass
+            elif re.search(r"הקדש|מוקדש|לרפוא|לעילוי|נשמת|תיקון", msg):
+                dm(user, "כדי להקדיש פרק, שלחו הודעה אחת בנוסח הזה:\n"
+                         "לרפואת יוסף בן שרה / לעילוי נשמת יוסף בן שרה\n(שם + שם האם)\n"
+                         "לתיקון הקדשה ששלחתם: תיקון: והנוסח הנכון.")
     d["seen"] = d["seen"][-500:]
     save_ded(d)
 
