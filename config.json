@@ -31,7 +31,7 @@
   "minutes_after_holy_end": 100,
   "minutes_before_sunset_on_erev": 120,
   "seconds_per_page": 4,
-  "seconds_join": 3,
+  "seconds_join": 4,
   "join_image": "assets/join_reel.png",
   "music": "assets/music.mp3",
   "whatsapp_link": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
@@ -70,5 +70,6 @@
       "18": 270,
       "21": 275
     }
-  }
+  },
+  "min_reel_seconds": 30
 }

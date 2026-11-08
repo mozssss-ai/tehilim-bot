@@ -207,8 +207,13 @@ def build_video(unit: dict, out: Path) -> Path:
     if missing:
         raise FileNotFoundError(f"חסרות תמונות לפרק {unit['chapter']}: {missing}")
     join = ROOT / CONFIG["join_image"]
-    if join.exists():
-        frames.append((join, CONFIG["seconds_join"]))
+    join_secs = CONFIG["seconds_join"] if join.exists() else 0
+    # לפחות min_reel_seconds (ברירת מחדל 30) – הזמן מתחלק שווה בין עמודי הפרק, כדי שיהיה זמן לקרוא
+    per_page = max(CONFIG["seconds_per_page"],
+                   (CONFIG.get("min_reel_seconds", 30) - join_secs) / max(1, len(frames)))
+    frames = [(f, round(per_page, 2)) for f, _ in frames]
+    if join_secs:
+        frames.append((join, join_secs))
     total = sum(s for _, s in frames)
 
     cmd = ["ffmpeg", "-y", "-loglevel", "error"]
