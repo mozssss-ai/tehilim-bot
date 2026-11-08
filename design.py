@@ -144,17 +144,28 @@ def clean_footer(src, out, link):
     im.paste(bg.crop((90, top, 990, bottom)), (90, top))
     # QR באמצע הרווח שהתפנה
     space_top, space_bottom = above + 10, min(bottom + 40, 1850)
-    size = max(90, space_bottom - space_top)
-    q = qrcode.QRCode(border=2, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=10)
+    avail = max(90, space_bottom - space_top)
+    q = qrcode.QRCode(border=2, error_correction=qrcode.constants.ERROR_CORRECT_M, box_size=1)
     q.add_data(link)
-    q.make()
-    qr = q.make_image(fill_color=NAVY, back_color="white").convert("RGB").resize((size, size), Image.NEAREST)
+    q.make(fit=True)
+    modules = q.modules_count + 2 * q.border
+    box = max(2, avail // modules)            # כל ריבוע בקוד = מספר שלם של פיקסלים -> חד ומיושר
+    q.box_size = box
+    qr = q.make_image(fill_color=NAVY, back_color="white").convert("RGB")
+    size = qr.width
     im.paste(bg.crop((90, above + 2, 990, space_bottom)), (90, above + 2))
-    x = 540 - size // 2
-    im.paste(qr, (x, space_top))
     d = ImageDraw.Draw(im)
-    text(d, (x - 30, space_top + size // 2 - 18), "סרקו", SEC(34), fill=GOLD, anchor="rm")
-    text(d, (x - 30, space_top + size // 2 + 20), "והצטרפו", SEC(34), fill=GOLD, anchor="rm")
+    f = SEC(36)
+    label_w = max(d.textlength(w, font=f, direction="rtl") for w in ("סרקו", "והצטרפו"))
+    gap = 24
+    group = size + gap + label_w                  # QR + כיתוב ממורכזים יחד
+    x_qr = int(540 + group / 2 - size)            # QR מימין (עברית), הכיתוב משמאלו
+    y_qr = space_top + (avail - size) // 2
+    im.paste(qr, (x_qr, y_qr))
+    cy = y_qr + size // 2
+    tx = x_qr - gap
+    text(d, (tx, cy - 22), "סרקו", f, fill=GOLD, anchor="rm")
+    text(d, (tx, cy + 22), "והצטרפו", f, fill=GOLD, anchor="rm")
     im.save(out)
     return out
 
