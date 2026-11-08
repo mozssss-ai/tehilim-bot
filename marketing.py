@@ -599,6 +599,7 @@ def next_times(now, state, upcoming):
 
 def render(m, state):
     now = dt.datetime.now(TZ)
+    (bot.ROOT / "out" / "clean").mkdir(parents=True, exist_ok=True)  # בהרצה נקייה התיקייה לא קיימת
     upcoming = []
     st = json.loads(json.dumps(state))
     t = now

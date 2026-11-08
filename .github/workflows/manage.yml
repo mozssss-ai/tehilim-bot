@@ -26,6 +26,7 @@ jobs:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
         run: python manage.py
       - name: refresh dashboard
+        continue-on-error: true
         run: python marketing.py
       - run: |
           git config user.name "tehilim-bot"; git config user.email "tehilim-bot@users.noreply.github.com"
