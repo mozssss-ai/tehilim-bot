@@ -219,16 +219,50 @@ def check_inbox(token):
 
 
 # ---------------------------------------------------------------- stories / reels around the daily reel
+GREETINGS = {  # חג -> (ברכה, שם החג להצגה)
+    "ראש השנה": ("שנה טובה ומתוקה", "ראש השנה"),
+    "יום כיפור": ("גמר חתימה טובה", "יום הכיפורים"),
+    "סוכות": ("חג שמח", "חג הסוכות"),
+    "שמיני עצרת": ("חג שמח", "שמחת תורה"),
+    "פסח": ("חג כשר ושמח", "חג הפסח"),
+    "שבועות": ("חג שמח", "חג השבועות"),
+}
+
+
 def shabbat_texts(day: dt.date):
-    """day = ערב שבת/חג. מחזיר (כותרת, תת-כותרת)."""
+    """day = ערב שבת/חג. מחזיר (כותרת, תת-כותרת, שאלה)."""
     from pyluach import dates as hd, parshios
     nxt = day + dt.timedelta(days=1)
     h = hd.HebrewDate.from_pydate(nxt)
     fest = h.festival(israel=True, hebrew=True, include_working_days=False)
-    if nxt.weekday() == 5:
-        p = parshios.getparsha_string(hd.GregorianDate.from_pydate(nxt), israel=True, hebrew=True)
-        return ("שבת שלום" if not fest else "שבת שלום וחג שמח", f"פרשת {p}" if p else (fest or ""))
-    return ("חג שמח", fest or "")
+    if fest:
+        greet, name = GREETINGS.get(fest, ("חג שמח", fest))
+        if fest == "פסח" and h.day == 21:
+            greet, name = "חג שמח", "שביעי של פסח"
+        if nxt.weekday() == 5:
+            if len(greet) <= 8:
+                greet = "שבת שלום ו" + greet
+            else:
+                name = "שבת שלום · " + name
+        q = "היום הקדוש הזה – גם אתם איתנו?" if fest == "יום כיפור" else "החג הזה – גם אתם איתנו?"
+        return greet, name, q
+    p = parshios.getparsha_string(hd.GregorianDate.from_pydate(nxt), israel=True, hebrew=True)
+    return "שבת שלום", (f"פרשת {p}" if p else ""), "השבת הזאת – גם אתם איתנו?"
+
+
+OVR_FILE = ROOT / "overrides.json"
+
+
+def load_ovr():
+    return json.loads(OVR_FILE.read_text(encoding="utf-8")) if OVR_FILE.exists() else {"caption": {}, "story": {}}
+
+
+def story_override(day, texts):
+    """תיקון ידני מהדשבורד לכותרת/תת-כותרת של סטורי שבת/חג בתאריך מסוים."""
+    o = load_ovr().get("story", {}).get(day.isoformat())
+    if not o:
+        return texts
+    return (o.get("title") or texts[0], o.get("subtitle", texts[1]), texts[2])
 
 
 def after_reel(unit, day, kind, media_id, token, publish):
@@ -241,8 +275,8 @@ def after_reel(unit, day, kind, media_id, token, publish):
     daily = kind == "cycle"  # סטוריז נוספים רק אחרי הפרק היומי (לא אחרי השלמות), ופעם אחת ביום
     if daily and "shabbat_story" not in already and CFG.get("shabbat_story") \
             and bot.day_kind(day) == "erev" and day == today:
-        title, sub = shabbat_texts(day)
-        v = card_video(design.shabbat_story(title, sub, OUT / "shabbat.png"), OUT / "shabbat.mp4", 8)
+        title, sub, q = story_override(day, shabbat_texts(day))
+        v = card_video(design.shabbat_story(title, sub, OUT / "shabbat.png", q), OUT / "shabbat.mp4", 8)
         done.append(("shabbat_story", publish(v, "", token, "STORIES")))
     if daily and "invite_story" not in already and CFG.get("dedications") and today.weekday() in CFG.get("dedication_invite_days", [6, 2]):
         v = card_video(design.invite_story(OUT / "invite.png"), OUT / "invite.mp4", 8)

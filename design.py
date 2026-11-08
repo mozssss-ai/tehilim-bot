@@ -41,8 +41,11 @@ def divider(d, cy, x0=260, x1=820):
         d.polygon([(x - 12, cy), (x, cy - 9), (x + 12, cy), (x, cy + 9)], fill=GOLD)
 
 
-def label(d, cy, s, size=72):
+def label(d, cy, s, size=72, max_w=860):
     f = SEC(size)
+    while d.textlength(s, font=f, direction="rtl") > max_w and size > 40:
+        size -= 4
+        f = SEC(size)
     bb = d.textbbox((540, cy), s, font=f, anchor="mm", direction="rtl")
     d.rectangle((bb[0] - 36, cy - size * 0.8, bb[2] + 36, cy + size * 0.8), fill=NAVY)
     text(d, (540, cy), s, f, fill=WHITE)
@@ -58,8 +61,16 @@ def candles(d, cx, cy):
     d.rounded_rectangle((cx - 130, cy + 166, cx + 130, cy + 196), 12, fill=GOLD)
 
 
-def shabbat_story(title, subtitle, out):
-    """title: 'שבת שלום' / 'חג שמח'. subtitle: למשל 'פרשת תולדות'."""
+def fit(d, s, size, max_w=900):
+    f = SEC(size)
+    while d.textlength(s, font=f, direction="rtl") > max_w and size > 30:
+        size -= 2
+        f = SEC(size)
+    return f
+
+
+def shabbat_story(title, subtitle, out, question="השבת הזאת – גם אתם איתנו?"):
+    """title: 'שבת שלום' / 'חג שמח' / 'שנה טובה' ... subtitle: למשל 'פרשת תולדות' / 'ראש השנה'."""
     im = Image.open(A / "bg_card.png").convert("RGB")
     d = ImageDraw.Draw(im)
     text(d, (960, 120), 'בס"ד', HEB(30, 800), anchor="rm")
@@ -67,9 +78,9 @@ def shabbat_story(title, subtitle, out):
     candles(d, 540, 640)
     label(d, 990, title, 110)
     if subtitle:
-        text(d, (540, 1135), subtitle, SEC(70), fill=GOLD)
+        text(d, (540, 1135), subtitle, fit(d, subtitle, 70), fill=GOLD)
     divider(d, 1235)
-    text(d, (540, 1320), "השבת הזאת – גם אתם איתנו?", SEC(56))
+    text(d, (540, 1320), question, fit(d, question, 56))
     text(d, (540, 1400), "פרק תהילים אחד בכל יום, ישר לוואטסאפ", HEB(42, 600))
     text(d, (540, 1530), "הקישור לקבוצה בביו", SEC(58), fill=GOLD)
     im.save(out)
@@ -89,7 +100,8 @@ def siyum_card(out, book_no=None):
     text(d, (540, 1140), "זה הזמן הכי טוב להצטרף", HEB(46, 600))
     text(d, (540, 1300), 'כתבו "תהילים" בתגובה', SEC(62))
     text(d, (540, 1380), "ונשלח לכם קישור לקבוצה בפרטי", HEB(44, 600))
-    text(d, (540, 1560), "תודה לכל מי שאמר איתנו", SEC(54), fill=GOLD)
+    text(d, (540, 1530), "תודה לכל מי שאמר איתנו", SEC(54), fill=GOLD)
+    text(d, (540, 1605), '"תהילים - כל יום"', SEC(60), fill=NAVY)
     im.save(out)
     return out
 
