@@ -208,11 +208,16 @@ def after_reel(unit, day, kind, media_id, token, publish):
     """רץ אחרי שהריל היומי (והסטורי שלו) עלו."""
     OUT.mkdir(exist_ok=True)
     done = []
-    if CFG.get("shabbat_story") and bot.day_kind(day) == "erev" and day == dt.datetime.now(bot.TZ).date():
+    today = dt.datetime.now(bot.TZ).date()
+    already = {x[0] for p in bot.load_state()["posted"] if p.get("at", "")[:10] == today.isoformat()
+               for x in (p.get("extras") or [])}
+    daily = kind == "cycle"  # סטוריז נוספים רק אחרי הפרק היומי (לא אחרי השלמות), ופעם אחת ביום
+    if daily and "shabbat_story" not in already and CFG.get("shabbat_story") \
+            and bot.day_kind(day) == "erev" and day == today:
         title, sub = shabbat_texts(day)
         v = card_video(design.shabbat_story(title, sub, OUT / "shabbat.png"), OUT / "shabbat.mp4", 8)
         done.append(("shabbat_story", publish(v, "", token, "STORIES")))
-    if CFG.get("dedications") and dt.datetime.now(bot.TZ).weekday() in CFG.get("dedication_invite_days", [6, 2]):
+    if daily and "invite_story" not in already and CFG.get("dedications") and today.weekday() in CFG.get("dedication_invite_days", [6, 2]):
         v = card_video(design.invite_story(OUT / "invite.png"), OUT / "invite.mp4", 8)
         done.append(("invite_story", publish(v, "", token, "STORIES")))
     if CFG.get("siyum_reel") and unit["chapter"] == 150 and kind == "cycle":
