@@ -66,9 +66,9 @@ DAYENU_B = ('"C"E2 E2 | "G7"GF- F2 | F2 F2 | "C"AG- G2 | G2 G2 | "G7"cB- BB | BG
 
 
 def maoz_tzur(name="chanukah", bpm=84):
-    VIOLIN, STRINGS, CHOIR, CELESTA = 40, 48, 52, 8
-    p = Piece(name, bpm, {0: VIOLIN, 1: STRINGS, 2: STRINGS, 3: CHOIR})
-    for ch, voice, vel, shift in ((0, "S", 84, 12), (1, "A", 52, 0), (2, "T", 48, -12), (3, "S", 40, 0)):
+    PIANO, HARP, SLOW_STR, CELESTA = 0, 46, 49, 8
+    p = Piece(name, bpm, {0: PIANO, 1: HARP, 2: SLOW_STR, 3: CELESTA})
+    for ch, voice, vel, shift in ((0, "S", 88, 12), (1, "A", 50, 0), (2, "T", 40, -12), (3, "S", 34, 24)):
         seq, _ = parse(MAOZ[voice], "F")
         t = 0.0
         for k, d in seq:
@@ -100,4 +100,37 @@ def dayenu(name="pesach", bpm=126):
                     p.note(1, t0 + b + 0.5, 0.4, n, 50)
                 b += 1.0
         t0 = t
+    return p
+
+
+# ---------------------------------------------------------------- שושנת יעקב (לחן עממי, לפי ויקיטקסט "ביאור:שושנת יעקב/לחן 1")
+# (פיץ', אורך ברבעים) – 8 התיבות הראשונות + אנקרוזה
+SHOSHANAT = [("E4", .5),
+             ("C5", .5), ("C5", .5), ("B4", .5), ("B4", .5), ("A4", 1.5), ("E4", .5),
+             ("A4", .5), ("A4", .25), ("A4", .25), ("G4", .5), ("F4", .5), ("E4", 1.5), ("A4", .5),
+             ("A4", .5), ("A4", 1), ("B4", .5), ("C5", .5), ("C5", 1), ("D5", .5),
+             ("E5", .5), ("F5", .5), ("E5", .5), ("D5", .5), ("E5", 1.5), (None, .5),
+             ("C5", 1), ("B4", 1), ("A4", .5), ("A4", 1), ("E4", .5),
+             ("A4", .5), ("A4", .5), ("G4", .5), ("F4", .5), ("E4", 2),
+             ("A4", 1.5), ("B4", .5), ("C5", .5), ("C5", 1), ("D5", .5),
+             ("E5", .5), ("F5", .5), ("E5", .5), ("D5", .5), ("A4", .5), ("A4", .5), ("B4", .5), ("C5", .5)]
+SHOSH_CHORDS = ["Am", "Dm", "Am", "Dm", "Am", "Dm", "Am", "E"]  # אקורד לכל חצי תיבה בערך
+
+
+def shoshanat_yaakov(name="purim", bpm=132):
+    from make_music import m
+    CLARINET, ACCORDION, BASS = 71, 21, 32
+    p = Piece(name, bpm, {0: CLARINET, 1: ACCORDION, 2: BASS})
+    t = 0.0
+    for n, d in SHOSHANAT:
+        if n:
+            p.note(0, t, d * .9, m(n), 88)
+        t += d
+    bars = int(t // 4) + 1
+    prog = ["Am", "Am", "Am", "E", "Am", "Dm", "Am", "E", "Am"]
+    for b in range(bars):
+        notes = CHORD_NOTES[prog[b % len(prog)]]
+        for beat in range(4):
+            bt = .5 + b * 4 + beat  # אחרי האנקרוזה
+            p.note(2, bt, .45, notes[0] - 12, 70) if beat % 2 == 0 else [p.note(1, bt, .4, k, 50) for k in notes[1:]]
     return p
