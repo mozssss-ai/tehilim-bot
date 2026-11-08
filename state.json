@@ -35,6 +35,21 @@
       "cta": 0,
       "music": "23_original_minor_Dm",
       "secs": 32.839999999999996
+    },
+    {
+      "chapter": 148,
+      "day": "2026-11-08",
+      "kind": "catch_up",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-08T04:27+02:00",
+      "media_id": "18025819172946318",
+      "story_id": "18033860912909248",
+      "cta": 0,
+      "music": "24_original_guitar_strings_E",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
