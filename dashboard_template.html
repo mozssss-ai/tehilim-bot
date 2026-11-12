@@ -98,6 +98,42 @@ const PW = A.prevweek || {}; const H = JSON.parse(JSON.stringify(D.health || {})
 const delta = (a, b) => (a == null || b == null || !b) ? '' : (a >= b ? `<div class="d">▲ ${Math.round(100*(a-b)/b)}% מהשבוע שעבר</div>` : `<div class="d down">▼ ${Math.round(100*(b-a)/b)}% מהשבוע שעבר</div>`);
 const ago = iso => { const m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'עכשיו' : m < 60 ? `לפני ${m} דק'` : m < 1440 ? `לפני ${Math.floor(m/60)} שע'` : `לפני ${Math.floor(m/1440)} ימים`; };
 
+function followersSection(){
+  const wk = A.week || {}, mo = A.month || {}, pw = PW || {};
+  const f7 = wk['follows_and_unfollows:FOLLOWER'] || 0, u7 = wk['follows_and_unfollows:NON_FOLLOWER'] || 0;
+  const fp = pw['follows_and_unfollows:FOLLOWER'], f28 = mo['follows_and_unfollows:FOLLOWER'] || 0, u28 = mo['follows_and_unfollows:NON_FOLLOWER'] || 0;
+  const box = (n, l, c) => `<div style="flex:1;text-align:center"><div style="font:800 24px Heebo;color:${c||'var(--ink)'}">${n}</div><div class="sub" style="margin:0">${l}</div></div>`;
+  let h = `<div style="display:flex;gap:8px">${box(f7,'התחילו לעקוב','#3c9a5f')}${box(u7,'הפסיקו לעקוב','#c0563f')}${box(`<span dir="ltr">${(f7-u7>=0?'+':'')+(f7-u7)}</span>`,'נטו')}</div>
+  <div class="sub" style="margin:8px 0 0">7 הימים האחרונים${fp!=null?` · שבוע קודם: ${fp} התחילו לעקוב`:''} · 28 ימים: ${f28} התחילו, ${u28} הפסיקו</div>`;
+  // לפי ימים
+  const log = D.follow_log || {}; let days = Object.keys(log).sort().slice(-14);
+  let rows;
+  if (days.length >= 3) rows = days.map(d => [d, log[d].follows, log[d].unfollows]);
+  else { const dn = D.daily_new_followers || {}; rows = Object.keys(dn).sort().slice(-14).map(d => [d, dn[d], null]); }
+  const mx = Math.max(1, ...rows.map(r => Math.max(r[1]||0, r[2]||0)));
+  if (rows.length) h += `<div style="margin-top:12px">${rows.slice().reverse().map(([d,f,u]) => `<div style="display:flex;align-items:center;gap:8px;font-size:13px;margin:3px 0">
+    <span style="width:44px;color:var(--muted)">${d.slice(5).split('-').reverse().join('/')}</span>
+    <span style="flex:1;display:flex;gap:3px;align-items:center"><span style="height:10px;border-radius:5px;background:#3c9a5f;width:${40*(f||0)/mx}%;min-width:${f?6:0}px"></span><b>${f||0}</b>
+    ${u!=null?`<span style="height:10px;border-radius:5px;background:#c0563f;width:${40*(u||0)/mx}%;min-width:${u?6:0}px;margin-inline-start:8px"></span><b style="color:#c0563f">${u||0}</b>`:''}</span></div>`).join('')}
+    <div class="sub" style="margin:4px 0 0">${rows[0][2]!=null?'ירוק – התחילו לעקוב · אדום – הפסיקו':'עוקבים חדשים לפי יום'}</div></div>`;
+  // איזה ריל הביא עוקבים
+  const rf = (D.reels||[]).filter(r => r.follows != null).sort((a,b) => b.follows - a.follows).slice(0,5);
+  if (rf.length) h += `<h3 style="margin:14px 0 4px;font-size:15px">הריילס שהביאו הכי הרבה עוקבים</h3>${rf.map(r => `<div class="sub" style="margin:2px 0">פרק ${esc(r.chapter_h)}: <b>${r.follows}</b> עוקבים${r.profile_visits!=null?` · ${r.profile_visits} כניסות לפרופיל`:''}</div>`).join('')}`;
+  // מאיפה העוקבים
+  const dm = D.demographics || {};
+  const line = (o, total) => Object.entries(o||{}).slice(0,5).map(([k,v]) => `${esc(k.split(',')[0])} ${total?Math.round(100*v/total)+'%':v}`).join(' · ');
+  const sum = o => Object.values(o||{}).reduce((a,b)=>a+b,0);
+  if (dm.city || dm.age || dm.gender) {
+    const g = dm.gender||{}, gs = sum(g);
+    h += `<h3 style="margin:14px 0 4px;font-size:15px">מי העוקבים</h3>
+    ${dm.city?`<div class="sub" style="margin:2px 0">ערים: ${line(dm.city, sum(dm.city))}</div>`:''}
+    ${dm.age?`<div class="sub" style="margin:2px 0">גילאים: ${line(dm.age, sum(dm.age))}</div>`:''}
+    ${gs?`<div class="sub" style="margin:2px 0">גברים ${Math.round(100*(g.M||0)/gs)}% · נשים ${Math.round(100*(g.F||0)/gs)}%</div>`:''}`;
+  }
+  h += `<p class="sub" style="margin:12px 0 0">אינסטגרם לא נותן לבוטים את שמות העוקבים – את הרשימה עצמה רואים באפליקציה, בפרופיל ← עוקבים.</p>`;
+  return h;
+}
+
 function followersChart(){
   const h = D.followers_history || {}; const keys = Object.keys(h).sort();
   if (keys.length < 2) return `<p class="empty">הגרף יתמלא כשיצטברו כמה ימים של נתונים (${keys.length} עד עכשיו).</p>`;
@@ -162,6 +198,9 @@ ${P.reel ? `<div class="card">
 
 <h2>תגובות אחרונות</h2>
 <div class="card">${(D.recent_comments||[]).slice(0,5).map(c => `<div class="cm"><div class="u">${esc(c.user)}</div><div class="t">${esc(c.text)}</div><div class="p">${esc(c.post)}</div></div>`).join('') || '<p class="empty">עוד אין תגובות.</p>'}</div>
+
+<h2>עוקבים חדשים</h2>
+<div class="card">${followersSection()}</div>
 
 <h2>ריילס אחרונים</h2>
 <div class="card">${(D.reels||[]).slice(0,5).map(r => `<div class="reel cm">

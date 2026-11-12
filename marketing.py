@@ -110,6 +110,13 @@ def collect(api, m):
             r = api.safe(f"media {x['id']} basic", f"{x['id']}/insights", metric=",".join(BASIC_METRICS))
         for d in (r or {}).get("data", []):
             c[d["name"]] = d["values"][0]["value"] if d.get("values") else d.get("total_value", {}).get("value")
+        # כמה עוקבים וכניסות לפרופיל הביא כל פוסט (אם אינסטגרם מאפשר למדד הזה)
+        if not m.get("no_media_follows"):
+            r2 = api.safe(f"media {x['id']} follows", f"{x['id']}/insights", metric="follows,profile_visits")
+            if r2 is None and x.get("media_product_type") == "REELS":
+                m["no_media_follows"] = True  # לא נתמך בריילס – לא מנסים שוב
+            for d in (r2 or {}).get("data", []):
+                c[d["name"]] = d["values"][0]["value"] if d.get("values") else d.get("total_value", {}).get("value")
         c["final"] = (now - ts).days >= 14
 
     # סטוריז – אינסטגרם שומר את הנתונים שלהם רק 24 שעות, לכן אוספים כל שעה ושומרים
@@ -158,6 +165,33 @@ def collect(api, m):
                     "media_count": acc.get("media_count"), "username": acc.get("username", api.username),
                     "website": acc.get("website"), **{k: v for k, v in account.items()}}
     m["daily_new_followers"] = daily_new
+    # יומן עוקבים: כמה התחילו לעקוב וכמה הפסיקו – לכל יום (אתמול), נשמר להיסטוריה
+    yday = (dt.datetime.now(TZ).date() - dt.timedelta(days=1)).isoformat()
+    day = account.get("day", {})
+    if acc.get("followers_count") is not None:
+        log = m.setdefault("follow_log", {})
+        log[yday] = {"follows": day.get("follows_and_unfollows:FOLLOWER", 0) or 0,
+                     "unfollows": day.get("follows_and_unfollows:NON_FOLLOWER", 0) or 0,
+                     "profile_views": day.get("profile_views", 0) or 0,
+                     "followers": m.get("followers_history", {}).get(yday)}
+        for k in sorted(log)[:-120]:
+            log.pop(k)
+    # מאיפה העוקבים (עיר, גיל, מגדר) – פעם ביום מספיק
+    demo = m.get("demographics") or {}
+    if demo.get("date") != today:
+        new = {"date": today}
+        for br in ("city", "age", "gender"):
+            r = api.safe(f"demographics {br}", f"{api.uid}/insights", metric="follower_demographics",
+                         period="lifetime", metric_type="total_value", breakdown=br)
+            vals = {}
+            for d in (r or {}).get("data", []):
+                for b in d.get("total_value", {}).get("breakdowns", []) or []:
+                    for res in b.get("results", []):
+                        vals["/".join(res.get("dimension_values", []))] = res.get("value")
+            if vals:
+                new[br] = dict(sorted(vals.items(), key=lambda kv: -kv[1])[:8])
+        if len(new) > 1:
+            m["demographics"] = new
     m["recent_comments"] = recent_comments[:25]
     m["api_errors"] = api.errors[-15:]
 
@@ -186,6 +220,28 @@ def insights(m, reels, ready, replied):
     clicks_w = (week.get("website_clicks") or 0) + (week.get("profile_links_taps") or 0)
     week_ago = now - dt.timedelta(days=7)
     joins_w = sum(1 for r in replied.get("done", []) if dt.datetime.fromisoformat(r["at"]) > week_ago)
+
+    # 0. עוקבים: כמה מצטרפים מול כמה עוזבים
+    f_m = month.get("follows_and_unfollows:FOLLOWER") or 0
+    u_m = month.get("follows_and_unfollows:NON_FOLLOWER") or 0
+    if f_m + u_m >= 8 and u_m >= 0.5 * f_m:
+        add("followers-churn", "high", "הרבה עוקבים עוזבים",
+            f"על כל 10 שמתחילים לעקוב, בערך {round(10 * u_m / f_m) if f_m else 10} מפסיקים. בדרך כלל עוזבים כשהתוכן "
+            "לא מה שציפו לו או כשיש יותר מדי פוסטים ביום. כדאי לשמור על פרק אחד קבוע ביום ולהבהיר בביו מה מקבלים.",
+            f"28 ימים: {f_m} התחילו לעקוב · {u_m} הפסיקו · נטו {f_m - u_m:+d}")
+    by_f = [r for r in ready_all if r.get("follows") is not None]
+    if len(by_f) >= 3 and max(r["follows"] for r in by_f) > 0:
+        top = max(by_f, key=lambda r: r["follows"])
+        add(f"followers-top-{top.get('chapter')}", "info", f"הריל שהביא הכי הרבה עוקבים: פרק {bot.gematria(top['chapter'])}",
+            "כדאי לבדוק מה היה שונה בו (שעה, מוזיקה, אורך) ולנסות לחזור על זה.",
+            " · ".join(f"פרק {bot.gematria(r['chapter'])}: {r['follows']}" for r in
+                       sorted(by_f, key=lambda r: -r["follows"])[:5]))
+    prof_m = month.get("profile_views") or 0
+    if prof_m >= 50 and f_m and f_m / prof_m < 0.05:
+        add("followers-profile", "mid", "נכנסים לפרופיל ולא מתחילים לעקוב",
+            f"רק {pct(f_m, prof_m)}% מהכניסות לפרופיל הפכו לעוקבים. הפרופיל הוא חלון הראווה: תמונת פרופיל ברורה, "
+            "שורה ראשונה בביו שמסבירה מה מקבלים, ושלושה ריילס מוצמדים חזקים.",
+            f"28 ימים: {prof_m} כניסות לפרופיל → {f_m} עוקבים חדשים")
 
     # 1. משפך: חשיפה -> כניסה לפרופיל -> לחיצה על הקישור / "תהילים" בתגובה
     if reach_w >= 100:
@@ -317,7 +373,8 @@ def analyse(m, state, replied):
     for p in state.get("posted", []):
         c = cache.get(p.get("media_id") or "", {})
         reels.append({**p, **{k: c.get(k) for k in ("reach", "views", "likes", "comments", "saved", "shares",
-                                                   "total_interactions", "ig_reels_avg_watch_time", "permalink")},
+                                                   "total_interactions", "ig_reels_avg_watch_time", "permalink",
+                                                   "follows", "profile_visits")},
                       "joins": joins_by_media.get(p.get("media_id"), 0), "cta": p.get("cta", 0)})
     ready = [r for r in reels if r.get("reach")]
     # "הוגנים": ריילס של הפרק היומי שעלו בשעה המתוכננת (בלי השלמות לילה) – רק הם נכנסים להשוואות
@@ -620,6 +677,7 @@ def render(m, state):
                              "at": rel.isoformat(timespec="minutes")})
         t = rel + dt.timedelta(minutes=26)
     data = {k: m.get(k) for k in ("account", "followers_history", "daily_new_followers", "recent_comments",
+                                  "follow_log", "demographics",
                                   "hypotheses", "recommendations", "slot_rows", "music_rows", "reels",
                                   "totals", "cta", "api_errors", "style_rows", "fair_count")}
     data["upcoming"] = upcoming
