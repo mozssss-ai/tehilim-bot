@@ -215,6 +215,15 @@ def next_job(now: dt.datetime, state: dict):
     done = sum(1 for p in posted if p.get("kind", "cycle") == "cycle")
     if done >= len(released):
         return None
+    # פיגור (למשל אחרי תקלה): משלימים בהדרגה – לא יותר משני פרקים ביום, לא בלילה (07:00–23:00),
+    # והשני רק אחרי שעת ההעלאה הרגילה של היום ולפחות 3 שעות אחרי הראשון.
+    if released[done] < now.date():
+        today_posts = [dt.datetime.fromisoformat(p["at"]) for p in posted
+                       if dt.datetime.fromisoformat(p["at"]).date() == now.date()]
+        if not (7 <= now.hour < 23) or len(today_posts) >= 2:
+            return None
+        if today_posts and (released[-1] != now.date() or now - max(today_posts) < dt.timedelta(hours=3)):
+            return None
     idx = done % len(UNITS)  # בסוף הספר מתחילים מחזור חדש
     return UNITS[idx], released[done], "cycle"
 

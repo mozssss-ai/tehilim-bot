@@ -2,8 +2,8 @@ name: post daily chapter
 
 on:
   schedule:
-    # כל חצי שעה, מסביב לשעון. הבוט מחליט לבד אם להעלות (ולא מעלה בשבת ובחג).
-    - cron: "5,20,35,50 * * * *"
+    # כל חצי שעה. הבוט מחליט לבד אם להעלות (ולא מעלה בשבת ובחג).
+    - cron: "12,42 * * * *"
   workflow_dispatch:
   push:
     paths: [".github/run-post"]
@@ -75,6 +75,18 @@ jobs:
         run: |
           git config user.name "tehilim-bot"
           git config user.email "tehilim-bot@users.noreply.github.com"
-          git add state.json STATUS.md replied.json marketing.json dedications.json overrides.json whatsapp.json docs 2>/dev/null || git add state.json STATUS.md
-          git commit -m "bot update" || exit 0
-          git pull --rebase -q && git push
+          # שומרים פחות: עדכון של הדשבורד בלבד נשמר רק אם עברו 3 שעות מהשמירה הקודמת שלו
+          last=$(git log -1 --format=%ct -- docs/6dd35a90fba60637/index.html 2>/dev/null || echo 0)
+          only_dash=1
+          for f in state.json replied.json dedications.json overrides.json whatsapp.json rec_status.json config.json; do
+            [ -e "$f" ] && ! git diff --quiet -- "$f" && only_dash=0
+            git ls-files --error-unmatch "$f" >/dev/null 2>&1 || { [ -e "$f" ] && only_dash=0; }
+          done
+          if [ "$only_dash" = 1 ] && [ $(( $(date +%s) - last )) -lt 10800 ]; then
+            echo "רק עדכון דשבורד, נשמר לאחרונה לפני פחות מ-3 שעות – לא שומרים הפעם"; exit 0
+          fi
+          for f in state.json STATUS.md replied.json marketing.json dedications.json overrides.json whatsapp.json rec_status.json docs; do
+            [ -e "$f" ] && git add -A "$f"
+          done
+          git commit -q -m "bot update" || exit 0
+          git pull --rebase -q && git push -q

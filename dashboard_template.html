@@ -92,7 +92,9 @@ const ST = {validated:'אומת ✓', rejected:'לא אומת', testing:'בבד�
 const app = document.getElementById('app');
 const issue = (title, body) => `https://github.com/${D.repo||'mozssss-ai/tehilim-bot'}/issues/new?title=${encodeURIComponent(title)}${body?'&body='+encodeURIComponent(body):''}`;
 const P = D.preview || {}; const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
-const PW = A.prevweek || {}; const H = D.health || {}; const WA = D.whatsapp || [];
+const PW = A.prevweek || {}; const H = JSON.parse(JSON.stringify(D.health || {}));
+{ const age = (Date.now() - new Date(D.updated_iso).getTime()) / 36e5;
+  if (age > 6) { H.ok = false; (H.issues = H.issues || []).unshift(`הבוט לא עדכן את הדשבורד כבר ${Math.round(age)} שעות – ייתכן שהוא לא רץ`); } } const WA = D.whatsapp || [];
 const delta = (a, b) => (a == null || b == null || !b) ? '' : (a >= b ? `<div class="d">▲ ${Math.round(100*(a-b)/b)}% מהשבוע שעבר</div>` : `<div class="d down">▼ ${Math.round(100*(b-a)/b)}% מהשבוע שעבר</div>`);
 const ago = iso => { const m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'עכשיו' : m < 60 ? `לפני ${m} דק'` : m < 1440 ? `לפני ${Math.floor(m/60)} שע'` : `לפני ${Math.floor(m/1440)} ימים`; };
 
@@ -283,7 +285,7 @@ function upd(){
   const u = Date.parse(D.updated_iso || ''); if (!u) return;
   const mins = Math.round((Date.now() - u) / 60000);
   const el = document.getElementById('upd');
-  if (el) el.textContent = 'עודכן ' + (mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק'` : `לפני ${Math.floor(mins/60)} שע'`) + ' · מתעדכן לבד כל רבע שעה';
+  if (el) el.textContent = 'עודכן ' + (mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק'` : `לפני ${Math.floor(mins/60)} שע'`) + ' · מתעדכן לבד כל כמה שעות';
 }
 upd(); setInterval(upd, 30000);
 tick(); setInterval(tick, 1000);
