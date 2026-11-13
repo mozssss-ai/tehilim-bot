@@ -1,7 +1,7 @@
 {
  "cta": {
   "0": {
-   "n": 6,
+   "n": 7,
    "n_ready": 6,
    "reach": 854,
    "joins": 1,
@@ -73,6 +73,33 @@
  "slot_rows": [],
  "music_rows": [],
  "reels": [
+  {
+   "chapter": 2,
+   "day": "2026-11-06",
+   "kind": "cycle",
+   "day_kind": "erev",
+   "slot": null,
+   "at": "2026-11-13T07:06+02:00",
+   "media_id": "18136499413685706",
+   "story_id": "18023947982954355",
+   "cta": 0,
+   "music": "03_grieg_morning",
+   "secs": 30.0,
+   "dedication": null,
+   "extras": [],
+   "reach": 0,
+   "views": 1,
+   "likes": 0,
+   "comments": 0,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 0,
+   "ig_reels_avg_watch_time": 0,
+   "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
+   "follows": null,
+   "profile_visits": null,
+   "joins": 0
+  },
   {
    "chapter": 1,
    "day": "2026-11-05",
@@ -261,7 +288,7 @@
   }
  ],
  "totals": {
-  "posted": 7,
+  "posted": 8,
   "tehilim_comments": 1,
   "dms_sent": 1,
   "reach_sum": 1007,
@@ -609,6 +636,21 @@
    "total_interactions": 15,
    "ig_reels_avg_watch_time": 4532,
    "final": false
+  },
+  "18136499413685706": {
+   "timestamp": "2026-11-13T05:07:44+0000",
+   "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
+   "caption": "פרק ב' | ג' כסלו תשפ\"ז 📖",
+   "likes": 0,
+   "comments": 0,
+   "type": "REELS",
+   "reach": 0,
+   "views": 1,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 0,
+   "ig_reels_avg_watch_time": 0,
+   "final": false
   }
  },
  "followers_history": {
@@ -618,7 +660,7 @@
  "account": {
   "followers": 667,
   "following": 258,
-  "media_count": 23,
+  "media_count": 24,
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
   "day": {
@@ -709,12 +751,6 @@
    "post": "פרק קמ\"ט | כ\"ח מרחשוון תשפ\"ז 📖"
   },
   {
-   "text": "Amén veAmén 🔥🔥🔥",
-   "user": "litav43",
-   "at": "2026-11-08T04:53:39+0000",
-   "post": "פרק קמ\"ו | כ\"ח מרחשוון תשפ\"ז 📖"
-  },
-  {
    "text": "Amén veAmén 🔥 🔥 🔥",
    "user": "litav43",
    "at": "2026-11-08T04:36:54+0000",
@@ -722,14 +758,20 @@
   }
  ],
  "api_errors": [
-  "media 18121638964991778 follows: Instagram API 400: {\"error\":{\"message\":\"(#100) The Media Insights API does not support the follows, profile_visits metric for this media product type.\",\"code\":1",
+  "story 18023947982954355: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
+  "story 18023947982954355 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"ANkAb9cfL26GrIZ",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-13T02:56+00:00",
+ "refreshed": "2026-11-13T05:10+00:00",
  "style_rows": [],
  "fair_count": 0,
  "no_media_follows": true,
- "story_cache": {},
+ "story_cache": {
+  "18023947982954355": {
+   "timestamp": "2026-11-13T05:08:26+0000",
+   "type": "פרק ב'"
+  }
+ },
  "follow_log": {
   "2026-11-12": {
    "follows": 0,

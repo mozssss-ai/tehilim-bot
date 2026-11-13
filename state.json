@@ -100,6 +100,21 @@
           "18109236391976327"
         ]
       ]
+    },
+    {
+      "chapter": 2,
+      "day": "2026-11-06",
+      "kind": "cycle",
+      "day_kind": "erev",
+      "slot": null,
+      "at": "2026-11-13T07:06+02:00",
+      "media_id": "18136499413685706",
+      "story_id": "18023947982954355",
+      "cta": 0,
+      "music": "03_grieg_morning",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
