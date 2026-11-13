@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>מי לא עוקב בחזרה · תהילים כל יום</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=Secular+One&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#14123a;--muted:#6b6a80;--line:#e7e3d8;--navy:#090446;--gold:#ad8330;--gold-soft:#f3ead7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d0c22;--card:#17163a;--ink:#f1efe8;--muted:#a3a1b8;--line:#2a2950;--navy:#c9b27a;--gold:#d8b46a;--gold-soft:#2b2640}}
+:root[data-theme="dark"]{--bg:#0d0c22;--card:#17163a;--ink:#f1efe8;--muted:#a3a1b8;--line:#2a2950;--navy:#c9b27a;--gold:#d8b46a;--gold-soft:#2b2640}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 Heebo,system-ui,sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 60px}
+h1{font:26px "Secular One",sans-serif;color:var(--navy);margin:4px 0}
+h2{font:18px "Secular One",sans-serif;color:var(--navy);margin:22px 0 8px}
+a{color:var(--gold)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:10px 0}
+ol{margin:6px 0;padding-inline-start:20px}ol li{margin:4px 0}
+.sub{color:var(--muted);font-size:13px}
+.drop{display:block;text-align:center;border:2px dashed var(--gold);border-radius:16px;padding:22px 12px;cursor:pointer;background:var(--gold-soft);font-weight:700}
+.drop input{display:none}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.row b{direction:ltr;unicode-bidi:isolate}
+.btn{border:0;font:700 13px Heebo;padding:6px 12px;border-radius:99px;background:var(--gold-soft);color:var(--ink);text-decoration:none;white-space:nowrap}
+.stats{display:flex;gap:8px;text-align:center}.stats div{flex:1}.stats b{display:block;font:800 22px Heebo}
+input[type=search]{width:100%;font:15px Heebo;padding:8px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);margin:6px 0}
+.err{color:#c0563f;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="../">→ חזרה לדשבורד</a>
+  <h1>מי לא עוקב בחזרה</h1>
+  <p class="sub">אינסטגרם לא נותן לבוטים את רשימות העוקבים, אבל נותן לך להוריד אותן. מעלים כאן את הקובץ, והרשימה מחושבת בטלפון שלך. הקובץ לא נשלח לשום מקום.</p>
+
+  <div class="card">
+    <b>איך מורידים את הקובץ מאינסטגרם (פעם אחת, בערך 5 דקות)</b>
+    <ol>
+      <li>באינסטגרם: פרופיל ← ☰ ← <b>מרכז החשבונות</b> (Accounts Center).</li>
+      <li><b>המידע וההרשאות שלך</b> ← <b>הורדת המידע שלך</b> ← הורדה או העברה של מידע.</li>
+      <li>לבחור את החשבון tehilim_kol_yom ← <b>חלק מהמידע</b> ← לסמן רק <b>עוקבים ונעקבים</b> (Followers and following).</li>
+      <li>הורדה למכשיר ← טווח תאריכים: <b>כל הזמן</b> ← פורמט: <b>JSON</b> ← יצירת קבצים.</li>
+      <li>אינסטגרם שולח התראה כשהקובץ מוכן (בדרך כלל תוך כמה דקות). מורידים את קובץ ה-ZIP ומעלים אותו כאן.</li>
+    </ol>
+  </div>
+
+  <label class="drop">📂 בחירת הקובץ מאינסטגרם (ZIP, או שני קובצי ה-JSON)
+    <input type="file" id="file" accept=".zip,.json,application/zip,application/json" multiple>
+  </label>
+  <p id="msg" class="sub"></p>
+
+  <div id="out" hidden>
+    <div class="card stats">
+      <div><b id="nFollowing">0</b><span class="sub">אנחנו עוקבים</span></div>
+      <div><b id="nFollowers">0</b><span class="sub">עוקבים אחרינו</span></div>
+      <div><b id="nNot">0</b><span class="sub">לא עוקבים בחזרה</span></div>
+    </div>
+    <h2>אנחנו עוקבים, והם לא עוקבים אחרינו</h2>
+    <p class="sub">מסודר מהישן לחדש לפי מתי התחלנו לעקוב. "פתיחה" פותח את הפרופיל באינסטגרם.</p>
+    <input type="search" id="q" placeholder="חיפוש שם משתמש">
+    <div class="card" id="list"></div>
+    <h2>עוקבים אחרינו, ואנחנו לא עוקבים אחריהם</h2>
+    <details class="card"><summary id="fansTitle">רשימה</summary><div id="fans"></div></details>
+  </div>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+let NOT = [];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// מוציא שמות משתמש מכל מבנה של הקובץ (אינסטגרם משנה את הפורמט מדי פעם)
+function users(json) {
+  const items = Array.isArray(json) ? json
+    : json.relationships_following || json.relationships_followers || Object.values(json).find(Array.isArray) || [];
+  const out = new Map();
+  for (const it of items) {
+    const sd = (it.string_list_data || [])[0] || {};
+    let u = sd.value || it.title || '';
+    if (!u && sd.href) u = sd.href.replace(/\/+$/, '').split('/').pop();
+    u = u.trim().replace(/^@/, '').toLowerCase();
+    if (u) out.set(u, sd.timestamp || 0);
+  }
+  return out;
+}
+
+async function readFiles(files) {
+  const found = {followers: [], following: []};
+  const take = (name, text) => {
+    const base = name.split('/').pop().toLowerCase();
+    if (/^followers(_\d+)?\.json$/.test(base)) found.followers.push(JSON.parse(text));
+    else if (/^following\.json$/.test(base)) found.following.push(JSON.parse(text));
+  };
+  for (const f of files) {
+    if (/\.zip$/i.test(f.name) || f.type.includes('zip')) {
+      const zip = await JSZip.loadAsync(f);
+      for (const name of Object.keys(zip.files)) {
+        if (/followers(_\d+)?\.json$|following\.json$/i.test(name)) take(name, await zip.files[name].async('string'));
+      }
+    } else take(f.name, await f.text());
+  }
+  return found;
+}
+
+$('#file').onchange = async e => {
+  const files = [...e.target.files]; if (!files.length) return;
+  $('#msg').className = 'sub'; $('#msg').textContent = 'קורא את הקובץ…';
+  try {
+    const f = await readFiles(files);
+    if (!f.following.length || !f.followers.length) throw new Error('לא נמצאו בקובץ רשימות העוקבים והנעקבים. צריך לבחור "עוקבים ונעקבים" ופורמט JSON.');
+    const followers = new Map(), following = new Map();
+    f.followers.forEach(j => users(j).forEach((t, u) => followers.set(u, t)));
+    f.following.forEach(j => users(j).forEach((t, u) => following.set(u, t)));
+    NOT = [...following].filter(([u]) => !followers.has(u)).sort((a, b) => a[1] - b[1]);
+    const fans = [...followers].filter(([u]) => !following.has(u)).sort((a, b) => b[1] - a[1]);
+    $('#nFollowing').textContent = following.size; $('#nFollowers').textContent = followers.size; $('#nNot').textContent = NOT.length;
+    $('#fansTitle').textContent = `${fans.length} חשבונות`;
+    $('#fans').innerHTML = fans.map(row).join('') || '<p class="sub">אין.</p>';
+    render(); $('#out').hidden = false;
+    $('#msg').textContent = 'מוכן. הנתונים נכונים לתאריך שבו הורדת את הקובץ.';
+  } catch (err) { $('#msg').className = 'err'; $('#msg').textContent = err.message || 'הקובץ לא נקרא'; }
+};
+function row([u, t]) {
+  const d = t ? new Date(t * 1000).toLocaleDateString('he-IL') : '';
+  return `<div class="row"><div><b>@${esc(u)}</b>${d ? `<div class="sub">מאז ${d}</div>` : ''}</div>
+    <a class="btn" href="https://www.instagram.com/${encodeURIComponent(u)}/" target="_blank" rel="noopener">פתיחה</a></div>`;
+}
+function render() {
+  const q = $('#q').value.trim().toLowerCase().replace(/^@/, '');
+  $('#list').innerHTML = NOT.filter(([u]) => !q || u.includes(q)).map(row).join('') || '<p class="sub">כולם עוקבים בחזרה 🙏</p>';
+}
+$('#q').oninput = render;
+</script>
+</body>
+</html>

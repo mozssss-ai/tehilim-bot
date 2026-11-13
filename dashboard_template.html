@@ -130,7 +130,8 @@ function followersSection(){
     ${dm.age?`<div class="sub" style="margin:2px 0">גילאים: ${line(dm.age, sum(dm.age))}</div>`:''}
     ${gs?`<div class="sub" style="margin:2px 0">גברים ${Math.round(100*(g.M||0)/gs)}% · נשים ${Math.round(100*(g.F||0)/gs)}%</div>`:''}`;
   }
-  h += `<p class="sub" style="margin:12px 0 0">אינסטגרם לא נותן לבוטים את שמות העוקבים – את הרשימה עצמה רואים באפליקציה, בפרופיל ← עוקבים.</p>`;
+  h += `<p class="sub" style="margin:12px 0 6px">אינסטגרם לא נותן לבוטים את שמות העוקבים – את הרשימה עצמה רואים באפליקציה, בפרופיל ← עוקבים.</p>
+  <a class="btn" href="nonfollowers/">מי לא עוקב בחזרה ←</a>`;
   return h;
 }
 
