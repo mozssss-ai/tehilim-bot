@@ -1,13 +1,13 @@
 {
  "cta": {
   "0": {
-   "n": 7,
+   "n": 8,
    "n_ready": 7,
-   "reach": 885,
+   "reach": 893,
    "joins": 1,
    "shares": 15,
    "join_rate": 0.0011,
-   "score": 0.0203,
+   "score": 0.0202,
    "text": "רוצים לקבל את הפרק כל יום בוואטסאפ?\nכתבו \"תהילים\" בתגובה ונשלח לכם קישור בפרטי 💬"
   }
  },
@@ -74,6 +74,33 @@
  "music_rows": [],
  "reels": [
   {
+   "chapter": 3,
+   "day": "2026-11-07",
+   "kind": "cycle",
+   "day_kind": "holy",
+   "slot": null,
+   "at": "2026-11-13T12:40+02:00",
+   "media_id": "18026034575954129",
+   "story_id": "18484796788114760",
+   "cta": 0,
+   "music": "04_dvorak_largo",
+   "secs": 30.0,
+   "dedication": null,
+   "extras": [],
+   "reach": 0,
+   "views": 1,
+   "likes": 1,
+   "comments": 0,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 1,
+   "ig_reels_avg_watch_time": 0,
+   "permalink": "https://www.instagram.com/reel/DfrcHHgjdEL/",
+   "follows": null,
+   "profile_visits": null,
+   "joins": 0
+  },
+  {
    "chapter": 2,
    "day": "2026-11-06",
    "kind": "cycle",
@@ -87,14 +114,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 31,
-   "views": 42,
+   "reach": 39,
+   "views": 50,
    "likes": 3,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 3,
-   "ig_reels_avg_watch_time": 3443,
+   "ig_reels_avg_watch_time": 3188,
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "follows": null,
    "profile_visits": null,
@@ -288,11 +315,11 @@
   }
  ],
  "totals": {
-  "posted": 8,
+  "posted": 9,
   "tehilim_comments": 1,
   "dms_sent": 1,
-  "reach_sum": 1038,
-  "views_sum": 1308,
+  "reach_sum": 1046,
+  "views_sum": 1316,
   "shares_sum": 15,
   "saves_sum": 7,
   "likes_sum": 85
@@ -644,12 +671,27 @@
    "likes": 3,
    "comments": 0,
    "type": "REELS",
-   "reach": 31,
-   "views": 42,
+   "reach": 39,
+   "views": 50,
    "saved": 0,
    "shares": 0,
    "total_interactions": 3,
-   "ig_reels_avg_watch_time": 3443,
+   "ig_reels_avg_watch_time": 3188,
+   "final": false
+  },
+  "18026034575954129": {
+   "timestamp": "2026-11-13T10:41:22+0000",
+   "permalink": "https://www.instagram.com/reel/DfrcHHgjdEL/",
+   "caption": "פרק ג' | ג' כסלו תשפ\"ז 📖",
+   "likes": 1,
+   "comments": 0,
+   "type": "REELS",
+   "reach": 0,
+   "views": 1,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 1,
+   "ig_reels_avg_watch_time": 0,
    "final": false
   }
  },
@@ -660,7 +702,7 @@
  "account": {
   "followers": 667,
   "following": 258,
-  "media_count": 24,
+  "media_count": 25,
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
   "day": {
@@ -749,19 +791,15 @@
    "user": "ri_na1008",
    "at": "2026-11-08T07:24:08+0000",
    "post": "פרק קמ\"ט | כ\"ח מרחשוון תשפ\"ז 📖"
-  },
-  {
-   "text": "Amén veAmén 🔥 🔥 🔥",
-   "user": "litav43",
-   "at": "2026-11-08T04:36:54+0000",
-   "post": "פרק קמ\"ז | כ\"ח מרחשוון תשפ\"ז 📖"
   }
  ],
  "api_errors": [
+  "story 18484796788114760: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
+  "story 18484796788114760 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"AV8rEFdBvQ61Z9J",
   "story 18023947982954355: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-13T08:40+00:00",
+ "refreshed": "2026-11-13T10:43+00:00",
  "style_rows": [],
  "fair_count": 0,
  "no_media_follows": true,
@@ -769,8 +807,12 @@
   "18023947982954355": {
    "timestamp": "2026-11-13T05:08:26+0000",
    "type": "פרק ב'",
-   "reach": 34,
+   "reach": 55,
    "replies": 0
+  },
+  "18484796788114760": {
+   "timestamp": "2026-11-13T10:42:11+0000",
+   "type": "פרק ג'"
   }
  },
  "follow_log": {

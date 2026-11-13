@@ -115,6 +115,21 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 3,
+      "day": "2026-11-07",
+      "kind": "cycle",
+      "day_kind": "holy",
+      "slot": null,
+      "at": "2026-11-13T12:40+02:00",
+      "media_id": "18026034575954129",
+      "story_id": "18484796788114760",
+      "cta": 0,
+      "music": "04_dvorak_largo",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
