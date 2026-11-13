@@ -2,12 +2,12 @@
  "cta": {
   "0": {
    "n": 8,
-   "n_ready": 7,
-   "reach": 893,
+   "n_ready": 8,
+   "reach": 921,
    "joins": 1,
    "shares": 15,
    "join_rate": 0.0011,
-   "score": 0.0202,
+   "score": 0.0195,
    "text": "רוצים לקבל את הפרק כל יום בוואטסאפ?\nכתבו \"תהילים\" בתגובה ונשלח לכם קישור בפרטי 💬"
   }
  },
@@ -31,7 +31,7 @@
    "level": "mid",
    "title": "רוב הצופים עוזבים מוקדם",
    "text": "השניות הראשונות קובעות. אפשר לשקול ריילס קצרים יותר בפרקים ארוכים, או להתחיל את הריל בשורה מושכת – תגיד לי אם לבדוק את זה כניסוי.",
-   "evidence": "זמן צפייה ממוצע 5.3 שנ' מתוך 30 שנ' (17%)"
+   "evidence": "זמן צפייה ממוצע 5.2 שנ' מתוך 30 שנ' (17%)"
   },
   {
    "id": "learning-reels",
@@ -87,14 +87,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 0,
-   "views": 1,
+   "reach": 22,
+   "views": 36,
    "likes": 1,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 1,
-   "ig_reels_avg_watch_time": 0,
+   "ig_reels_avg_watch_time": 4495,
    "permalink": "https://www.instagram.com/reel/DfrcHHgjdEL/",
    "follows": null,
    "profile_visits": null,
@@ -114,14 +114,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 39,
-   "views": 50,
-   "likes": 3,
+   "reach": 45,
+   "views": 59,
+   "likes": 4,
    "comments": 0,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 3,
-   "ig_reels_avg_watch_time": 3188,
+   "total_interactions": 4,
+   "ig_reels_avg_watch_time": 3150,
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "follows": null,
    "profile_visits": null,
@@ -277,7 +277,7 @@
    "cta": 2,
    "music": "22_original_musicbox_F",
    "secs": 30.0,
-   "reach": 153,
+   "reach": 154,
    "views": 202,
    "likes": 14,
    "comments": 1,
@@ -318,11 +318,11 @@
   "posted": 9,
   "tehilim_comments": 1,
   "dms_sent": 1,
-  "reach_sum": 1046,
-  "views_sum": 1316,
+  "reach_sum": 1075,
+  "views_sum": 1361,
   "shares_sum": 15,
   "saves_sum": 7,
-  "likes_sum": 85
+  "likes_sum": 87
  },
  "media_cache": {
   "18099156383133995": {
@@ -332,7 +332,7 @@
    "likes": 14,
    "comments": 1,
    "type": "REELS",
-   "reach": 153,
+   "reach": 154,
    "views": 202,
    "saved": 1,
    "shares": 0,
@@ -668,15 +668,15 @@
    "timestamp": "2026-11-13T05:07:44+0000",
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "caption": "פרק ב' | ג' כסלו תשפ\"ז 📖",
-   "likes": 3,
+   "likes": 4,
    "comments": 0,
    "type": "REELS",
-   "reach": 39,
-   "views": 50,
+   "reach": 45,
+   "views": 59,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 3,
-   "ig_reels_avg_watch_time": 3188,
+   "total_interactions": 4,
+   "ig_reels_avg_watch_time": 3150,
    "final": false
   },
   "18026034575954129": {
@@ -686,12 +686,12 @@
    "likes": 1,
    "comments": 0,
    "type": "REELS",
-   "reach": 0,
-   "views": 1,
+   "reach": 22,
+   "views": 36,
    "saved": 0,
    "shares": 0,
    "total_interactions": 1,
-   "ig_reels_avg_watch_time": 0,
+   "ig_reels_avg_watch_time": 4495,
    "final": false
   }
  },
@@ -701,7 +701,7 @@
  },
  "account": {
   "followers": 667,
-  "following": 258,
+  "following": 256,
   "media_count": 25,
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
@@ -795,11 +795,10 @@
  ],
  "api_errors": [
   "story 18484796788114760: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
-  "story 18484796788114760 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"AV8rEFdBvQ61Z9J",
   "story 18023947982954355: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-13T10:43+00:00",
+ "refreshed": "2026-11-13T13:56+00:00",
  "style_rows": [],
  "fair_count": 0,
  "no_media_follows": true,
@@ -807,12 +806,14 @@
   "18023947982954355": {
    "timestamp": "2026-11-13T05:08:26+0000",
    "type": "פרק ב'",
-   "reach": 55,
+   "reach": 69,
    "replies": 0
   },
   "18484796788114760": {
    "timestamp": "2026-11-13T10:42:11+0000",
-   "type": "פרק ג'"
+   "type": "פרק ג'",
+   "reach": 45,
+   "replies": 0
   }
  },
  "follow_log": {
