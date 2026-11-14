@@ -1,13 +1,13 @@
 {
  "cta": {
   "0": {
-   "n": 9,
-   "n_ready": 8,
-   "reach": 1024,
+   "n": 10,
+   "n_ready": 9,
+   "reach": 1108,
    "joins": 1,
    "shares": 15,
-   "join_rate": 0.001,
-   "score": 0.0176,
+   "join_rate": 0.0009,
+   "score": 0.0162,
    "text": "רוצים לקבל את הפרק כל יום בוואטסאפ?\nכתבו \"תהילים\" בתגובה ונשלח לכם קישור בפרטי 💬"
   }
  },
@@ -31,7 +31,7 @@
    "level": "mid",
    "title": "רוב הצופים עוזבים מוקדם",
    "text": "השניות הראשונות קובעות. אפשר לשקול ריילס קצרים יותר בפרקים ארוכים, או להתחיל את הריל בשורה מושכת – תגיד לי אם לבדוק את זה כניסוי.",
-   "evidence": "זמן צפייה ממוצע 5.1 שנ' מתוך 30 שנ' (17%)"
+   "evidence": "זמן צפייה ממוצע 5.0 שנ' מתוך 30 שנ' (16%)"
   },
   {
    "id": "learning-reels",
@@ -62,7 +62,7 @@
   {
    "title": "האם ריילס קצרים נצפים עד הסוף יותר",
    "status": "testing",
-   "text": "בממוצע צופים ב-17% מהריל."
+   "text": "בממוצע צופים ב-16% מהריל."
   },
   {
    "title": "איזה סגנון מוזיקה עובד הכי טוב",
@@ -73,6 +73,33 @@
  "slot_rows": [],
  "music_rows": [],
  "reels": [
+  {
+   "chapter": 5,
+   "day": "2026-11-09",
+   "kind": "cycle",
+   "day_kind": "weekday",
+   "slot": null,
+   "at": "2026-11-14T21:49+02:00",
+   "media_id": "18029308682924064",
+   "story_id": "18023083778943860",
+   "cta": 0,
+   "music": "06_beethoven_moonlight",
+   "secs": 30.0,
+   "dedication": null,
+   "extras": [],
+   "reach": 0,
+   "views": 2,
+   "likes": 0,
+   "comments": 0,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 0,
+   "ig_reels_avg_watch_time": 0,
+   "permalink": "https://www.instagram.com/reel/Dfu_42kjgQa/",
+   "follows": null,
+   "profile_visits": null,
+   "joins": 0
+  },
   {
    "chapter": 4,
    "day": "2026-11-08",
@@ -87,14 +114,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 0,
-   "views": 0,
-   "likes": 0,
-   "comments": 0,
+   "reach": 79,
+   "views": 100,
+   "likes": 6,
+   "comments": 1,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 0,
-   "ig_reels_avg_watch_time": 0,
+   "total_interactions": 7,
+   "ig_reels_avg_watch_time": 4515,
    "permalink": "https://www.instagram.com/reel/DfurTOris1j/",
    "follows": null,
    "profile_visits": null,
@@ -114,14 +141,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 78,
-   "views": 96,
+   "reach": 80,
+   "views": 98,
    "likes": 3,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 3,
-   "ig_reels_avg_watch_time": 3855,
+   "ig_reels_avg_watch_time": 3792,
    "permalink": "https://www.instagram.com/reel/DfrcHHgjdEL/",
    "follows": null,
    "profile_visits": null,
@@ -141,14 +168,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 87,
-   "views": 104,
-   "likes": 6,
+   "reach": 90,
+   "views": 108,
+   "likes": 7,
    "comments": 0,
    "saved": 1,
    "shares": 0,
-   "total_interactions": 7,
-   "ig_reels_avg_watch_time": 3094,
+   "total_interactions": 9,
+   "ig_reels_avg_watch_time": 3063,
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "follows": null,
    "profile_visits": null,
@@ -180,7 +207,7 @@
    "saved": 0,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 4473,
+   "ig_reels_avg_watch_time": 4453,
    "permalink": "https://www.instagram.com/reel/Dfd8m66Dm4h/",
    "follows": null,
    "profile_visits": null,
@@ -280,13 +307,13 @@
    "music": "23_original_minor_Dm",
    "secs": 32.839999999999996,
    "reach": 138,
-   "views": 171,
+   "views": 172,
    "likes": 10,
    "comments": 1,
    "saved": 2,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 6856,
+   "ig_reels_avg_watch_time": 6812,
    "permalink": "https://www.instagram.com/reel/DfdmyDKgAv5/",
    "follows": null,
    "profile_visits": null,
@@ -342,14 +369,14 @@
   }
  ],
  "totals": {
-  "posted": 10,
+  "posted": 11,
   "tehilim_comments": 1,
   "dms_sent": 1,
-  "reach_sum": 1178,
-  "views_sum": 1475,
+  "reach_sum": 1262,
+  "views_sum": 1582,
   "shares_sum": 15,
   "saves_sum": 8,
-  "likes_sum": 91
+  "likes_sum": 98
  },
  "media_cache": {
   "18099156383133995": {
@@ -624,11 +651,11 @@
    "comments": 1,
    "type": "REELS",
    "reach": 138,
-   "views": 171,
+   "views": 172,
    "saved": 2,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 6856,
+   "ig_reels_avg_watch_time": 6812,
    "final": false
   },
   "18025819172946318": {
@@ -688,22 +715,22 @@
    "saved": 0,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 4473,
+   "ig_reels_avg_watch_time": 4453,
    "final": false
   },
   "18136499413685706": {
    "timestamp": "2026-11-13T05:07:44+0000",
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "caption": "פרק ב' | ג' כסלו תשפ\"ז 📖",
-   "likes": 6,
+   "likes": 7,
    "comments": 0,
    "type": "REELS",
-   "reach": 87,
-   "views": 104,
+   "reach": 90,
+   "views": 108,
    "saved": 1,
    "shares": 0,
-   "total_interactions": 7,
-   "ig_reels_avg_watch_time": 3094,
+   "total_interactions": 9,
+   "ig_reels_avg_watch_time": 3063,
    "final": false
   },
   "18026034575954129": {
@@ -713,23 +740,38 @@
    "likes": 3,
    "comments": 0,
    "type": "REELS",
-   "reach": 78,
-   "views": 96,
+   "reach": 80,
+   "views": 98,
    "saved": 0,
    "shares": 0,
    "total_interactions": 3,
-   "ig_reels_avg_watch_time": 3855,
+   "ig_reels_avg_watch_time": 3792,
    "final": false
   },
   "17917495650556853": {
    "timestamp": "2026-11-14T16:52:10+0000",
    "permalink": "https://www.instagram.com/reel/DfurTOris1j/",
    "caption": "פרק ד' | ד' כסלו תשפ\"ז 📖",
+   "likes": 6,
+   "comments": 1,
+   "type": "REELS",
+   "reach": 79,
+   "views": 100,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 7,
+   "ig_reels_avg_watch_time": 4515,
+   "final": false
+  },
+  "18029308682924064": {
+   "timestamp": "2026-11-14T19:51:47+0000",
+   "permalink": "https://www.instagram.com/reel/Dfu_42kjgQa/",
+   "caption": "פרק ה' | ד' כסלו תשפ\"ז 📖",
    "likes": 0,
    "comments": 0,
    "type": "REELS",
    "reach": 0,
-   "views": 0,
+   "views": 2,
    "saved": 0,
    "shares": 0,
    "total_interactions": 0,
@@ -744,8 +786,8 @@
  },
  "account": {
   "followers": 667,
-  "following": 256,
-  "media_count": 26,
+  "following": 244,
+  "media_count": 27,
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
   "day": {
@@ -755,6 +797,8 @@
    "accounts_engaged": 6,
    "total_interactions": 7,
    "follows_and_unfollows": null,
+   "follows_and_unfollows:FOLLOWER": 0,
+   "follows_and_unfollows:NON_FOLLOWER": 0,
    "profile_links_taps": 0
   },
   "week": {
@@ -825,23 +869,24 @@
  "recent_comments": [
   {
    "text": "אמן",
-   "user": "ri_na1008",
-   "at": "2026-11-08T07:30:26+0000",
-   "post": "פרק ק\"נ | כ\"ח מרחשוון תשפ\"ז 📖"
+   "user": "ozelmak",
+   "at": "2026-11-14T18:25:47+0000",
+   "post": "פרק ד' | ד' כסלו תשפ\"ז 📖"
   },
   {
    "text": "אמן",
    "user": "ri_na1008",
-   "at": "2026-11-08T07:24:08+0000",
-   "post": "פרק קמ\"ט | כ\"ח מרחשוון תשפ\"ז 📖"
+   "at": "2026-11-08T07:30:26+0000",
+   "post": "פרק ק\"נ | כ\"ח מרחשוון תשפ\"ז 📖"
   }
  ],
  "api_errors": [
+  "story 18023083778943860: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
+  "story 18023083778943860 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"Al8q1W-rXqV94WV",
   "story 18060643322656503: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
-  "story 18060643322656503 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"A1rpMnCCNORzKHe",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-14T16:54+00:00",
+ "refreshed": "2026-11-14T19:54+00:00",
  "style_rows": [],
  "fair_count": 0,
  "no_media_follows": true,
@@ -860,7 +905,13 @@
   },
   "18060643322656503": {
    "timestamp": "2026-11-14T16:52:52+0000",
-   "type": "פרק ד'"
+   "type": "פרק ד'",
+   "reach": 67,
+   "replies": 0
+  },
+  "18023083778943860": {
+   "timestamp": "2026-11-14T19:53:23+0000",
+   "type": "פרק ה'"
   }
  },
  "follow_log": {

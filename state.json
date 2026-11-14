@@ -145,6 +145,21 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 5,
+      "day": "2026-11-09",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-14T21:49+02:00",
+      "media_id": "18029308682924064",
+      "story_id": "18023083778943860",
+      "cta": 0,
+      "music": "06_beethoven_moonlight",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
