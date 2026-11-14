@@ -1,9 +1,9 @@
 {
  "cta": {
   "0": {
-   "n": 8,
+   "n": 9,
    "n_ready": 8,
-   "reach": 1022,
+   "reach": 1024,
    "joins": 1,
    "shares": 15,
    "join_rate": 0.001,
@@ -74,6 +74,33 @@
  "music_rows": [],
  "reels": [
   {
+   "chapter": 4,
+   "day": "2026-11-08",
+   "kind": "cycle",
+   "day_kind": "weekday",
+   "slot": null,
+   "at": "2026-11-14T18:49+02:00",
+   "media_id": "17917495650556853",
+   "story_id": "18060643322656503",
+   "cta": 0,
+   "music": "05_brahms_lullaby",
+   "secs": 30.0,
+   "dedication": null,
+   "extras": [],
+   "reach": 0,
+   "views": 0,
+   "likes": 0,
+   "comments": 0,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 0,
+   "ig_reels_avg_watch_time": 0,
+   "permalink": "https://www.instagram.com/reel/DfurTOris1j/",
+   "follows": null,
+   "profile_visits": null,
+   "joins": 0
+  },
+  {
    "chapter": 3,
    "day": "2026-11-07",
    "kind": "cycle",
@@ -114,14 +141,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 86,
+   "reach": 87,
    "views": 104,
    "likes": 6,
    "comments": 0,
    "saved": 1,
    "shares": 0,
    "total_interactions": 7,
-   "ig_reels_avg_watch_time": 2978,
+   "ig_reels_avg_watch_time": 3094,
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "follows": null,
    "profile_visits": null,
@@ -146,14 +173,14 @@
      "18109236391976327"
     ]
    ],
-   "reach": 149,
-   "views": 177,
+   "reach": 150,
+   "views": 178,
    "likes": 14,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 4500,
+   "ig_reels_avg_watch_time": 4473,
    "permalink": "https://www.instagram.com/reel/Dfd8m66Dm4h/",
    "follows": null,
    "profile_visits": null,
@@ -315,11 +342,11 @@
   }
  ],
  "totals": {
-  "posted": 9,
+  "posted": 10,
   "tehilim_comments": 1,
   "dms_sent": 1,
-  "reach_sum": 1176,
-  "views_sum": 1474,
+  "reach_sum": 1178,
+  "views_sum": 1475,
   "shares_sum": 15,
   "saves_sum": 8,
   "likes_sum": 91
@@ -656,12 +683,12 @@
    "likes": 14,
    "comments": 0,
    "type": "REELS",
-   "reach": 149,
-   "views": 177,
+   "reach": 150,
+   "views": 178,
    "saved": 0,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 4500,
+   "ig_reels_avg_watch_time": 4473,
    "final": false
   },
   "18136499413685706": {
@@ -671,12 +698,12 @@
    "likes": 6,
    "comments": 0,
    "type": "REELS",
-   "reach": 86,
+   "reach": 87,
    "views": 104,
    "saved": 1,
    "shares": 0,
    "total_interactions": 7,
-   "ig_reels_avg_watch_time": 2978,
+   "ig_reels_avg_watch_time": 3094,
    "final": false
   },
   "18026034575954129": {
@@ -693,6 +720,21 @@
    "total_interactions": 3,
    "ig_reels_avg_watch_time": 3855,
    "final": false
+  },
+  "17917495650556853": {
+   "timestamp": "2026-11-14T16:52:10+0000",
+   "permalink": "https://www.instagram.com/reel/DfurTOris1j/",
+   "caption": "פרק ד' | ד' כסלו תשפ\"ז 📖",
+   "likes": 0,
+   "comments": 0,
+   "type": "REELS",
+   "reach": 0,
+   "views": 0,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 0,
+   "ig_reels_avg_watch_time": 0,
+   "final": false
   }
  },
  "followers_history": {
@@ -703,7 +745,7 @@
  "account": {
   "followers": 667,
   "following": 256,
-  "media_count": 25,
+  "media_count": 26,
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
   "day": {
@@ -795,9 +837,11 @@
   }
  ],
  "api_errors": [
+  "story 18060643322656503: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
+  "story 18060643322656503 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"A1rpMnCCNORzKHe",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-14T13:58+00:00",
+ "refreshed": "2026-11-14T16:54+00:00",
  "style_rows": [],
  "fair_count": 0,
  "no_media_follows": true,
@@ -813,6 +857,10 @@
    "type": "פרק ג'",
    "reach": 68,
    "replies": 0
+  },
+  "18060643322656503": {
+   "timestamp": "2026-11-14T16:52:52+0000",
+   "type": "פרק ד'"
   }
  },
  "follow_log": {
