@@ -3,11 +3,11 @@
   "0": {
    "n": 8,
    "n_ready": 8,
-   "reach": 946,
+   "reach": 972,
    "joins": 1,
    "shares": 15,
-   "join_rate": 0.0011,
-   "score": 0.019,
+   "join_rate": 0.001,
+   "score": 0.0185,
    "text": "רוצים לקבל את הפרק כל יום בוואטסאפ?\nכתבו \"תהילים\" בתגובה ונשלח לכם קישור בפרטי 💬"
   }
  },
@@ -24,14 +24,14 @@
    "level": "high",
    "title": "נכנסים לפרופיל, אבל לא לוחצים על הקישור",
    "text": "הביו הוא המקום שבו מחליטים. כדאי שהשורה הראשונה תסביר מה מקבלים (\"פרק תהילים אחד ביום בוואטסאפ\") ושהקישור לקבוצה יהיה היחיד בביו.",
-   "evidence": "7 ימים: 731 חשיפות → 61 כניסות לפרופיל (8%) → 3 לחיצות על הקישור · 1 כתבו \"תהילים\""
+   "evidence": "7 ימים: 783 חשיפות → 62 כניסות לפרופיל (8%) → 3 לחיצות על הקישור · 1 כתבו \"תהילים\""
   },
   {
    "id": "watch-low",
    "level": "mid",
    "title": "רוב הצופים עוזבים מוקדם",
    "text": "השניות הראשונות קובעות. אפשר לשקול ריילס קצרים יותר בפרקים ארוכים, או להתחיל את הריל בשורה מושכת – תגיד לי אם לבדוק את זה כניסוי.",
-   "evidence": "זמן צפייה ממוצע 5.3 שנ' מתוך 30 שנ' (17%)"
+   "evidence": "זמן צפייה ממוצע 5.2 שנ' מתוך 30 שנ' (17%)"
   },
   {
    "id": "learning-reels",
@@ -87,14 +87,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 33,
-   "views": 48,
-   "likes": 1,
+   "reach": 44,
+   "views": 60,
+   "likes": 3,
    "comments": 0,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 1,
-   "ig_reels_avg_watch_time": 4635,
+   "total_interactions": 3,
+   "ig_reels_avg_watch_time": 4301,
    "permalink": "https://www.instagram.com/reel/DfrcHHgjdEL/",
    "follows": null,
    "profile_visits": null,
@@ -114,14 +114,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 56,
-   "views": 73,
-   "likes": 4,
+   "reach": 71,
+   "views": 88,
+   "likes": 6,
    "comments": 0,
-   "saved": 0,
+   "saved": 1,
    "shares": 0,
-   "total_interactions": 4,
-   "ig_reels_avg_watch_time": 3829,
+   "total_interactions": 7,
+   "ig_reels_avg_watch_time": 3391,
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "follows": null,
    "profile_visits": null,
@@ -318,11 +318,11 @@
   "posted": 9,
   "tehilim_comments": 1,
   "dms_sent": 1,
-  "reach_sum": 1100,
-  "views_sum": 1394,
+  "reach_sum": 1126,
+  "views_sum": 1421,
   "shares_sum": 15,
-  "saves_sum": 7,
-  "likes_sum": 87
+  "saves_sum": 8,
+  "likes_sum": 91
  },
  "media_cache": {
   "18099156383133995": {
@@ -668,36 +668,37 @@
    "timestamp": "2026-11-13T05:07:44+0000",
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "caption": "פרק ב' | ג' כסלו תשפ\"ז 📖",
-   "likes": 4,
+   "likes": 6,
    "comments": 0,
    "type": "REELS",
-   "reach": 56,
-   "views": 73,
-   "saved": 0,
+   "reach": 71,
+   "views": 88,
+   "saved": 1,
    "shares": 0,
-   "total_interactions": 4,
-   "ig_reels_avg_watch_time": 3829,
+   "total_interactions": 7,
+   "ig_reels_avg_watch_time": 3391,
    "final": false
   },
   "18026034575954129": {
    "timestamp": "2026-11-13T10:41:22+0000",
    "permalink": "https://www.instagram.com/reel/DfrcHHgjdEL/",
    "caption": "פרק ג' | ג' כסלו תשפ\"ז 📖",
-   "likes": 1,
+   "likes": 3,
    "comments": 0,
    "type": "REELS",
-   "reach": 33,
-   "views": 48,
+   "reach": 44,
+   "views": 60,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 1,
-   "ig_reels_avg_watch_time": 4635,
+   "total_interactions": 3,
+   "ig_reels_avg_watch_time": 4301,
    "final": false
   }
  },
  "followers_history": {
   "2026-11-08": 664,
-  "2026-11-13": 667
+  "2026-11-13": 667,
+  "2026-11-14": 667
  },
  "account": {
   "followers": 667,
@@ -706,44 +707,42 @@
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
   "day": {
-   "reach": 58,
-   "profile_views": 6,
+   "reach": 132,
+   "profile_views": 3,
    "website_clicks": 0,
-   "accounts_engaged": 4,
-   "total_interactions": 4,
+   "accounts_engaged": 6,
+   "total_interactions": 7,
    "follows_and_unfollows": null,
-   "follows_and_unfollows:FOLLOWER": 1,
-   "follows_and_unfollows:NON_FOLLOWER": 0,
    "profile_links_taps": 0
   },
   "week": {
-   "reach": 731,
-   "profile_views": 61,
+   "reach": 783,
+   "profile_views": 62,
    "website_clicks": 3,
-   "accounts_engaged": 43,
-   "total_interactions": 221,
+   "accounts_engaged": 46,
+   "total_interactions": 228,
    "follows_and_unfollows": null,
    "follows_and_unfollows:FOLLOWER": 3,
    "follows_and_unfollows:NON_FOLLOWER": 0,
    "profile_links_taps": 0
   },
   "prevweek": {
-   "reach": 57,
-   "profile_views": 18,
+   "reach": 55,
+   "profile_views": 19,
    "website_clicks": 0,
    "accounts_engaged": 5,
    "total_interactions": 5,
    "follows_and_unfollows": null,
-   "follows_and_unfollows:FOLLOWER": 4,
-   "follows_and_unfollows:NON_FOLLOWER": 3,
+   "follows_and_unfollows:FOLLOWER": 3,
+   "follows_and_unfollows:NON_FOLLOWER": 2,
    "profile_links_taps": 0
   },
   "month": {
-   "reach": 1928,
-   "profile_views": 277,
+   "reach": 1956,
+   "profile_views": 279,
    "website_clicks": 12,
-   "accounts_engaged": 117,
-   "total_interactions": 549,
+   "accounts_engaged": 118,
+   "total_interactions": 556,
    "follows_and_unfollows": null,
    "follows_and_unfollows:FOLLOWER": 21,
    "follows_and_unfollows:NON_FOLLOWER": 12,
@@ -800,7 +799,7 @@
   "story 18023947982954355: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-13T20:59+00:00",
+ "refreshed": "2026-11-14T01:10+00:00",
  "style_rows": [],
  "fair_count": 0,
  "no_media_follows": true,
@@ -808,13 +807,13 @@
   "18023947982954355": {
    "timestamp": "2026-11-13T05:08:26+0000",
    "type": "פרק ב'",
-   "reach": 77,
+   "reach": 84,
    "replies": 0
   },
   "18484796788114760": {
    "timestamp": "2026-11-13T10:42:11+0000",
    "type": "פרק ג'",
-   "reach": 59,
+   "reach": 64,
    "replies": 0
   }
  },
@@ -824,23 +823,29 @@
    "unfollows": 0,
    "profile_views": 6,
    "followers": null
+  },
+  "2026-11-13": {
+   "follows": 0,
+   "unfollows": 0,
+   "profile_views": 3,
+   "followers": 667
   }
  },
  "demographics": {
-  "date": "2026-11-13",
+  "date": "2026-11-14",
   "city": {
    "Ashqelon, Southern District": 41,
    "Jerusalem, Jerusalem": 30,
    "Ashdod, Southern District": 30,
-   "Petah Tikva, Central District": 26,
-   "Rishon Le Zion, Central District": 21,
+   "Petah Tikva, Central District": 25,
    "Netanya, Central District": 20,
-   "Holon, Tel Aviv": 20,
+   "Rishon Le Zion, Central District": 20,
+   "Holon, Tel Aviv": 19,
    "Tel Aviv, Tel Aviv": 18
   },
   "age": {
-   "25-34": 219,
-   "18-24": 142,
+   "25-34": 220,
+   "18-24": 141,
    "35-44": 139,
    "45-54": 97,
    "55-64": 39,
@@ -849,8 +854,8 @@
   },
   "gender": {
    "F": 299,
-   "M": 195,
-   "U": 172
+   "M": 194,
+   "U": 173
   }
  }
 }
