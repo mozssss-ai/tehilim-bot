@@ -80,6 +80,14 @@ def planned_slot(day: dt.date) -> str:
     kind = day_kind(day)
     slots = CONFIG["slots"][kind]
     best = LEARN.get("best", {}).get(kind, CONFIG["default_slot"][kind])
+    test = CONFIG.get("slot_test") or {}
+    if test.get(kind) and test["from"] <= day.isoformat() <= test["until"]:
+        # ניסוי מסודר: מחליפים לסירוגין בין השעות שבניסוי, כדי שלכל שעה יהיו מספיק ריילס להשוואה
+        d, n = dt.date.fromisoformat(test["from"]), 0
+        while d < day:
+            n += day_kind(d) == kind
+            d += dt.timedelta(days=1)
+        return test[kind][n % len(test[kind])]
     rng = random.Random(day.toordinal())  # אותה החלטה בכל הרצה באותו יום
     if rng.random() < CONFIG["explore_rate"]:
         return rng.choice(slots)
