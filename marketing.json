@@ -1,9 +1,9 @@
 {
  "cta": {
   "0": {
-   "n": 11,
+   "n": 12,
    "n_ready": 11,
-   "reach": 1287,
+   "reach": 1290,
    "joins": 1,
    "shares": 15,
    "join_rate": 0.0008,
@@ -16,8 +16,8 @@
    "id": "followers-churn",
    "level": "high",
    "title": "הרבה עוקבים עוזבים",
-   "text": "על כל 10 שמתחילים לעקוב, בערך 6 מפסיקים. בדרך כלל עוזבים כשהתוכן לא מה שציפו לו או כשיש יותר מדי פוסטים ביום. כדאי לשמור על פרק אחד קבוע ביום ולהבהיר בביו מה מקבלים.",
-   "evidence": "28 ימים: 20 התחילו לעקוב · 12 הפסיקו · נטו +8"
+   "text": "על כל 10 שמתחילים לעקוב, בערך 5 מפסיקים. בדרך כלל עוזבים כשהתוכן לא מה שציפו לו או כשיש יותר מדי פוסטים ביום. כדאי לשמור על פרק אחד קבוע ביום ולהבהיר בביו מה מקבלים.",
+   "evidence": "28 ימים: 22 התחילו לעקוב · 12 הפסיקו · נטו +10"
   },
   {
    "id": "funnel-link",
@@ -74,6 +74,33 @@
  "music_rows": [],
  "reels": [
   {
+   "chapter": 7,
+   "day": "2026-11-11",
+   "kind": "cycle",
+   "day_kind": "weekday",
+   "slot": null,
+   "at": "2026-11-15T18:50+02:00",
+   "media_id": "18029518304867370",
+   "story_id": "18122235281078892",
+   "cta": 0,
+   "music": "r08_clair_de_lune_claude_debussy_suite_berga",
+   "secs": 30.66,
+   "dedication": null,
+   "extras": [],
+   "reach": 0,
+   "views": 1,
+   "likes": 0,
+   "comments": 0,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 0,
+   "ig_reels_avg_watch_time": 0,
+   "permalink": "https://www.instagram.com/reel/DfxQLmEj_y5/",
+   "follows": null,
+   "profile_visits": null,
+   "joins": 0
+  },
+  {
    "chapter": 6,
    "day": "2026-11-10",
    "kind": "cycle",
@@ -87,14 +114,14 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 83,
-   "views": 112,
+   "reach": 86,
+   "views": 118,
    "likes": 4,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 4,
-   "ig_reels_avg_watch_time": 4028,
+   "ig_reels_avg_watch_time": 3891,
    "permalink": "https://www.instagram.com/reel/DfwCs7kgfZM/",
    "follows": null,
    "profile_visits": null,
@@ -396,11 +423,11 @@
   }
  ],
  "totals": {
-  "posted": 12,
+  "posted": 13,
   "tehilim_comments": 1,
   "dms_sent": 1,
-  "reach_sum": 1441,
-  "views_sum": 1817,
+  "reach_sum": 1444,
+  "views_sum": 1823,
   "shares_sum": 15,
   "saves_sum": 8,
   "likes_sum": 108
@@ -812,12 +839,27 @@
    "likes": 4,
    "comments": 0,
    "type": "REELS",
-   "reach": 83,
-   "views": 112,
+   "reach": 86,
+   "views": 118,
    "saved": 0,
    "shares": 0,
    "total_interactions": 4,
-   "ig_reels_avg_watch_time": 4028,
+   "ig_reels_avg_watch_time": 3891,
+   "final": false
+  },
+  "18029518304867370": {
+   "timestamp": "2026-11-15T16:52:47+0000",
+   "permalink": "https://www.instagram.com/reel/DfxQLmEj_y5/",
+   "caption": "פרק ז' | ה' כסלו תשפ\"ז 📖",
+   "likes": 0,
+   "comments": 0,
+   "type": "REELS",
+   "reach": 0,
+   "views": 1,
+   "saved": 0,
+   "shares": 0,
+   "total_interactions": 0,
+   "ig_reels_avg_watch_time": 0,
    "final": false
   }
  },
@@ -830,7 +872,7 @@
  "account": {
   "followers": 669,
   "following": 245,
-  "media_count": 28,
+  "media_count": 29,
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
   "day": {
@@ -840,6 +882,8 @@
    "accounts_engaged": 14,
    "total_interactions": 23,
    "follows_and_unfollows": null,
+   "follows_and_unfollows:FOLLOWER": 2,
+   "follows_and_unfollows:NON_FOLLOWER": 0,
    "profile_links_taps": 0
   },
   "week": {
@@ -849,7 +893,7 @@
    "accounts_engaged": 34,
    "total_interactions": 166,
    "follows_and_unfollows": null,
-   "follows_and_unfollows:FOLLOWER": 1,
+   "follows_and_unfollows:FOLLOWER": 3,
    "follows_and_unfollows:NON_FOLLOWER": 0,
    "profile_links_taps": 0
   },
@@ -871,7 +915,7 @@
    "accounts_engaged": 122,
    "total_interactions": 564,
    "follows_and_unfollows": null,
-   "follows_and_unfollows:FOLLOWER": 20,
+   "follows_and_unfollows:FOLLOWER": 22,
    "follows_and_unfollows:NON_FOLLOWER": 12,
    "profile_links_taps": 0
   }
@@ -904,7 +948,7 @@
   "2026-11-11": 0,
   "2026-11-12": 1,
   "2026-11-13": 0,
-  "2026-11-14": 0,
+  "2026-11-14": 2,
   "2026-11-15": 0
  },
  "recent_comments": [
@@ -916,12 +960,13 @@
   }
  ],
  "api_errors": [
+  "story 18122235281078892: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
+  "story 18122235281078892 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"AX7_IkjxsINAbxX",
   "story 17913588123591553: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
   "story 18023083778943860: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
-  "story 18060643322656503: Instagram API 400: {\"error\":{\"message\":\"(#100) Incompatible breakdowns (story_navigation_action_type) for metric (reach)\",\"code\":100,\"type\":\"OAuthException\",\"fb",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-15T15:48+00:00",
+ "refreshed": "2026-11-15T16:55+00:00",
  "style_rows": [],
  "fair_count": 0,
  "no_media_follows": true,
@@ -947,14 +992,18 @@
   "18023083778943860": {
    "timestamp": "2026-11-14T19:53:23+0000",
    "type": "פרק ה'",
-   "reach": 69,
+   "reach": 71,
    "replies": 0
   },
   "17913588123591553": {
    "timestamp": "2026-11-15T05:37:58+0000",
    "type": "פרק ו'",
-   "reach": 47,
+   "reach": 49,
    "replies": 0
+  },
+  "18122235281078892": {
+   "timestamp": "2026-11-15T16:53:34+0000",
+   "type": "פרק ז'"
   }
  },
  "follow_log": {
@@ -971,7 +1020,7 @@
    "followers": 667
   },
   "2026-11-14": {
-   "follows": 0,
+   "follows": 2,
    "unfollows": 0,
    "profile_views": 10,
    "followers": 667

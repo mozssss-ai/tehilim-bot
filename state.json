@@ -175,6 +175,21 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 7,
+      "day": "2026-11-11",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-15T18:50+02:00",
+      "media_id": "18029518304867370",
+      "story_id": "18122235281078892",
+      "cta": 0,
+      "music": "r08_clair_de_lune_claude_debussy_suite_berga",
+      "secs": 30.66,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
