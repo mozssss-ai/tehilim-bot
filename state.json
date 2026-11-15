@@ -160,6 +160,21 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 6,
+      "day": "2026-11-10",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-15T07:34+02:00",
+      "media_id": "18101866190560401",
+      "story_id": "17913588123591553",
+      "cta": 0,
+      "music": "07_satie_gymnopedie",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
