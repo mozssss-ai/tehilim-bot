@@ -290,7 +290,7 @@ def build_video(unit: dict, out: Path) -> Path:
         mk = json.loads((ROOT / "marketing.json").read_text(encoding="utf-8"))
         best = mk.get("music_best_style")
         if tracks and best in STYLES and random.Random(unit["chapter"] * 31).random() < 0.7:
-            pool = [t for t in tracks if t.name[:2] in STYLES[best]]
+            pool = [t for t in tracks if t.name.split("_")[0] in STYLES[best]]
             if pool:
                 music = pool[unit["chapter"] % len(pool)]
     except Exception:

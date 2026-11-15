@@ -9,5 +9,5 @@ STYLES = {
 
 
 def style_of(track_name):
-    pre = (track_name or "")[:2]
+    pre = (track_name or "").split("_")[0]
     return next((s for s, ids in STYLES.items() if pre in ids), None)
