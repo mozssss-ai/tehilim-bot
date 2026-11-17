@@ -346,3 +346,17 @@ if __name__ == "__main__":
     clean_footer(ROOT / "images" / "119_3.png", o / "clean_119.png", "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn")
     dedicate(ROOT / "images" / "001_1.png", "הפרק מוקדש לרפואת פלוני בן פלונית", o / "dedication.png")
     print("ok", o)
+
+
+def hook_frame(src, label, sub, out):
+    """פתיח לניסוי: עמוד הפרק עצמו, ומעליו מספר הפרק גדול (2–3 השניות הראשונות של הריל)."""
+    im = Image.open(src).convert("RGBA").resize((1080, 1920), Image.LANCZOS)
+    ov = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    ImageDraw.Draw(ov).rounded_rectangle((90, 150, 990, 470), radius=48, fill=NAVY + (238,))
+    im = Image.alpha_composite(im, ov)
+    d = ImageDraw.Draw(im)
+    text(d, (540, 270), label, SEC(150), fill=GOLD)
+    text(d, (540, 400), sub, HEB(54, 600), fill=WHITE)
+    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    im.convert("RGB").save(out)
+    return Path(out)

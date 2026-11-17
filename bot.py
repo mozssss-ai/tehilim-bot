@@ -191,6 +191,22 @@ def cta_index(day: dt.date) -> int:
     return int(m.get("cta_best", 0))
 
 
+def hook_index(day: dt.date) -> int:
+    """ניסוי פתיח: 0 = פתיח הלוגו, 1 = מתחילים מיד בפרק עם מספר הפרק גדול למעלה.
+    עד שלכל גרסה יש 5 ריילס עם נתוני צפייה – לסירוגין לפי היום. אחר כך: ברוב הימים הגרסה
+    שמחזיקה צופים יותר זמן (אחוז צפייה ממוצע), ובחלק מהימים השנייה – כדי להמשיך לבדוק."""
+    import random
+    if not (CONFIG.get("hook_test") or {}).get("enabled"):
+        return 0
+    m = json.loads(MARKETING_FILE.read_text(encoding="utf-8")) if MARKETING_FILE.exists() else {}
+    stats = m.get("hook", {})
+    if min(stats.get(str(i), {}).get("n", 0) for i in (0, 1)) < 5:
+        return day.toordinal() % 2
+    rng = random.Random(day.toordinal() * 13 + 5)
+    best = int(m.get("hook_best", day.toordinal() % 2))
+    return 1 - best if rng.random() < CONFIG.get("hook_explore_rate", 0.2) else best
+
+
 def caption(unit: dict, day: dt.date, cta: int = 0) -> str:
     variants = CONFIG.get("cta_variants") or [""]
     return CONFIG["caption"].format(
@@ -307,6 +323,15 @@ def build_video(unit: dict, out: Path) -> Path:
     frames = [(f, s) for f, s in zip([f for f, _ in frames], reading_times([f for f, _ in frames], join_secs))]
     if join_secs:
         frames.append((join, join_secs))
+    hook = hook_index(dt.datetime.now(TZ).date())
+    BUILT["hook"] = hook
+    if hook == 1 and frames[0][1] > 4:
+        import design
+        ht = (CONFIG.get("hook_test") or {})
+        hs = float(ht.get("secs", 2.5))
+        hp = design.hook_frame(frames[0][0], f"פרק {gematria(unit['chapter'])}", ht.get("sub", "תהילים כל יום - פרק אחד ביום"),
+                               ROOT / "out" / "hook.png")
+        frames = [(hp, hs), (frames[0][0], round(frames[0][1] - hs, 2))] + frames[1:]
     total = sum(s for _, s in frames)
 
     cmd = ["ffmpeg", "-y", "-loglevel", "error"]
@@ -337,7 +362,7 @@ def build_video(unit: dict, out: Path) -> Path:
         f"pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=white,setsar=1,fps=30,format=yuv420p[v{i}];"
         for i in range(a))
     intro = ROOT / "assets" / "intro.mp4"
-    if CONFIG.get("intro", True) and intro.exists():
+    if CONFIG.get("intro", True) and intro.exists() and BUILT.get("hook") != 1:
         # פתיח: הלוגו צף פנימה, ואז מעבר רך לפרק
         cmd += ["-i", str(intro)]
         idur, xf = 1.6, 0.4
@@ -672,7 +697,7 @@ def main():
     state["posted"].append({"chapter": unit["chapter"], "day": day.isoformat(), "kind": kind,
                             "day_kind": day_kind(day), "slot": slot,
                             "at": now.isoformat(timespec="minutes"), "media_id": media_id,
-                            "story_id": story_id, "cta": cta,
+                            "story_id": story_id, "cta": cta, "hook": BUILT.get("hook", 0),
                             "music": BUILT.get("music"), "secs": BUILT.get("secs"),
                             "dedication": ded["text"] if ded else None, "extras": more})
     save_state(state)

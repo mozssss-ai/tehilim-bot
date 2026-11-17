@@ -456,6 +456,30 @@ def analyse(m, state, replied):
         hyps.append({"title": "האם ריילס קצרים נצפים עד הסוף יותר", "status": "testing",
                      "text": f"נאסף זמן צפייה ממוצע לכל ריל ({len(watch)}/4 ריילס)."})
 
+    # 3ב. פתיח (A/B): לוגו מול פתיחה מיידית בפרק – כמה אחוז מהריל אנשים רואים
+    hk = {}
+    for i in (0, 1):
+        ws = [r["ig_reels_avg_watch_time"] / 1000 / r["secs"] for r in recent_ready
+              if r.get("hook", 0) == i and r.get("secs") and r.get("ig_reels_avg_watch_time")]
+        rs = [r["adj"] for r in recent_ready if r.get("hook", 0) == i]
+        hk[str(i)] = {"n": len(ws), "watch": round(statistics.mean(ws), 3) if ws else 0,
+                      "avg_reach": round(statistics.mean(rs)) if rs else 0}
+    m["hook"] = hk
+    if cfg.get("hook_test", {}).get("enabled"):
+        names = {"0": "פתיח הלוגו", "1": "פתיחה מיידית בפרק"}
+        if min(v["n"] for v in hk.values()) >= 5:
+            b = max(hk, key=lambda k: hk[k]["watch"])
+            o = "1" if b == "0" else "0"
+            m["hook_best"] = int(b)
+            st = "validated" if hk[b]["watch"] > 1.15 * hk[o]["watch"] else "rejected"
+            hyps.append({"title": "איזה פתיח מחזיק צופים יותר זמן", "status": st,
+                         "text": f"{names[b]}: צופים ב-{round(100 * hk[b]['watch'])}% מהריל, מול {round(100 * hk[o]['watch'])}% ב{names[o]}. "
+                                 + ("הבוט משתמש בו ברוב הימים וממשיך לבדוק." if st == "validated" else "אין עדיין הבדל ברור – ממשיכים לבדוק.")})
+        else:
+            hyps.append({"title": "איזה פתיח מחזיק צופים יותר זמן", "status": "testing",
+                         "text": f"לסירוגין: פתיח הלוגו מול פתיחה מיידית בפרק. צריך 5 ריילס לכל גרסה "
+                                 f"(יש {hk['0']['n']} ו-{hk['1']['n']})."})
+
     # 4. מוזיקה – לפי מנגינה ולפי סגנון (רק ריילס הוגנים)
     from music_styles import style_of, STYLES
     by_music, by_style = defaultdict(list), defaultdict(list)
