@@ -709,7 +709,7 @@ def render(m, state):
     data = {k: m.get(k) for k in ("account", "followers_history", "daily_new_followers", "recent_comments",
                                   "follow_log", "demographics",
                                   "hypotheses", "recommendations", "slot_rows", "music_rows", "reels",
-                                  "totals", "cta", "api_errors", "style_rows", "fair_count")}
+                                  "totals", "cta", "hook", "hook_best", "api_errors", "style_rows", "fair_count")}
     data["upcoming"] = upcoming
     try:
         data["preview"] = previews(upcoming, now)

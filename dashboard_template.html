@@ -267,6 +267,11 @@ ${Object.keys(D.cta||{}).length>1?`<h2>ניסוי הכיתוב (A/B)</h2>
 ${Object.entries(D.cta||{}).map(([k,v]) => `<tr><td><b>${String.fromCharCode(65+ +k)}</b><div class="cta">${esc(v.text)}</div></td><td class="n">${v.n}</td><td class="n">${fmt(v.reach)}</td><td class="n">${fmt(v.joins)}</td></tr>`).join('')}
 </table></div>`:''}
 
+${D.hook?`<h2>ניסוי הפתיח (A/B)</h2>
+<div class="card"><table><tr><th>פתיח</th><th class="n">ריילס</th><th class="n">אחוז צפייה</th><th class="n">חשיפה</th></tr>
+${[['0','פתיח הלוגו'],['1','פתיחה מיידית בפרק']].map(([k,n]) => { const v = D.hook[k] || {}; return `<tr><td><b>${n}</b>${D.hook_best!=null && +k===D.hook_best && v.n>=8?' 🏆':''}</td><td class="n">${v.n||0}</td><td class="n">${v.watch?Math.round(v.watch*100)+'%':'—'}</td><td class="n">${v.avg_reach?fmt(v.avg_reach):'—'}</td></tr>`; }).join('')}
+</table><p class="sub">אחוז צפייה = כמה מהריל צופים בממוצע. מכריעים אחרי 8 ריילס לכל גרסה.</p></div>`:''}
+
 <h2>שעות העלאה</h2>
 <div class="card">${(D.slot_rows||[]).length ? `<table><tr><th>יום</th><th>שעה</th><th class="n">ריילס</th><th class="n">חשיפה ממוצעת</th></tr>
 ${D.slot_rows.map(s => `<tr><td>${s.kind==='erev'?'ערב שבת/חג':'חול'}</td><td>${s.slot}</td><td class="n">${s.n}</td><td class="n">${fmt(s.avg_reach)}</td></tr>`).join('')}</table>`
