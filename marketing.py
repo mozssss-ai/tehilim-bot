@@ -410,13 +410,14 @@ def analyse(m, state, replied):
 
     # 2. נוסח הכיתוב (A/B) – כמה כותבים "תהילים" (= מבקשים להצטרף) ביחס לחשיפה
     variants = cfg.get("cta_variants", [""])
+    cta_from = cfg.get("cta_test_from", "")  # משווים רק ריילס מאז שכל הנוסחים קיימים – אחרת הנוסח הוותיק נהנה מנתונים של תקופה אחרת
     cta = {}
     for i in range(len(variants)):
-        rs = [r for r in recent_ready if r["cta"] == i]
+        rs = [r for r in recent_ready if r["cta"] == i and r["day"] >= cta_from]
         reach = sum(r["reach"] for r in rs)
         joins = sum(r["joins"] for r in rs)
         shares = sum(r.get("shares") or 0 for r in rs)
-        cta[str(i)] = {"n": len([r for r in reels if r["cta"] == i]), "n_ready": len(rs), "reach": reach,
+        cta[str(i)] = {"n": len([r for r in reels if r["cta"] == i and r["day"] >= cta_from]), "n_ready": len(rs), "reach": reach,
                        "joins": joins, "shares": shares, "join_rate": rate(joins, reach),
                        "score": rate(joins * 3 + shares, reach), "text": variants[i]}
     m["cta"] = cta
@@ -460,14 +461,14 @@ def analyse(m, state, replied):
     hk = {}
     for i in (0, 1):
         ws = [r["ig_reels_avg_watch_time"] / 1000 / r["secs"] for r in recent_ready
-              if r.get("hook", 0) == i and r.get("secs") and r.get("ig_reels_avg_watch_time")]
-        rs = [r["adj"] for r in recent_ready if r.get("hook", 0) == i]
+              if r.get("hook") == i and r.get("secs") and r.get("ig_reels_avg_watch_time")]
+        rs = [r["adj"] for r in recent_ready if r.get("hook") == i]
         hk[str(i)] = {"n": len(ws), "watch": round(statistics.mean(ws), 3) if ws else 0,
                       "avg_reach": round(statistics.mean(rs)) if rs else 0}
     m["hook"] = hk
     if cfg.get("hook_test", {}).get("enabled"):
         names = {"0": "פתיח הלוגו", "1": "פתיחה מיידית בפרק"}
-        if min(v["n"] for v in hk.values()) >= 5:
+        if min(v["n"] for v in hk.values()) >= 8:
             b = max(hk, key=lambda k: hk[k]["watch"])
             o = "1" if b == "0" else "0"
             m["hook_best"] = int(b)
@@ -477,7 +478,7 @@ def analyse(m, state, replied):
                                  + ("הבוט משתמש בו ברוב הימים וממשיך לבדוק." if st == "validated" else "אין עדיין הבדל ברור – ממשיכים לבדוק.")})
         else:
             hyps.append({"title": "איזה פתיח מחזיק צופים יותר זמן", "status": "testing",
-                         "text": f"לסירוגין: פתיח הלוגו מול פתיחה מיידית בפרק. צריך 5 ריילס לכל גרסה "
+                         "text": f"לסירוגין: פתיח הלוגו מול פתיחה מיידית בפרק. צריך 8 ריילס לכל גרסה "
                                  f"(יש {hk['0']['n']} ו-{hk['1']['n']})."})
 
     # 4. מוזיקה – לפי מנגינה ולפי סגנון (רק ריילס הוגנים)

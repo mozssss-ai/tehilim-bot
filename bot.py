@@ -193,15 +193,17 @@ def cta_index(day: dt.date) -> int:
 
 def hook_index(day: dt.date) -> int:
     """ניסוי פתיח: 0 = פתיח הלוגו, 1 = מתחילים מיד בפרק עם מספר הפרק גדול למעלה.
-    עד שלכל גרסה יש 5 ריילס עם נתוני צפייה – לסירוגין לפי היום. אחר כך: ברוב הימים הגרסה
+    עד שלכל גרסה יש 8 ריילס עם נתוני צפייה – לסירוגין בזוגות של יומיים. אחר כך: ברוב הימים הגרסה
     שמחזיקה צופים יותר זמן (אחוז צפייה ממוצע), ובחלק מהימים השנייה – כדי להמשיך לבדוק."""
     import random
     if not (CONFIG.get("hook_test") or {}).get("enabled"):
         return 0
     m = json.loads(MARKETING_FILE.read_text(encoding="utf-8")) if MARKETING_FILE.exists() else {}
     stats = m.get("hook", {})
-    if min(stats.get(str(i), {}).get("n", 0) for i in (0, 1)) < 5:
-        return day.toordinal() % 2
+    if min(stats.get(str(i), {}).get("n", 0) for i in (0, 1)) < 8:
+        # זוגות של יומיים (ולא יום כן/יום לא) – כדי שכל גרסה תעלה גם בצהריים וגם בערב,
+        # ולא תתערבב עם ניסוי השעות שמתחלף כל יום
+        return (day.toordinal() // 2) % 2
     rng = random.Random(day.toordinal() * 13 + 5)
     best = int(m.get("hook_best", day.toordinal() % 2))
     return 1 - best if rng.random() < CONFIG.get("hook_explore_rate", 0.2) else best
