@@ -122,6 +122,29 @@ def is_forbidden(now: dt.datetime) -> bool:
 
 
 # ---------------------------------------------------------------- hebrew text
+def growth_adjusted(rows, window_days=90, near_days=14):
+    """מתקן את החשיפה של כל ריל לפי הגודל של העמוד באותה תקופה, כדי שהשוואות (שעה, מוזיקה, כיתוב)
+    יישארו הוגנות גם כשהעמוד גדל: ריל נמדד מול חציון הריילס שעלו סביבו (±near_days),
+    ומתורגם ל"חשיפות במונחים של היום" (מול חציון 28 הימים האחרונים).
+    נכנסים רק ריילס מ-window_days הימים האחרונים – ניסויים ישנים מתיישנים והבוט ממשיך ללמוד מחדש.
+    מוסיף לכל שורה את המפתח "adj" ומחזיר רק את השורות שבחלון."""
+    import statistics
+    pts = [(dt.datetime.fromisoformat(r["at"]), r) for r in rows if r.get("at") and r.get("reach")]
+    if not pts:
+        return []
+    last = max(t for t, _ in pts)
+    pts = [(t, r) for t, r in pts if (last - t).days <= window_days]
+    recent = [r["reach"] for t, r in pts if (last - t).days <= 28] or [r["reach"] for _, r in pts]
+    today = statistics.median(recent)
+    out = []
+    for t, r in pts:
+        near = [x["reach"] for u, x in pts if abs((u - t).days) <= near_days]
+        base = statistics.median(near) if len(near) >= 3 else today
+        r["adj"] = round(r["reach"] / base * today) if base else r["reach"]
+        out.append(r)
+    return out
+
+
 def gematria(n: int) -> str:
     ones = "אבגדהוזחט"
     tens = "יכלמנסעפצ"

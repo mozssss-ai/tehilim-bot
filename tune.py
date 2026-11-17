@@ -88,11 +88,15 @@ if online:
     for kind in ("weekday", "erev"):
         by_followers[kind] = max(config["slots"][kind], key=online_score)
     best.update(by_followers)
+# החשיפה מתוקנת לפי גודל העמוד באותה תקופה, ורק 90 הימים האחרונים נכנסים – כך הבחירה מתעדכנת כשהעמוד גדל
+at_by_media = {p.get("media_id"): p["at"] for p in state["posted"] if p.get("media_id")}
+rows = [{**v, "at": at_by_media.get(k)} for k, v in cache.items()]
+rows = bot.growth_adjusted(rows)
 for kind in ("weekday", "erev"):
     by_slot = {}
-    for v in cache.values():
+    for v in rows:
         if v["day_kind"] == kind:
-            by_slot.setdefault(v["slot"], []).append(v["reach"])
+            by_slot.setdefault(v["slot"], []).append(v["adj"])
     scores = {s: statistics.mean(r) for s, r in by_slot.items() if len(r) >= 2}
     report[kind] = {s: {"avg_reach": round(statistics.mean(r)), "reels": len(r),
                         "followers_online": round(online_score(s))} for s, r in by_slot.items()}

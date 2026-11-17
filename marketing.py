@@ -381,16 +381,17 @@ def analyse(m, state, replied):
                                                    "follows", "profile_visits")},
                       "joins": joins_by_media.get(p.get("media_id"), 0), "cta": p.get("cta", 0)})
     ready = [r for r in reels if r.get("reach")]
+    # להשוואות: רק 90 הימים האחרונים, והחשיפה מתוקנת לפי גודל העמוד באותה תקופה (adj)
+    recent_ready = bot.growth_adjusted(ready)
     # "הוגנים": ריילס של הפרק היומי שעלו בשעה המתוכננת (בלי השלמות לילה) – רק הם נכנסים להשוואות
-    fair = [r for r in ready if r.get("slot")]
+    fair = [r for r in recent_ready if r.get("slot")]
 
     hyps = []
 
     # 1. שעת העלאה
     by_slot = defaultdict(list)
-    for r in ready:
-        if r.get("slot"):
-            by_slot[(r["day_kind"], r["slot"])].append(r["reach"])
+    for r in fair:
+        by_slot[(r["day_kind"], r["slot"])].append(r["adj"])
     slot_rows = [{"kind": k, "slot": s, "n": len(v), "avg_reach": round(statistics.mean(v))}
                  for (k, s), v in sorted(by_slot.items())]
     for kind, name in (("weekday", "ימי חול"), ("erev", "ערב שבת/חג")):
@@ -411,7 +412,7 @@ def analyse(m, state, replied):
     variants = cfg.get("cta_variants", [""])
     cta = {}
     for i in range(len(variants)):
-        rs = [r for r in ready if r["cta"] == i]
+        rs = [r for r in recent_ready if r["cta"] == i]
         reach = sum(r["reach"] for r in rs)
         joins = sum(r["joins"] for r in rs)
         shares = sum(r.get("shares") or 0 for r in rs)
@@ -456,13 +457,13 @@ def analyse(m, state, replied):
                      "text": f"נאסף זמן צפייה ממוצע לכל ריל ({len(watch)}/4 ריילס)."})
 
     # 4. מוזיקה – לפי מנגינה ולפי סגנון (רק ריילס הוגנים)
-    from music_styles import style_of
+    from music_styles import style_of, STYLES
     by_music, by_style = defaultdict(list), defaultdict(list)
     for r in fair:
         if r.get("music"):
-            by_music[r["music"]].append(r["reach"])
+            by_music[r["music"]].append(r["adj"])
             if style_of(r["music"]):
-                by_style[style_of(r["music"])].append(r["reach"])
+                by_style[style_of(r["music"])].append(r["adj"])
     music_rows = sorted(({"track": k, "n": len(v), "avg_reach": round(statistics.mean(v))} for k, v in by_music.items()),
                         key=lambda x: -x["avg_reach"])
     style_rows = sorted(({"style": k, "n": len(v), "avg_reach": round(statistics.mean(v))} for k, v in by_style.items()),
@@ -476,7 +477,7 @@ def analyse(m, state, replied):
     else:
         m.pop("music_best_style", None)
         hyps.append({"title": "איזה סגנון מוזיקה עובד הכי טוב", "status": "testing",
-                     "text": f"נבדקים 5 סגנונות (פסנתר, נבל, גיטרה, מיתרים, פעמונים). צריך 3 ריילס בשעה המתוכננת "
+                     "text": f"נבדקים {len(STYLES)} סגנונות ({', '.join(STYLES)}). צריך 3 ריילס בשעה המתוכננת "
                              f"לפחות בשני סגנונות ({len(fair)} ריילס כאלה עד עכשיו)."})
 
     # ---------------------------------------------------------------- תובנות והמלצות (נבנות מהנתונים בכל הרצה)
