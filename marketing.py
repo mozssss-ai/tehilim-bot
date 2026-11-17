@@ -130,10 +130,14 @@ def collect(api, m):
                                 "holiday_story": "חג", "siyum_story": "סיום הספר"}.get(kind, kind)
     sc = m.setdefault("story_cache", {})
     for s in (api.safe("stories", f"{api.uid}/stories", fields="id,timestamp,permalink") or {}).get("data", []):
-        r = api.safe(f"story {s['id']}", f"{s['id']}/insights", metric="reach,replies,views,shares,total_interactions,navigation",
-                     breakdown="story_navigation_action_type")
+        # navigation חייב breakdown משלו – באותה קריאה עם reach אינסטגרם דוחים את כל הבקשה
+        r = api.safe(f"story {s['id']}", f"{s['id']}/insights", metric="reach,replies,views,shares,total_interactions")
         if r is None:
             r = api.safe(f"story {s['id']} basic", f"{s['id']}/insights", metric="reach,replies")
+        nav = api.safe(f"story {s['id']} nav", f"{s['id']}/insights", metric="navigation",
+                       breakdown="story_navigation_action_type")
+        if r is not None and nav:
+            r = {"data": r.get("data", []) + nav.get("data", [])}
         c = sc.setdefault(s["id"], {"timestamp": s["timestamp"], "type": story_types.get(s["id"], "סטורי")})
         for d in (r or {}).get("data", []):
             if d["name"] == "navigation":
