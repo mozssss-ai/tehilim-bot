@@ -250,6 +250,22 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 12,
+      "day": "2026-11-16",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-18T13:38+02:00",
+      "media_id": "18040705976898948",
+      "story_id": "18113050259575639",
+      "cta": 2,
+      "hook": 1,
+      "music": "r13_gnossienne_5_satie",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
