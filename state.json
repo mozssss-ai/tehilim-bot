@@ -266,6 +266,22 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 13,
+      "day": "2026-11-17",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-18T21:37+02:00",
+      "media_id": "18387107452235067",
+      "story_id": "18079259897783372",
+      "cta": 2,
+      "hook": 1,
+      "music": "r14_gymnopedie_no_1",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
