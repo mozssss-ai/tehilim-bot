@@ -212,6 +212,14 @@ def check_inbox(token):
                 dm(user, f"קיבלנו, תודה 🙏\nהפרק יוקדש {text}.\nההקדשה תעלה בפרק של {eta} – בתמונה ובכיתוב.\n"
                          f"רוצים לתקן? כתבו: תיקון: והנוסח הנכון. לביטול כתבו: ביטול." + extra, item)
                 print("הקדשה חדשה בתור:", text)
+            elif any(k in msg for k in CFG.get("comment_keywords", ["תהילים"])):
+                # כתבו "תהילים" בהודעה פרטית – שולחים את הקישור לקבוצה (פעם בשבוע לכל אדם לכל היותר)
+                sent = d.setdefault("link_sent", {})
+                last = sent.get(user)
+                if not last or dt.datetime.now(bot.TZ) - dt.datetime.fromisoformat(last) > dt.timedelta(days=7):
+                    dm(user, CFG["dm_message"].format(group_link=CFG["whatsapp_link"]))
+                    sent[user] = dt.datetime.now(bot.TZ).isoformat(timespec="minutes")
+                    print("נשלח קישור לקבוצה בהודעה פרטית")
             elif re.search(r"הקדש|מוקדש|לרפוא|לעילוי|נשמת|תיקון", msg):
                 dm(user, "כדי להקדיש פרק, שלחו הודעה אחת בנוסח הזה:\n"
                          "לרפואת יוסף בן שרה / לעילוי נשמת יוסף בן שרה\n(שם + שם האם)\n"
