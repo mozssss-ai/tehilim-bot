@@ -282,6 +282,22 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 14,
+      "day": "2026-11-18",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": null,
+      "at": "2026-11-19T11:31+02:00",
+      "media_id": "18026240768714189",
+      "story_id": "18119745104606571",
+      "cta": 3,
+      "hook": 1,
+      "music": "r15_handel_suite_vol_1_no_2_in_f_major_hwv_4",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
