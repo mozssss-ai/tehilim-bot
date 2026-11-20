@@ -73,12 +73,17 @@ def online_score(slot):
 
 
 # אם אינסטגרם לא מחזירים נתוני שעות – משתמשים בנתונים שהוזנו ידנית מלוח הבקרה
-if not online and config.get("followers_activity_manual"):
-    man = config["followers_activity_manual"]["weekday"]
-    for h3, v in man.items():
-        for k in range(3):
-            online[(int(h3) + k) % 24] = v
+# אם יש נתונים מלוח הבקרה של אינסטגרם עם prefer – הם עדיפים (ה-API מחזיר לפעמים יום חלקי בלבד)
+online_erev = {}
+man_cfg = config.get("followers_activity_manual") or {}
+if man_cfg and (not online or man_cfg.get("prefer")):
+    online = {}
+    for key, target in (("weekday", online), ("erev", online_erev)):
+        for h3, v in (man_cfg.get(key) or {}).items():
+            for k in range(3):
+                target[(int(h3) + k) % 24] = v
     learn["online_source"] = "manual"
+    learn["online_followers_api"] = learn.get("online_followers")
 else:
     learn["online_source"] = "instagram"
 
@@ -86,7 +91,9 @@ best, report = dict(learn.get("best", {})), {}
 by_followers = {}
 if online:
     for kind in ("weekday", "erev"):
-        by_followers[kind] = max(config["slots"][kind], key=online_score)
+        src = online_erev if (kind == "erev" and online_erev) else online
+        by_followers[kind] = max(config["slots"][kind], key=lambda sl, src=src: (
+            src.get(int(sl[:2]), 0) + (src.get((int(sl[:2]) + 1) % 24, 0) - src.get(int(sl[:2]), 0)) * int(sl[3:]) / 60))
     best.update(by_followers)
 # החשיפה מתוקנת לפי גודל העמוד באותה תקופה, ורק 90 הימים האחרונים נכנסים – כך הבחירה מתעדכנת כשהעמוד גדל
 at_by_media = {p.get("media_id"): p["at"] for p in state["posted"] if p.get("media_id")}

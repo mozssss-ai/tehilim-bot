@@ -315,7 +315,7 @@ def insights(m, reels, ready, replied):
     if len(watch) >= 4:
         comp = statistics.mean(w / s for s, w in watch)
         ev = f"זמן צפייה ממוצע {statistics.mean(w for _, w in watch):.1f} שנ' מתוך {statistics.mean(s for s, _ in watch):.0f} שנ' ({pct(comp, 1)}%)"
-        if comp < .35:
+        if comp < .35 and not cfg.get("hook_test", {}).get("enabled"):  # כשניסוי הפתיח רץ – הוא הטיפול בזה
             add("watch-low", "mid", "רוב הצופים עוזבים מוקדם",
                 "השניות הראשונות קובעות. אפשר לשקול ריילס קצרים יותר בפרקים ארוכים, או להתחיל את הריל בשורה מושכת – "
                 "תגיד לי אם לבדוק את זה כניסוי.", ev)
