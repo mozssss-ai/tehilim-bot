@@ -314,6 +314,27 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 16,
+      "day": "2026-11-20",
+      "kind": "cycle",
+      "day_kind": "erev",
+      "slot": "13:30",
+      "at": "2026-11-20T13:55+02:00",
+      "media_id": "18141048418650430",
+      "story_id": "17972243979207208",
+      "cta": 1,
+      "hook": 0,
+      "music": "r17_johannes_brahms_klavierstucke_op_118_ii_",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": [
+        [
+          "shabbat_story",
+          "18124348343287789"
+        ]
+      ]
     }
   ]
 }
