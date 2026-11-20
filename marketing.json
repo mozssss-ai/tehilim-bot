@@ -3,7 +3,7 @@
   "0": {
    "n": 1,
    "n_ready": 1,
-   "reach": 99,
+   "reach": 115,
    "joins": 0,
    "shares": 0,
    "join_rate": 0.0,
@@ -33,7 +33,7 @@
   "3": {
    "n": 1,
    "n_ready": 1,
-   "reach": 123,
+   "reach": 124,
    "joins": 0,
    "shares": 0,
    "join_rate": 0.0,
@@ -54,14 +54,14 @@
    "level": "high",
    "title": "נכנסים לפרופיל, אבל לא לוחצים על הקישור",
    "text": "הביו הוא המקום שבו מחליטים. כדאי שהשורה הראשונה תסביר מה מקבלים (\"פרק תהילים אחד ביום בוואטסאפ\") ושהקישור לקבוצה יהיה היחיד בביו.",
-   "evidence": "7 ימים: 987 חשיפות → 53 כניסות לפרופיל (5%) → 0 לחיצות על הקישור · 1 כתבו \"תהילים\""
+   "evidence": "7 ימים: 1001 חשיפות → 56 כניסות לפרופיל (6%) → 0 לחיצות על הקישור · 1 כתבו \"תהילים\""
   },
   {
    "id": "shares-low",
    "level": "high",
    "title": "מעט שיתופים",
    "text": "שיתוף הוא הדרך העיקרית שבה אנשים חדשים מגיעים. הכי יעיל: לבקש בקבוצת הוואטסאפ לשתף את הריל היומי לסטטוס (הקישור לכל ריל נמצא בדשבורד, תחת \"ריילס אחרונים\").",
-   "evidence": "15 שיתופים ו-8 שמירות על 2290 חשיפות (21 ריילס)"
+   "evidence": "15 שיתופים ו-8 שמירות על 2320 חשיפות (21 ריילס)"
   },
   {
    "id": "watch-low",
@@ -129,14 +129,14 @@
    "kind": "weekday",
    "slot": "20:30",
    "n": 1,
-   "avg_reach": 99
+   "avg_reach": 115
   }
  ],
  "music_rows": [
   {
    "track": "r16_handel_suite_vol_1_no_2_in_f_major_hwv_4",
    "n": 1,
-   "avg_reach": 99
+   "avg_reach": 115
   }
  ],
  "reels": [
@@ -155,19 +155,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 99,
-   "views": 123,
-   "likes": 9,
+   "reach": 115,
+   "views": 139,
+   "likes": 10,
    "comments": 0,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 9,
-   "ig_reels_avg_watch_time": 5613,
+   "total_interactions": 10,
+   "ig_reels_avg_watch_time": 6164,
    "permalink": "https://www.instagram.com/reel/Df7v2sQGa3Y/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 99
+   "adj": 115
   },
   {
    "chapter": 14,
@@ -184,19 +184,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 123,
-   "views": 156,
+   "reach": 124,
+   "views": 157,
    "likes": 13,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 13,
-   "ig_reels_avg_watch_time": 6859,
+   "ig_reels_avg_watch_time": 6927,
    "permalink": "https://www.instagram.com/reel/Df6w-oEgCmJ/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 123
+   "adj": 124
   },
   {
    "chapter": 13,
@@ -213,19 +213,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 124,
-   "views": 142,
+   "reach": 126,
+   "views": 143,
    "likes": 12,
    "comments": 1,
    "saved": 0,
    "shares": 0,
    "total_interactions": 13,
-   "ig_reels_avg_watch_time": 4325,
+   "ig_reels_avg_watch_time": 4298,
    "permalink": "https://www.instagram.com/reel/Df5RhPhCsgW/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 124
+   "adj": 126
   },
   {
    "chapter": 12,
@@ -242,19 +242,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 21,
-   "views": 35,
+   "reach": 22,
+   "views": 37,
    "likes": 4,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 4,
-   "ig_reels_avg_watch_time": 9144,
+   "ig_reels_avg_watch_time": 8938,
    "permalink": "https://www.instagram.com/reel/Df4asFynAQO/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 21
+   "adj": 22
   },
   {
    "chapter": 11,
@@ -494,7 +494,7 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 86,
+   "reach": 87,
    "views": 108,
    "likes": 3,
    "comments": 0,
@@ -506,7 +506,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 86
+   "adj": 87
   },
   {
    "chapter": 2,
@@ -522,19 +522,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 98,
-   "views": 116,
+   "reach": 99,
+   "views": 117,
    "likes": 7,
    "comments": 0,
    "saved": 1,
    "shares": 0,
    "total_interactions": 9,
-   "ig_reels_avg_watch_time": 3081,
+   "ig_reels_avg_watch_time": 3089,
    "permalink": "https://www.instagram.com/reel/Dfq17ijjyud/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 98
+   "adj": 99
   },
   {
    "chapter": 1,
@@ -555,19 +555,19 @@
      "18109236391976327"
     ]
    ],
-   "reach": 156,
-   "views": 186,
+   "reach": 157,
+   "views": 187,
    "likes": 15,
    "comments": 0,
    "saved": 0,
    "shares": 0,
    "total_interactions": 16,
-   "ig_reels_avg_watch_time": 4333,
+   "ig_reels_avg_watch_time": 4317,
    "permalink": "https://www.instagram.com/reel/Dfd8m66Dm4h/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 156
+   "adj": 157
   },
   {
    "chapter": 150,
@@ -583,19 +583,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 156,
-   "views": 190,
+   "reach": 157,
+   "views": 192,
    "likes": 14,
    "comments": 1,
    "saved": 0,
    "shares": 0,
    "total_interactions": 16,
-   "ig_reels_avg_watch_time": 4518,
+   "ig_reels_avg_watch_time": 4645,
    "permalink": "https://www.instagram.com/reel/Dfd1pdqGdHb/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 156
+   "adj": 157
   },
   {
    "chapter": 149,
@@ -611,19 +611,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 153,
-   "views": 205,
+   "reach": 154,
+   "views": 207,
    "likes": 7,
    "comments": 1,
    "saved": 2,
    "shares": 0,
    "total_interactions": 11,
-   "ig_reels_avg_watch_time": 7895,
+   "ig_reels_avg_watch_time": 7973,
    "permalink": "https://www.instagram.com/reel/DfduucLkcrD/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 153
+   "adj": 154
   },
   {
    "chapter": 148,
@@ -639,19 +639,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 139,
-   "views": 175,
+   "reach": 140,
+   "views": 178,
    "likes": 11,
    "comments": 0,
    "saved": 1,
    "shares": 15,
    "total_interactions": 28,
-   "ig_reels_avg_watch_time": 3460,
+   "ig_reels_avg_watch_time": 3521,
    "permalink": "https://www.instagram.com/reel/Dfdrr77CZhB/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 139
+   "adj": 140
   },
   {
    "chapter": 147,
@@ -665,19 +665,19 @@
    "cta": 0,
    "music": "23_original_minor_Dm",
    "secs": 32.839999999999996,
-   "reach": 140,
-   "views": 176,
+   "reach": 141,
+   "views": 178,
    "likes": 10,
    "comments": 1,
    "saved": 2,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 6812,
+   "ig_reels_avg_watch_time": 6787,
    "permalink": "https://www.instagram.com/reel/DfdmyDKgAv5/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 140
+   "adj": 141
   },
   {
    "chapter": 146,
@@ -691,19 +691,19 @@
    "cta": 2,
    "music": "22_original_musicbox_F",
    "secs": 30.0,
-   "reach": 157,
-   "views": 208,
+   "reach": 158,
+   "views": 209,
    "likes": 14,
    "comments": 1,
    "saved": 1,
    "shares": 0,
    "total_interactions": 18,
-   "ig_reels_avg_watch_time": 6438,
+   "ig_reels_avg_watch_time": 6405,
    "permalink": "https://www.instagram.com/reel/Dfdi1j7iXIJ/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 157
+   "adj": 158
   },
   {
    "chapter": 145,
@@ -714,31 +714,31 @@
    "at": "2026-11-08T02:17+02:00",
    "media_id": "17953069818356178",
    "story_id": "18149402437541838",
-   "reach": 134,
-   "views": 171,
+   "reach": 136,
+   "views": 172,
    "likes": 12,
    "comments": 2,
    "saved": 1,
    "shares": 0,
    "total_interactions": 16,
-   "ig_reels_avg_watch_time": 6064,
+   "ig_reels_avg_watch_time": 6043,
    "permalink": "https://www.instagram.com/reel/Dfdc0_voVCf/",
    "follows": null,
    "profile_visits": null,
    "joins": 1,
    "cta": 0,
-   "adj": 134
+   "adj": 136
   }
  ],
  "totals": {
   "posted": 21,
   "tehilim_comments": 2,
   "dms_sent": 2,
-  "reach_sum": 2290,
-  "views_sum": 2883,
+  "reach_sum": 2320,
+  "views_sum": 2916,
   "shares_sum": 15,
   "saves_sum": 8,
-  "likes_sum": 175
+  "likes_sum": 176
  },
  "media_cache": {
   "18099156383133995": {
@@ -748,12 +748,12 @@
    "likes": 14,
    "comments": 1,
    "type": "REELS",
-   "reach": 157,
-   "views": 208,
+   "reach": 158,
+   "views": 209,
    "saved": 1,
    "shares": 0,
    "total_interactions": 18,
-   "ig_reels_avg_watch_time": 6438,
+   "ig_reels_avg_watch_time": 6405,
    "final": false
   },
   "17953069818356178": {
@@ -763,12 +763,12 @@
    "likes": 12,
    "comments": 2,
    "type": "REELS",
-   "reach": 134,
-   "views": 171,
+   "reach": 136,
+   "views": 172,
    "saved": 1,
    "shares": 0,
    "total_interactions": 16,
-   "ig_reels_avg_watch_time": 6064,
+   "ig_reels_avg_watch_time": 6043,
    "final": false
   },
   "18359991334301857": {
@@ -1012,12 +1012,12 @@
    "likes": 10,
    "comments": 1,
    "type": "REELS",
-   "reach": 140,
-   "views": 176,
+   "reach": 141,
+   "views": 178,
    "saved": 2,
    "shares": 0,
    "total_interactions": 15,
-   "ig_reels_avg_watch_time": 6812,
+   "ig_reels_avg_watch_time": 6787,
    "final": false
   },
   "18025819172946318": {
@@ -1027,12 +1027,12 @@
    "likes": 11,
    "comments": 0,
    "type": "REELS",
-   "reach": 139,
-   "views": 175,
+   "reach": 140,
+   "views": 178,
    "saved": 1,
    "shares": 15,
    "total_interactions": 28,
-   "ig_reels_avg_watch_time": 3460,
+   "ig_reels_avg_watch_time": 3521,
    "final": false
   },
   "18399095176205019": {
@@ -1042,12 +1042,12 @@
    "likes": 7,
    "comments": 1,
    "type": "REELS",
-   "reach": 153,
-   "views": 205,
+   "reach": 154,
+   "views": 207,
    "saved": 2,
    "shares": 0,
    "total_interactions": 11,
-   "ig_reels_avg_watch_time": 7895,
+   "ig_reels_avg_watch_time": 7973,
    "final": false
   },
   "18211503535367058": {
@@ -1057,12 +1057,12 @@
    "likes": 14,
    "comments": 1,
    "type": "REELS",
-   "reach": 156,
-   "views": 190,
+   "reach": 157,
+   "views": 192,
    "saved": 0,
    "shares": 0,
    "total_interactions": 16,
-   "ig_reels_avg_watch_time": 4518,
+   "ig_reels_avg_watch_time": 4645,
    "final": false
   },
   "18121638964991778": {
@@ -1072,12 +1072,12 @@
    "likes": 15,
    "comments": 0,
    "type": "REELS",
-   "reach": 156,
-   "views": 186,
+   "reach": 157,
+   "views": 187,
    "saved": 0,
    "shares": 0,
    "total_interactions": 16,
-   "ig_reels_avg_watch_time": 4333,
+   "ig_reels_avg_watch_time": 4317,
    "final": false
   },
   "18136499413685706": {
@@ -1087,12 +1087,12 @@
    "likes": 7,
    "comments": 0,
    "type": "REELS",
-   "reach": 98,
-   "views": 116,
+   "reach": 99,
+   "views": 117,
    "saved": 1,
    "shares": 0,
    "total_interactions": 9,
-   "ig_reels_avg_watch_time": 3081,
+   "ig_reels_avg_watch_time": 3089,
    "final": false
   },
   "18026034575954129": {
@@ -1102,7 +1102,7 @@
    "likes": 3,
    "comments": 0,
    "type": "REELS",
-   "reach": 86,
+   "reach": 87,
    "views": 108,
    "saved": 0,
    "shares": 0,
@@ -1237,12 +1237,12 @@
    "likes": 4,
    "comments": 0,
    "type": "REELS",
-   "reach": 21,
-   "views": 35,
+   "reach": 22,
+   "views": 37,
    "saved": 0,
    "shares": 0,
    "total_interactions": 4,
-   "ig_reels_avg_watch_time": 9144,
+   "ig_reels_avg_watch_time": 8938,
    "final": false
   },
   "18387107452235067": {
@@ -1252,12 +1252,12 @@
    "likes": 12,
    "comments": 1,
    "type": "REELS",
-   "reach": 124,
-   "views": 142,
+   "reach": 126,
+   "views": 143,
    "saved": 0,
    "shares": 0,
    "total_interactions": 13,
-   "ig_reels_avg_watch_time": 4325,
+   "ig_reels_avg_watch_time": 4298,
    "final": false
   },
   "18026240768714189": {
@@ -1267,27 +1267,27 @@
    "likes": 13,
    "comments": 0,
    "type": "REELS",
-   "reach": 123,
-   "views": 156,
+   "reach": 124,
+   "views": 157,
    "saved": 0,
    "shares": 0,
    "total_interactions": 13,
-   "ig_reels_avg_watch_time": 6859,
+   "ig_reels_avg_watch_time": 6927,
    "final": false
   },
   "18122890130102926": {
    "timestamp": "2026-11-19T18:41:38+0000",
    "permalink": "https://www.instagram.com/reel/Df7v2sQGa3Y/",
    "caption": "פרק ט\"ו | ט' כסלו תשפ\"ז 📖",
-   "likes": 9,
+   "likes": 10,
    "comments": 0,
    "type": "REELS",
-   "reach": 99,
-   "views": 123,
+   "reach": 115,
+   "views": 139,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 9,
-   "ig_reels_avg_watch_time": 5613,
+   "total_interactions": 10,
+   "ig_reels_avg_watch_time": 6164,
    "final": false
   }
  },
@@ -1309,20 +1309,20 @@
   "username": "tehilim_kol_yom",
   "website": "https://chat.whatsapp.com/Eh40Iv0LO9r9ZjLUgxeHQn",
   "day": {
-   "reach": 249,
-   "profile_views": 10,
+   "reach": 269,
+   "profile_views": 13,
    "website_clicks": 0,
-   "accounts_engaged": 19,
-   "total_interactions": 27,
+   "accounts_engaged": 21,
+   "total_interactions": 30,
    "follows_and_unfollows": null,
    "profile_links_taps": 0
   },
   "week": {
-   "reach": 987,
-   "profile_views": 53,
+   "reach": 1001,
+   "profile_views": 56,
    "website_clicks": 0,
-   "accounts_engaged": 45,
-   "total_interactions": 113,
+   "accounts_engaged": 47,
+   "total_interactions": 116,
    "follows_and_unfollows": null,
    "follows_and_unfollows:FOLLOWER": 9,
    "follows_and_unfollows:NON_FOLLOWER": 5,
@@ -1340,11 +1340,11 @@
    "profile_links_taps": 0
   },
   "month": {
-   "reach": 1969,
-   "profile_views": 155,
+   "reach": 1972,
+   "profile_views": 158,
    "website_clicks": 3,
-   "accounts_engaged": 101,
-   "total_interactions": 478,
+   "accounts_engaged": 102,
+   "total_interactions": 481,
    "follows_and_unfollows": null,
    "follows_and_unfollows:FOLLOWER": 19,
    "follows_and_unfollows:NON_FOLLOWER": 12,
@@ -1352,7 +1352,6 @@
   }
  },
  "daily_new_followers": {
-  "2026-10-22": 2,
   "2026-10-23": 1,
   "2026-10-24": 0,
   "2026-10-25": 1,
@@ -1380,7 +1379,8 @@
   "2026-11-16": 4,
   "2026-11-17": 0,
   "2026-11-18": 1,
-  "2026-11-19": 0
+  "2026-11-19": 0,
+  "2026-11-20": 0
  },
  "recent_comments": [
   {
@@ -1393,12 +1393,12 @@
  "api_errors": [
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-20T00:58+00:00",
+ "refreshed": "2026-11-20T08:33+00:00",
  "style_rows": [
   {
    "style": "פסנתר",
    "n": 1,
-   "avg_reach": 99
+   "avg_reach": 115
   }
  ],
  "fair_count": 1,
@@ -1518,27 +1518,27 @@
   "18119745104606571": {
    "timestamp": "2026-11-19T09:32:56+0000",
    "type": "פרק י\"ד",
-   "reach": 55,
+   "reach": 59,
    "replies": 0,
-   "views": 63,
+   "views": 68,
    "shares": 0,
-   "total_interactions": 1,
+   "total_interactions": 2,
    "nav_tap_back": 1,
-   "nav_tap_forward": 38,
-   "nav_tap_exit": 11,
-   "nav_swipe_forward": 7
+   "nav_tap_forward": 39,
+   "nav_tap_exit": 13,
+   "nav_swipe_forward": 9
   },
   "17948149179368545": {
    "timestamp": "2026-11-19T18:42:14+0000",
    "type": "פרק ט\"ו",
-   "reach": 37,
+   "reach": 42,
    "replies": 0,
-   "views": 43,
+   "views": 49,
    "shares": 0,
-   "total_interactions": 1,
-   "nav_tap_forward": 28,
-   "nav_swipe_forward": 3,
-   "nav_tap_exit": 7
+   "total_interactions": 2,
+   "nav_tap_forward": 31,
+   "nav_swipe_forward": 4,
+   "nav_tap_exit": 8
   }
  },
  "follow_log": {
@@ -1587,7 +1587,7 @@
   "2026-11-19": {
    "follows": 0,
    "unfollows": 0,
-   "profile_views": 10,
+   "profile_views": 13,
    "followers": 671
   }
  },
@@ -1626,8 +1626,8 @@
   },
   "1": {
    "n": 4,
-   "watch": 0.216,
-   "avg_reach": 92
+   "watch": 0.219,
+   "avg_reach": 97
   }
  }
 }
