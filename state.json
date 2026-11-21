@@ -335,6 +335,22 @@
           "18124348343287789"
         ]
       ]
+    },
+    {
+      "chapter": 17,
+      "day": "2026-11-21",
+      "kind": "cycle",
+      "day_kind": "holy",
+      "slot": null,
+      "at": "2026-11-21T18:26+02:00",
+      "media_id": "18148944820601612",
+      "story_id": "17955959424312051",
+      "cta": 1,
+      "hook": 0,
+      "music": "r18_johannes_brahms_ninna_nanna_op_49_n_4",
+      "secs": 31.79,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
