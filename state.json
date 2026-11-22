@@ -351,6 +351,27 @@
       "secs": 31.79,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 18,
+      "day": "2026-11-22",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": "13:30",
+      "at": "2026-11-22T13:35+02:00",
+      "media_id": "17893921554618718",
+      "story_id": "17957969832321025,18233254000336463",
+      "cta": 2,
+      "hook": 1,
+      "music": "r19_klaviersonate_nr_1_op_2_1_ii_adagio",
+      "secs": 81.87,
+      "dedication": null,
+      "extras": [
+        [
+          "invite_story",
+          "17885536722629437"
+        ]
+      ]
     }
   ]
 }
