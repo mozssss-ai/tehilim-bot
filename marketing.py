@@ -315,7 +315,7 @@ def insights(m, reels, ready, replied):
     if len(watch) >= 4:
         comp = statistics.mean(w / s for s, w in watch)
         ev = f"זמן צפייה ממוצע {statistics.mean(w for _, w in watch):.1f} שנ' מתוך {statistics.mean(s for s, _ in watch):.0f} שנ' ({pct(comp, 1)}%)"
-        if comp < .35 and not cfg.get("hook_test", {}).get("enabled"):  # כשניסוי הפתיח רץ – הוא הטיפול בזה
+        if comp < .35 and not bot.CONFIG.get("hook_test", {}).get("enabled"):  # כשניסוי הפתיח רץ – הוא הטיפול בזה
             add("watch-low", "mid", "רוב הצופים עוזבים מוקדם",
                 "השניות הראשונות קובעות. אפשר לשקול ריילס קצרים יותר בפרקים ארוכים, או להתחיל את הריל בשורה מושכת – "
                 "תגיד לי אם לבדוק את זה כניסוי.", ev)
@@ -709,7 +709,7 @@ def render(m, state):
     data = {k: m.get(k) for k in ("account", "followers_history", "daily_new_followers", "recent_comments",
                                   "follow_log", "demographics",
                                   "hypotheses", "recommendations", "slot_rows", "music_rows", "reels",
-                                  "totals", "cta", "hook", "hook_best", "api_errors", "style_rows", "fair_count")}
+                                  "totals", "cta", "hook", "hook_best", "analysis_error", "api_errors", "style_rows", "fair_count")}
     data["upcoming"] = upcoming
     try:
         data["preview"] = previews(upcoming, now)
@@ -758,7 +758,14 @@ def main():
         print("נאספו נתונים מאינסטגרם. שגיאות:", len(m["api_errors"]))
         for e in m["api_errors"]:
             print("  ", e)
-    analyse(m, state, replied)
+    # תקלה בניתוח לא תעצור את עדכון הדשבורד: מציגים את מה שיש ומדווחים על התקלה בדשבורד
+    try:
+        analyse(m, state, replied)
+        m.pop("analysis_error", None)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        m["analysis_error"] = f"{type(e).__name__}: {e}"[:300]
     FILE.write_text(json.dumps(m, ensure_ascii=False, indent=1), encoding="utf-8")
     render(m, state)
     print("הדשבורד עודכן.")

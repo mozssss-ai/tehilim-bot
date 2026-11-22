@@ -94,7 +94,7 @@ const issue = (title, body) => `https://github.com/${D.repo||'mozssss-ai/tehilim
 const P = D.preview || {}; const A = D.account || {}, W = A.week || {}, M = A.month || {}, T = D.totals || {};
 const PW = A.prevweek || {}; const H = JSON.parse(JSON.stringify(D.health || {}));
 { const age = (Date.now() - new Date(D.updated_iso).getTime()) / 36e5;
-  if (age > 6) { H.ok = false; (H.issues = H.issues || []).unshift(`הבוט לא עדכן את הדשבורד כבר ${Math.round(age)} שעות – ייתכן שהוא לא רץ`); } } const WA = D.whatsapp || [];
+  if (age > 6) { H.ok = false; (H.issues = H.issues || []).unshift(`הבוט לא עדכן את הדשבורד כבר ${Math.round(age)} שעות – ייתכן שהוא לא רץ`); } } if (D.analysis_error) { H.ok = false; (H.issues = H.issues || []).push('תקלה בניתוח הנתונים (הנתונים עצמם נאספים כרגיל) – לכתוב ל-Claude: ' + D.analysis_error); } const WA = D.whatsapp || [];
 const delta = (a, b) => (a == null || b == null || !b) ? '' : (a >= b ? `<div class="d">▲ ${Math.round(100*(a-b)/b)}% מהשבוע שעבר</div>` : `<div class="d down">▼ ${Math.round(100*(b-a)/b)}% מהשבוע שעבר</div>`);
 const ago = iso => { const m = Math.round((Date.now() - Date.parse(iso)) / 60000); return m < 1 ? 'עכשיו' : m < 60 ? `לפני ${m} דק'` : m < 1440 ? `לפני ${Math.floor(m/60)} שע'` : `לפני ${Math.floor(m/1440)} ימים`; };
 
