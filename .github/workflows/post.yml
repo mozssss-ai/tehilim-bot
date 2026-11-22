@@ -76,7 +76,9 @@ jobs:
           git config user.name "tehilim-bot"
           git config user.email "tehilim-bot@users.noreply.github.com"
           # שומרים פחות: עדכון של הדשבורד בלבד נשמר רק אם עברו 3 שעות מהשמירה הקודמת שלו
-          last=$(git log -1 --format=%ct -- docs/6dd35a90fba60637/index.html 2>/dev/null || echo 0)
+          # השעה נלקחת מתוך הדשבורד השמור עצמו (ה-checkout רדוד, אז git log לא יודע מתי הוא נשמר באמת)
+          saved=$(git show HEAD:docs/6dd35a90fba60637/index.html 2>/dev/null | grep -o '"updated_iso": *"[^"]*"' | head -1 | sed 's/.*: *"//; s/"$//')
+          last=$(date -d "$saved" +%s 2>/dev/null || echo 0)
           only_dash=1
           for f in state.json replied.json dedications.json overrides.json whatsapp.json rec_status.json config.json; do
             [ -e "$f" ] && ! git diff --quiet -- "$f" && only_dash=0
