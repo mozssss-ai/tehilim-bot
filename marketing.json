@@ -32,8 +32,8 @@
   },
   "3": {
    "n": 2,
-   "n_ready": 1,
-   "reach": 132,
+   "n_ready": 2,
+   "reach": 167,
    "joins": 0,
    "shares": 0,
    "join_rate": 0.0,
@@ -68,14 +68,14 @@
    "level": "info",
    "title": "צופים בחלק גדול מהריל",
    "text": "אורך הריילס מתאים לקהל.",
-   "evidence": "זמן צפייה ממוצע 5.1 שנ' מתוך 33 שנ' (16%)"
+   "evidence": "זמן צפייה ממוצע 5.0 שנ' מתוך 33 שנ' (16%)"
   },
   {
    "id": "followers-trend",
    "level": "info",
    "title": "צמיחה בעוקבים",
    "text": "מעקב שבועי אחרי מספר העוקבים.",
-   "evidence": "לפני שבוע 673 → היום 674 (+1)"
+   "evidence": "לפני שבוע 671 → היום 673 (+2)"
   },
   {
    "id": "idea-collab",
@@ -89,7 +89,7 @@
   {
    "title": "השעה הכי טובה להעלאה – ימי חול",
    "status": "testing",
-   "text": "צריך לפחות 2 ריילס בכל אחת משתי שעות כדי להשוות (2 עד עכשיו)."
+   "text": "צריך לפחות 2 ריילס בכל אחת משתי שעות כדי להשוות (3 עד עכשיו)."
   },
   {
    "title": "השעה הכי טובה להעלאה – ערב שבת/חג",
@@ -99,7 +99,7 @@
   {
    "title": "איזה כיתוב מביא הכי הרבה הצטרפויות",
    "status": "testing",
-   "text": "ניסוי A/B על 4 נוסחים. צריך 3 ריילס לכל נוסח (A:1, B:2, C:1, D:1)."
+   "text": "ניסוי A/B על 4 נוסחים. צריך 3 ריילס לכל נוסח (A:1, B:2, C:1, D:2)."
   },
   {
    "title": "האם ריילס קצרים נצפים עד הסוף יותר",
@@ -109,12 +109,12 @@
   {
    "title": "איזה פתיח מחזיק צופים יותר זמן",
    "status": "testing",
-   "text": "לסירוגין: פתיח הלוגו מול פתיחה מיידית בפרק. צריך 8 ריילס לכל גרסה (יש 2 ו-5)."
+   "text": "לסירוגין: פתיח הלוגו מול פתיחה מיידית בפרק. צריך 8 ריילס לכל גרסה (יש 3 ו-5)."
   },
   {
    "title": "איזה סגנון מוזיקה עובד הכי טוב",
    "status": "testing",
-   "text": "נבדקים 3 סגנונות (פסנתר, כלי קשת, גיטרה ונבל). צריך 3 ריילס בשעה המתוכננת לפחות בשני סגנונות (3 ריילס כאלה עד עכשיו)."
+   "text": "נבדקים 3 סגנונות (פסנתר, כלי קשת, גיטרה ונבל). צריך 3 ריילס בשעה המתוכננת לפחות בשני סגנונות (4 ריילס כאלה עד עכשיו)."
   }
  ],
  "slot_rows": [
@@ -128,25 +128,30 @@
    "kind": "weekday",
    "slot": "13:30",
    "n": 1,
-   "avg_reach": 170
+   "avg_reach": 171
   },
   {
    "kind": "weekday",
    "slot": "20:30",
-   "n": 1,
-   "avg_reach": 124
+   "n": 2,
+   "avg_reach": 84
   }
  ],
  "music_rows": [
   {
    "track": "r19_klaviersonate_nr_1_op_2_1_ii_adagio",
    "n": 1,
-   "avg_reach": 170
+   "avg_reach": 171
   },
   {
    "track": "r16_handel_suite_vol_1_no_2_in_f_major_hwv_4",
    "n": 1,
    "avg_reach": 124
+  },
+  {
+   "track": "r20_klaviersonate_nr_16_g_dur_op_31_1_ii_ada",
+   "n": 1,
+   "avg_reach": 45
   },
   {
    "track": "r17_johannes_brahms_klavierstucke_op_118_ii_",
@@ -170,18 +175,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 0,
-   "views": 0,
-   "likes": 0,
+   "reach": 35,
+   "views": 56,
+   "likes": 3,
    "comments": 0,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 0,
-   "ig_reels_avg_watch_time": 0,
+   "total_interactions": 3,
+   "ig_reels_avg_watch_time": 2901,
    "permalink": "https://www.instagram.com/reel/DgGCX4bEdG6/",
    "follows": null,
    "profile_visits": null,
-   "joins": 0
+   "joins": 0,
+   "adj": 45
   },
   {
    "chapter": 18,
@@ -215,7 +221,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 170
+   "adj": 171
   },
   {
    "chapter": 17,
@@ -550,19 +556,19 @@
    "secs": 30.0,
    "dedication": null,
    "extras": [],
-   "reach": 125,
-   "views": 162,
+   "reach": 126,
+   "views": 163,
    "likes": 7,
    "comments": 0,
    "saved": 0,
    "shares": 12,
    "total_interactions": 19,
-   "ig_reels_avg_watch_time": 3800,
+   "ig_reels_avg_watch_time": 3794,
    "permalink": "https://www.instagram.com/reel/DfwCs7kgfZM/",
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 125
+   "adj": 126
   },
   {
    "chapter": 5,
@@ -707,7 +713,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 159
+   "adj": 158
   },
   {
    "chapter": 150,
@@ -735,7 +741,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 157
+   "adj": 156
   },
   {
    "chapter": 149,
@@ -763,7 +769,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 154
+   "adj": 153
   },
   {
    "chapter": 148,
@@ -791,7 +797,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 141
+   "adj": 140
   },
   {
    "chapter": 147,
@@ -817,7 +823,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 142
+   "adj": 141
   },
   {
    "chapter": 146,
@@ -843,7 +849,7 @@
    "follows": null,
    "profile_visits": null,
    "joins": 0,
-   "adj": 159
+   "adj": 158
   },
   {
    "chapter": 145,
@@ -867,18 +873,18 @@
    "profile_visits": null,
    "joins": 1,
    "cta": 0,
-   "adj": 137
+   "adj": 136
   }
  ],
  "totals": {
   "posted": 25,
   "tehilim_comments": 2,
   "dms_sent": 2,
-  "reach_sum": 2671,
-  "views_sum": 3412,
+  "reach_sum": 2707,
+  "views_sum": 3469,
   "shares_sum": 142,
   "saves_sum": 10,
-  "likes_sum": 212
+  "likes_sum": 215
  },
  "media_cache": {
   "18099156383133995": {
@@ -1287,12 +1293,12 @@
    "likes": 7,
    "comments": 0,
    "type": "REELS",
-   "reach": 125,
-   "views": 162,
+   "reach": 126,
+   "views": 163,
    "saved": 0,
    "shares": 12,
    "total_interactions": 19,
-   "ig_reels_avg_watch_time": 3800,
+   "ig_reels_avg_watch_time": 3794,
    "final": false
   },
   "18029518304867370": {
@@ -1479,15 +1485,15 @@
    "timestamp": "2026-11-23T18:35:52+0000",
    "permalink": "https://www.instagram.com/reel/DgGCX4bEdG6/",
    "caption": "פרק י\"ט | י\"ג כסלו תשפ\"ז 📖",
-   "likes": 0,
+   "likes": 3,
    "comments": 0,
    "type": "REELS",
-   "reach": 0,
-   "views": 0,
+   "reach": 35,
+   "views": 56,
    "saved": 0,
    "shares": 0,
-   "total_interactions": 0,
-   "ig_reels_avg_watch_time": 0,
+   "total_interactions": 3,
+   "ig_reels_avg_watch_time": 2901,
    "final": false
   }
  },
@@ -1502,10 +1508,11 @@
   "2026-11-19": 671,
   "2026-11-20": 670,
   "2026-11-22": 673,
-  "2026-11-23": 674
+  "2026-11-23": 674,
+  "2026-11-24": 673
  },
  "account": {
-  "followers": 674,
+  "followers": 673,
   "following": 201,
   "media_count": 41,
   "username": "tehilim_kol_yom",
@@ -1595,20 +1602,17 @@
   }
  ],
  "api_errors": [
-  "story 18225996313355090: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"AWZ9JC8F_9h5mbU",
-  "story 18225996313355090 basic: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"AuogX3X5DeGJ5i4",
-  "story 18225996313355090 nav: Instagram API 400: {\"error\":{\"message\":\"(#10) Not enough viewers for the media to show insights\",\"code\":10,\"type\":\"OAuthException\",\"fbtrace_id\":\"AWFPM0iHyilevuB",
   "token: Instagram API 400: {\"error\":{\"message\":\"(#100) You must provide an app access token, or a user access token that is an owner or developer of the app\",\"type\":\"OA"
  ],
- "refreshed": "2026-11-23T18:37+00:00",
+ "refreshed": "2026-11-23T22:39+00:00",
  "style_rows": [
   {
    "style": "פסנתר",
-   "n": 3,
-   "avg_reach": 110
+   "n": 4,
+   "avg_reach": 94
   }
  ],
- "fair_count": 3,
+ "fair_count": 4,
  "no_media_follows": true,
  "story_cache": {
   "18023947982954355": {
@@ -1800,7 +1804,15 @@
   },
   "18225996313355090": {
    "timestamp": "2026-11-23T18:36:29+0000",
-   "type": "פרק י\"ט"
+   "type": "פרק י\"ט",
+   "reach": 25,
+   "replies": 0,
+   "views": 29,
+   "shares": 0,
+   "total_interactions": 0,
+   "nav_tap_forward": 15,
+   "nav_tap_exit": 2,
+   "nav_swipe_forward": 7
   }
  },
  "follow_log": {
@@ -1863,10 +1875,16 @@
    "unfollows": 0,
    "profile_views": 10,
    "followers": 673
+  },
+  "2026-11-23": {
+   "follows": 1,
+   "unfollows": 0,
+   "profile_views": 10,
+   "followers": 674
   }
  },
  "demographics": {
-  "date": "2026-11-23",
+  "date": "2026-11-24",
   "city": {
    "Ashqelon, Southern District": 41,
    "Ashdod, Southern District": 28,
@@ -1894,9 +1912,9 @@
  },
  "hook": {
   "0": {
-   "n": 2,
-   "watch": 0.082,
-   "avg_reach": 66
+   "n": 3,
+   "watch": 0.087,
+   "avg_reach": 59
   },
   "1": {
    "n": 5,
