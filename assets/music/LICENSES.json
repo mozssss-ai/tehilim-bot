@@ -324,34 +324,16 @@
   "page": "https://commons.wikimedia.org/wiki/File%3ARomance_An%C3%B3nimo_%28Jeux_interdits%29.ogg"
  },
  {
-  "file": "holiday/chanukah.mp3",
-  "title": "Oy Chanukah - Airmen of Note - United States Air Force Band",
-  "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File:Oy_Chanukah_-_Airmen_of_Note_-_United_States_Air_Force_Band.mp3"
- },
- {
   "file": "holiday/yom_haatzmaut.mp3",
   "title": "Hatikvah instrumental",
   "license": "Public domain",
   "page": "https://commons.wikimedia.org/wiki/File%3AHatikvah_instrumental.ogg"
  },
  {
-  "file": "holiday/yom_kippur.mp3",
-  "title": "Kol Nidrei - Chamber Orchestra - United States Marine Band",
-  "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File%3AKol_Nidrei_-_Chamber_Orchestra_-_United_States_Marine_Band.opus"
- },
- {
   "file": "holiday/purim_2.mp3",
   "title": "Der Terk in America",
   "license": "Public domain",
   "page": "https://commons.wikimedia.org/wiki/File:Der_Terk_in_America.mp3"
- },
- {
-  "file": "holiday/purim.mp3",
-  "title": "Der Heyser Bulgar - Stellar Brass - United States Air Force Band of the Rockies",
-  "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File%3ADer_Heyser_Bulgar_-_Stellar_Brass_-_United_States_Air_Force_Band_of_the_Rockies.mp3"
  },
  {
   "file": "holiday/simchat_torah.mp3",
@@ -364,5 +346,47 @@
   "title": "Hava nagila",
   "license": "Public domain",
   "page": "https://commons.wikimedia.org/wiki/File%3AHava_nagila.ogg"
+ },
+ {
+  "file": "holiday/chanukah.mp3",
+  "title": "מעוז צור (לחן מסורתי) – עיבוד פסנתר/נבל",
+  "license": "Public domain (traditional melody)",
+  "page": ""
+ },
+ {
+  "file": "holiday/pesach.mp3",
+  "title": "דיינו (לחן מסורתי)",
+  "license": "Public domain (traditional melody)",
+  "page": ""
+ },
+ {
+  "file": "holiday/rosh_hashana.mp3",
+  "title": "קולות שופר",
+  "license": "Original rendering",
+  "page": ""
+ },
+ {
+  "file": "holiday/sukkot.mp3",
+  "title": "Vivaldi – Autumn I (flute arrangement)",
+  "license": "Public domain (Mutopia score)",
+  "page": "https://www.mutopiaproject.org"
+ },
+ {
+  "file": "holiday/purim.mp3",
+  "title": "Vivaldi – Autumn III 'La caccia' (flute arrangement)",
+  "license": "Public domain (Mutopia score)",
+  "page": "https://www.mutopiaproject.org"
+ },
+ {
+  "file": "holiday/yom_kippur.mp3",
+  "title": "Brahms – Waltz op.39 no.15 (piano)",
+  "license": "Public domain (Mutopia score)",
+  "page": "https://www.mutopiaproject.org"
+ },
+ {
+  "file": "holiday/tu_beav.mp3",
+  "title": "Debussy – Clair de lune (piano)",
+  "license": "Public domain (Mutopia score)",
+  "page": "https://www.mutopiaproject.org"
  }
 ]

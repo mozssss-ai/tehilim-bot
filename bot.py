@@ -200,11 +200,12 @@ def hook_index(day: dt.date) -> int:
         return 0
     m = json.loads(MARKETING_FILE.read_text(encoding="utf-8")) if MARKETING_FILE.exists() else {}
     stats = m.get("hook", {})
-    if min(stats.get(str(i), {}).get("n", 0) for i in (0, 1)) < 8:
-        # זוגות של יומיים (ולא יום כן/יום לא) – כדי שכל גרסה תעלה גם בצהריים וגם בערב,
-        # ולא תתערבב עם ניסוי השעות שמתחלף כל יום
-        return (day.toordinal() // 2) % 2
     rng = random.Random(day.toordinal() * 13 + 5)
+    if min(stats.get(str(i), {}).get("n", 0) for i in (0, 1)) < 8:
+        # אושר ב-23/11/2026: הפתיחה המיידית מובילה (19% צפייה מול 8%), אז היא ברירת המחדל,
+        # והלוגו עולה רק בחלק קטן מהימים (אקראי, כדי לא להתערבב עם ניסוי השעות) עד שיש לו 8 ריילס
+        default = int((CONFIG.get("hook_test") or {}).get("default", 1))
+        return 1 - default if rng.random() < CONFIG.get("hook_explore_rate", 0.2) else default
     best = int(m.get("hook_best", day.toordinal() % 2))
     return 1 - best if rng.random() < CONFIG.get("hook_explore_rate", 0.2) else best
 

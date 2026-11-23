@@ -61,10 +61,8 @@ if len(regular) < 20:
 # בחגים האלה הבוט ישתמש במנגינה השקטה הרגילה.
 for p in MUSIC.glob("[0-9][0-9]_*.mp3"):
     p.unlink()
-keep_holiday = {Path(it["file"]).name for it in done if it["file"].startswith("holiday/")}
-for p in (MUSIC / "holiday").glob("*.mp3"):
-    if p.name not in keep_holiday:
-        p.unlink()
+# מנגינות החגים לא נמחקות כאן: חלקן אושרו בנפרד (מעוז צור, דיינו, ויוואלדי, ברהמס, דביסי ועוד)
+# ומחיקה שלהן החליפה בעבר מנגינות מאושרות בלי אישור.
 
 styles = {}
 for it in regular:
@@ -73,6 +71,12 @@ src = (ROOT / "music_styles.py").read_text(encoding="utf-8")
 src = re.sub(r"STYLES = \{.*?\n\}", "STYLES = " + json.dumps(styles, ensure_ascii=False, indent=4), src, flags=re.S)
 (ROOT / "music_styles.py").write_text(src, encoding="utf-8")
 
-(MUSIC / "LICENSES.json").write_text(json.dumps(
-    [{k: it[k] for k in ("file", "title", "license", "page")} for it in done], ensure_ascii=False, indent=1), encoding="utf-8")
+lic_path = MUSIC / "LICENSES.json"
+old_lic = json.loads(lic_path.read_text(encoding="utf-8")) if lic_path.exists() else []
+new_files = {it["file"] for it in done}
+kept = [x for x in old_lic if x["file"].startswith("holiday/") and x["file"] not in new_files
+        and (MUSIC / x["file"]).exists()]
+lic_path.write_text(json.dumps(
+    [{k: it[k] for k in ("file", "title", "license", "page")} for it in done] + kept, ensure_ascii=False, indent=1),
+    encoding="utf-8")
 print(f"done {len(done)} ok, {len(failed)} failed:", [f["title"] for f in failed])

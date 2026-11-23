@@ -486,15 +486,6 @@
   "style": "גיטרה ונבל"
  },
  {
-  "file": "holiday/chanukah.mp3",
-  "src": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Oy_Chanukah_-_Airmen_of_Note_-_United_States_Air_Force_Band.mp3",
-  "start": 5,
-  "title": "Oy Chanukah - Airmen of Note - United States Air Force Band",
-  "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File:Oy_Chanukah_-_Airmen_of_Note_-_United_States_Air_Force_Band.mp3",
-  "style": null
- },
- {
   "file": "holiday/yom_haatzmaut.mp3",
   "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/2/26/Hatikvah_instrumental.ogg/Hatikvah_instrumental.ogg.mp3",
   "start": 4,
@@ -504,30 +495,12 @@
   "style": null
  },
  {
-  "file": "holiday/yom_kippur.mp3",
-  "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/93/Kol_Nidrei_-_Chamber_Orchestra_-_United_States_Marine_Band.opus/Kol_Nidrei_-_Chamber_Orchestra_-_United_States_Marine_Band.opus.mp3",
-  "start": 31,
-  "title": "Kol Nidrei - Chamber Orchestra - United States Marine Band",
-  "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File%3AKol_Nidrei_-_Chamber_Orchestra_-_United_States_Marine_Band.opus",
-  "style": null
- },
- {
   "file": "holiday/purim_2.mp3",
   "src": "https://upload.wikimedia.org/wikipedia/commons/5/55/Der_Terk_in_America.mp3",
   "start": 5,
   "title": "Der Terk in America",
   "license": "Public domain",
   "page": "https://commons.wikimedia.org/wiki/File:Der_Terk_in_America.mp3",
-  "style": null
- },
- {
-  "file": "holiday/purim.mp3",
-  "src": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Der_Heyser_Bulgar_-_Stellar_Brass_-_United_States_Air_Force_Band_of_the_Rockies.mp3",
-  "start": 13,
-  "title": "Der Heyser Bulgar - Stellar Brass - United States Air Force Band of the Rockies",
-  "license": "Public domain",
-  "page": "https://commons.wikimedia.org/wiki/File%3ADer_Heyser_Bulgar_-_Stellar_Brass_-_United_States_Air_Force_Band_of_the_Rockies.mp3",
   "style": null
  },
  {
