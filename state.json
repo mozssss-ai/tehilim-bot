@@ -372,6 +372,22 @@
           "17885536722629437"
         ]
       ]
+    },
+    {
+      "chapter": 19,
+      "day": "2026-11-23",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": "20:30",
+      "at": "2026-11-23T20:34+02:00",
+      "media_id": "18111740420351588",
+      "story_id": "18225996313355090",
+      "cta": 3,
+      "hook": 0,
+      "music": "r20_klaviersonate_nr_16_g_dur_op_31_1_ii_ada",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
