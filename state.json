@@ -388,6 +388,22 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 20,
+      "day": "2026-11-24",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": "13:30",
+      "at": "2026-11-24T13:35+02:00",
+      "media_id": "18125495272928494",
+      "story_id": "17921147124524450",
+      "cta": 0,
+      "hook": 1,
+      "music": "r21_klaviersonate_nr_17_d_moll_op_31_2_der_s",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
