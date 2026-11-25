@@ -404,6 +404,27 @@
       "secs": 30.0,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 21,
+      "day": "2026-11-25",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": "20:30",
+      "at": "2026-11-25T20:35+02:00",
+      "media_id": "18083654552705227",
+      "story_id": "18144742366615844",
+      "cta": 2,
+      "hook": 1,
+      "music": "r22_klaviersonate_nr_3_op_2_3_c_dur_ii_adagi",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": [
+        [
+          "invite_story",
+          "18034999385860428"
+        ]
+      ]
     }
   ]
 }
