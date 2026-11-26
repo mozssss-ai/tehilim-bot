@@ -425,6 +425,22 @@
           "18034999385860428"
         ]
       ]
+    },
+    {
+      "chapter": 22,
+      "day": "2026-11-26",
+      "kind": "cycle",
+      "day_kind": "weekday",
+      "slot": "13:30",
+      "at": "2026-11-26T13:35+02:00",
+      "media_id": "18134177428833765",
+      "story_id": "18119679647030532",
+      "cta": 2,
+      "hook": 0,
+      "music": "r23_mendelssohn_venetianisches_gondellied_op",
+      "secs": 53.480000000000004,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
