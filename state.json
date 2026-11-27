@@ -441,6 +441,27 @@
       "secs": 53.480000000000004,
       "dedication": null,
       "extras": []
+    },
+    {
+      "chapter": 23,
+      "day": "2026-11-27",
+      "kind": "cycle",
+      "day_kind": "erev",
+      "slot": "12:00",
+      "at": "2026-11-27T13:34+02:00",
+      "media_id": "18100960721656152",
+      "story_id": "18425742703156042",
+      "cta": 3,
+      "hook": 0,
+      "music": "r24_nocturne_op_32_no_1_in_b_major",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": [
+        [
+          "shabbat_story",
+          "18124055813014067"
+        ]
+      ]
     }
   ]
 }
