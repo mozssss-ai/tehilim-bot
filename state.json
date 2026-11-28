@@ -462,6 +462,22 @@
           "18124055813014067"
         ]
       ]
+    },
+    {
+      "chapter": 24,
+      "day": "2026-11-28",
+      "kind": "cycle",
+      "day_kind": "holy",
+      "slot": null,
+      "at": "2026-11-28T18:52+02:00",
+      "media_id": "17906823480608020",
+      "story_id": "18024079646937782",
+      "cta": 0,
+      "hook": 1,
+      "music": "r25_nocturneop9no2",
+      "secs": 30.0,
+      "dedication": null,
+      "extras": []
     }
   ]
 }
